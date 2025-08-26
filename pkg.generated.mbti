@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "username/hello"
+
+// Values
+
+// Errors
+
+// Types and methods
+type GraphicsOp
+
+type Object
+
+type Pdf
+
+type Stream
+
+type TransformMatrix
+
+// Type aliases
+
+// Traits
+
