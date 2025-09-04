@@ -249,7 +249,7 @@ test {
     ),
   )
   let pdf = make_pdf(3, [stm, pages, catalog, page])
-  let offset = write_pdf(pdf, buf, 0)
+  let offset = @fmt.Format::write(pdf, buf, 0)
   let pdf_file = bytes_of_memory(buf, offset)
   @fs.write_bytes_to_file("./output/hello.pdf", pdf_file)
 }
@@ -298,7 +298,7 @@ test "image" {
   let xobjects = define_xobject([("/Im0", Indirect(5))])
   let page = define_page(1, 2, [font_resources, xobjects])
   let pdf = make_pdf(3, [stm, pages, catalog, page, image, icc])
-  let offset = write_pdf(pdf, buf, 0)
+  let offset = @fmt.Format::write(pdf, buf, 0)
   let bytes = bytes_of_memory(buf, offset)
   @fs.write_bytes_to_file("./output/ocaml.pdf", bytes)
 }
