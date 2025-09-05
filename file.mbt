@@ -1,6 +1,6 @@
 ///|
-pub impl @fmt.Format for Pdf with write(
-  value : Pdf,
+pub impl @fmt.Format for File with write(
+  value : File,
   buffer : @fmt.Memory,
   start : Int,
 ) -> Int {
@@ -24,7 +24,7 @@ pub impl @fmt.Format for Pdf with write(
 }
 
 ///|
-pub impl @fmt.Format for Pdf with count(value : Pdf) -> Int {
+pub impl @fmt.Format for File with count(value : File) -> Int {
   let mut total = 0
   total += count_pdf_header(value)
   for n, obj in value.objects.iter2() {
@@ -42,7 +42,7 @@ pub impl @fmt.Format for Pdf with count(value : Pdf) -> Int {
 }
 
 ///|
-fn write_pdf_header(pdf : Pdf, buf : @fmt.Memory, start : Int) -> Int {
+fn write_pdf_header(pdf : File, buf : @fmt.Memory, start : Int) -> Int {
   try {
     let mut offset = start
     offset += @fmt.format_write(
@@ -64,7 +64,7 @@ fn write_pdf_header(pdf : Pdf, buf : @fmt.Memory, start : Int) -> Int {
 }
 
 ///|
-fn count_pdf_header(pdf : Pdf) -> Int {
+fn count_pdf_header(pdf : File) -> Int {
   10 + @fmt.Format::count(pdf.major) + @fmt.Format::count(pdf.minor) + 12
 }
 

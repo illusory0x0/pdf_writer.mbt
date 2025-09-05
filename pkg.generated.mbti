@@ -10,6 +10,9 @@ import(
 // Errors
 
 // Types and methods
+type File
+impl @fmt.Format for File
+
 pub(all) enum GraphicsOp {
   Op_w(Double)
   Op_J(Int)
@@ -102,9 +105,6 @@ pub(all) enum Object {
   Indirect(Int)
 }
 impl @fmt.Format for Object
-
-type Pdf
-impl @fmt.Format for Pdf
 
 pub(all) struct Stream(Bytes)
 fn Stream::inner(Self) -> Bytes

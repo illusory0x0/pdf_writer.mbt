@@ -171,7 +171,7 @@ pub(all) enum GraphicsOp {
 }
 
 ///|
-struct Pdf {
+struct File {
   major : Int
   minor : Int
   objects : Array[Object]

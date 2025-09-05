@@ -1,6 +1,6 @@
 ///|
-fn make_pdf(catalog : Int, objects : Array[Object]) -> Pdf {
-  Pdf::{
+fn make_pdf(catalog : Int, objects : Array[Object]) -> File {
+  File::{
     major: 1,
     minor: 4,
     trailer: Dictionary([("/Size", Integer(5)), ("/Root", Indirect(catalog))]),
