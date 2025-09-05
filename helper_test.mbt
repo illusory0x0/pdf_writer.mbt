@@ -111,7 +111,7 @@ fn bytes_of_memory(mem : @fmt.Memory, len : Int) -> Bytes {
 
 ///|
 fn write_graphics_operator_sequence(
-  xs : Array[GraphicsOp],
+  xs : Array[@pdf.GraphicOperator],
   buf : @fmt.Memory,
   start : Int,
 ) -> Int {

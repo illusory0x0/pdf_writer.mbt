@@ -17,7 +17,7 @@ pub(all) enum Object {
 }
 
 ///|
-pub(all) enum GraphicsOp {
+pub(all) enum GraphicOperator {
   // set line width
   Op_w(Double)
   // set line cap

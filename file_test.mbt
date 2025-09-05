@@ -173,7 +173,7 @@ test "image" (t : @test.T) {
     e: 50,
     f: 770,
   }
-  let ops : Array[@pdf.GraphicsOp] = [Op_cm(tm), Op_Do("/Im0")]
+  let ops : Array[@pdf.GraphicOperator] = [Op_cm(tm), Op_Do("/Im0")]
   let offset = write_graphics_operator_sequence(ops, buf, 0)
   let bytes = bytes_of_memory(buf, offset)
   let len = bytes.length()

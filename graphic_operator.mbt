@@ -1,6 +1,6 @@
 ///|
-pub impl @fmt.Format for GraphicsOp with write(
-  value : GraphicsOp,
+pub impl @fmt.Format for GraphicOperator with write(
+  value : GraphicOperator,
   buffer : @fmt.Memory,
   start : Int,
 ) -> Int {
@@ -187,7 +187,7 @@ pub impl @fmt.Format for GraphicsOp with write(
 }
 
 ///|
-pub impl @fmt.Format for GraphicsOp with count(value : GraphicsOp) -> Int {
+pub impl @fmt.Format for GraphicOperator with count(value : GraphicOperator) -> Int {
   let count = match value {
     Op_w(w) => @fmt.Format::count(w)
     Op_J(j) => @fmt.Format::count(j)
