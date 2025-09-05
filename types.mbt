@@ -171,7 +171,7 @@ pub(all) enum GraphicsOp {
 }
 
 ///|
-struct File {
+pub(all) struct File {
   major : Int
   minor : Int
   objects : Array[Object]
@@ -180,7 +180,7 @@ struct File {
 
 ///|
 ///  
-struct TransformMatrix {
+pub(all) struct TransformMatrix {
   a : Double
   b : Double
   c : Double

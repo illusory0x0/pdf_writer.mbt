@@ -24,11 +24,11 @@ test "test write to file" {
     e: 50,
     f: 770,
   }
-  let op1 = Op_cm(tm)
-  let op2 = Op_BT
-  let op3 = Op_Tf("/F0", 36)
-  let op4 = Op_Tj("Hello, World!")
-  let op5 = Op_ET
+  let op1 = @pdf.Op_cm(tm)
+  let op2 = @pdf.Op_BT
+  let op3 = @pdf.Op_Tf("/F0", 36)
+  let op4 = @pdf.Op_Tj("Hello, World!")
+  let op5 = @pdf.Op_ET
   let ops = [op1, op2, op3, op4, op5]
   let offset = write_graphics_operator_sequence(ops, buf, 0)
   let bytes = bytes_of_memory(buf, offset)
@@ -67,11 +67,11 @@ test (t : @test.T) {
     e: 50,
     f: 770,
   }
-  let op1 = Op_cm(tm)
-  let op2 = Op_BT
-  let op3 = Op_Tf("/F0", 36)
-  let op4 = Op_Tj("Hello, World!")
-  let op5 = Op_ET
+  let op1 = @pdf.Op_cm(tm)
+  let op2 = @pdf.Op_BT
+  let op3 = @pdf.Op_Tf("/F0", 36)
+  let op4 = @pdf.Op_Tj("Hello, World!")
+  let op5 = @pdf.Op_ET
   let ops = [op1, op2, op3, op4, op5]
   let offset = write_graphics_operator_sequence(ops, buf, 0)
   inspect(
@@ -90,7 +90,7 @@ test (t : @test.T) {
   let catalog = define_catalog(2)
 
   // 4 0 obj - Use define_page and helper functions for resources
-  let times_italic_font = Dictionary([
+  let times_italic_font = @pdf.Dictionary([
     ("/Type", Name("/Font")),
     ("/Subtype", Name("/Type1")),
     ("/BaseFont", Name("/Times-Italic")),
@@ -173,7 +173,7 @@ test "image" (t : @test.T) {
     e: 50,
     f: 770,
   }
-  let ops = [Op_cm(tm), Op_Do("/Im0")]
+  let ops : Array[@pdf.GraphicsOp] = [Op_cm(tm), Op_Do("/Im0")]
   let offset = write_graphics_operator_sequence(ops, buf, 0)
   let bytes = bytes_of_memory(buf, offset)
   let len = bytes.length()
@@ -187,7 +187,7 @@ test "image" (t : @test.T) {
   let catalog = define_catalog(2)
 
   // 4 0 obj - Use define_page and helper functions for resources
-  let times_italic_font = Dictionary([
+  let times_italic_font = @pdf.Dictionary([
     ("/Type", Name("/Font")),
     ("/Subtype", Name("/Type1")),
     ("/BaseFont", Name("/Times-Italic")),

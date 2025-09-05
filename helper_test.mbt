@@ -1,6 +1,6 @@
 ///|
 fn make_pdf(catalog : Int, objects : Array[Object]) -> File {
-  File::{
+  @pdf.File::{
     major: 1,
     minor: 4,
     trailer: Dictionary([("/Size", Integer(5)), ("/Root", Indirect(catalog))]),
@@ -70,7 +70,7 @@ fn define_jpeg_image(
   bpc : Int,
   icc : Int,
 ) -> Object {
-  let obj = Dictionary([
+  let obj = @pdf.Dictionary([
     ("/Type", Name("/XObject")),
     ("/Subtype", Name("/Image")),
     ("/Width", Integer(width)),
@@ -93,4 +93,31 @@ fn define_icc(icc : Bytes) -> Object {
     ]),
     icc,
   )
+}
+
+///|
+fn string_of_memory(mem : @fmt.Memory, len : Int) -> String {
+  let buf = StringBuilder::new(size_hint=len)
+  for i in 0..<len {
+    buf.write_char(mem[i].to_char())
+  }
+  buf.to_string()
+}
+
+///|
+fn bytes_of_memory(mem : @fmt.Memory, len : Int) -> Bytes {
+  Bytes::makei(len, i => mem[i])
+}
+
+///|
+fn write_graphics_operator_sequence(
+  xs : Array[GraphicsOp],
+  buf : @fmt.Memory,
+  start : Int,
+) -> Int {
+  let mut offset = start
+  for x in xs {
+    offset += @fmt.Format::write(x, buf, offset)
+  }
+  offset - start
 }
