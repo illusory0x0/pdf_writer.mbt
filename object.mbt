@@ -76,22 +76,16 @@ fn write_pdf_name_inner(n : @bytes.View, buf : @fmt.Memory, start : Int) -> Int 
 }
 
 ///|
-fn needs_processing(s : Bytes) -> Bool {
-  let l = s.length()
-  if l < 2 {
+fn needs_processing(pdf_name : Bytes) -> Bool {
+  if pdf_name.length() < 2 {
+    // b"/" is empty pdf object's name
     false
   } else {
-    needs_processing_inner(s, 1, l)
+    // ignore the leading '/'
+    pdf_name[1:]
+    .iter()
+    .any(x => x < '\x21' || x > '\x7e' || is_delimiter(x) || x == '#')
   }
-}
-
-///|
-fn needs_processing_inner(s : Bytes, p : Int, l : Int) -> Bool {
-  p <= l - 1 &&
-  (match s[p] {
-    x if x < '\x21' || x > '\x7e' || is_delimiter(x) || x == '#' => true
-    _ => needs_processing_inner(s, p + 1, l)
-  })
 }
 
 ///|
