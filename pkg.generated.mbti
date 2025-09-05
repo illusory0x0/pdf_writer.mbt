@@ -18,7 +18,7 @@ pub(all) struct File {
 }
 impl @fmt.Format for File
 
-pub(all) enum GraphicsOp {
+pub(all) enum GraphicOperator {
   Op_w(Double)
   Op_J(Int)
   Op_j(Int)
@@ -95,7 +95,7 @@ pub(all) enum GraphicsOp {
   Op_Unknown(Bytes)
   Op_Comment(Bytes)
 }
-impl @fmt.Format for GraphicsOp
+impl @fmt.Format for GraphicOperator
 
 pub(all) enum Object {
   Null
