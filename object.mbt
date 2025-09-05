@@ -1,5 +1,9 @@
 ///|
-fn write_pdf_string(pdf_string : Bytes, buffer : @fmt.Memory, start : Int) -> Int {
+fn write_pdf_string(
+  pdf_string : Bytes,
+  buffer : @fmt.Memory,
+  start : Int,
+) -> Int {
   let mut offset = start
   offset += @fmt.Format::write(b"(", buffer, offset)
   for x in pdf_string {
@@ -45,7 +49,11 @@ fn write_pdf_name(pdf_name : Bytes, buffer : @fmt.Memory, start : Int) -> Int {
 const HEX_DIGITS = b"0123456789ABCDEF"
 
 ///|
-fn write_pdf_name_inner(pdf_name : @bytes.View, buffer : @fmt.Memory, start : Int) -> Int {
+fn write_pdf_name_inner(
+  pdf_name : @bytes.View,
+  buffer : @fmt.Memory,
+  start : Int,
+) -> Int {
   let mut offset = start
   for ch in pdf_name {
     match ch {
@@ -56,9 +64,17 @@ fn write_pdf_name_inner(pdf_name : @bytes.View, buffer : @fmt.Memory, start : In
       h if h < '\x21' || h > '\x7e' || is_delimiter(h) || h == '#' => {
         offset += @fmt.Format::write(b"#", buffer, offset)
         // write high nibble
-        offset += @fmt.Format::write(HEX_DIGITS[h.to_int() / 16], buffer, offset)
+        offset += @fmt.Format::write(
+          HEX_DIGITS[h.to_int() / 16],
+          buffer,
+          offset,
+        )
         // write low nibble
-        offset += @fmt.Format::write(HEX_DIGITS[h.to_int() % 16], buffer, offset)
+        offset += @fmt.Format::write(
+          HEX_DIGITS[h.to_int() % 16],
+          buffer,
+          offset,
+        )
       }
       h => {
         buffer[offset] = h
@@ -174,25 +190,22 @@ impl @fmt.Format for Object with write(
 impl @fmt.Format for Object with count(value : Object) -> Int {
   match value {
     Stream(obj, stm) => @fmt.Format::count(obj) + stm.inner().length()
-    Dictionary(entries) => {
-      let mut total = 0
-      for elem in entries {
-        total += elem.0.length() * 2
-        total += 1 // space
-        total += @fmt.Format::count(elem.1)
-        total += 2 // indent and newline
-      }
-      total + 4 // << \n and \n >>
-    }
-    Array(elts) => {
-      let mut total = 0
-      for elem in elts {
-        total += @fmt.Format::count(elem)
-        total += 1 // space
-      }
-      total
-    }
+    // 6 for `<<\n` and `\n>>`
+    // x.0 * 2 for pdf escape in names
+    // 1 for space between key and value
+    // x.1 for value
+    // 2 for `\n  ` before each entry except the first
+    Dictionary(entries) =>
+      entries.fold(init=6, (acc, x) => acc +
+        @fmt.Format::count(x.0) * 2 +
+        1 +
+        @fmt.Format::count(x.1) +
+        2)
+    Array(elts) =>
+      elts.fold(init=1, (acc, x) => @fmt.Format::count(x) + acc + 1)
+    // * 2 for pdf escape in names
     Name(bytes) => bytes.length() * 2
+    // * 2 for pdf escape in strings
     String(bytes) => bytes.length() * 2
     Real(x) => @fmt.Format::count(x)
     Integer(x) => @fmt.Format::count(x)
