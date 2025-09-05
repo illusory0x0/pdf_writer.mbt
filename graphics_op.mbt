@@ -204,13 +204,9 @@ impl @fmt.Format for GraphicsOp with count(value : GraphicsOp) -> Int {
     Op_ET => 0
     Op_Tf(k, s) => @fmt.Format::count(k) + @fmt.Format::count(s)
     Op_Tj(s) => @fmt.Format::count(s)
-    Op_d(fl, y) => {
-      let mut cnt = 0
-      for f in fl {
-        cnt += @fmt.Format::count(f)
-      }
-      cnt + @fmt.Format::count(y)
-    }
+    Op_d(fl, y) =>
+      fl.fold(init=@fmt.Format::count(y), (acc, x) => acc +
+        @fmt.Format::count(x))
     Op_ri(s) => @fmt.Format::count(s)
     Op_i(i) => @fmt.Format::count(i)
     Op_gs(s) => @fmt.Format::count(s)
@@ -283,41 +279,15 @@ impl @fmt.Format for GraphicsOp with count(value : GraphicsOp) -> Int {
       @fmt.Format::count(k)
     Op_CS(s) => @fmt.Format::count(s)
     Op_cs(s) => @fmt.Format::count(s)
-    Op_SC(fs) => {
-      let mut cnt = 0
-      for f in fs {
-        cnt += @fmt.Format::count(f)
-      }
-      cnt
-    }
-    Op_SCN(fs) => {
-      let mut cnt = 0
-      for f in fs {
-        cnt += @fmt.Format::count(f)
-      }
-      cnt
-    }
-    Op_scn(fs) => {
-      let mut cnt = 0
-      for f in fs {
-        cnt += @fmt.Format::count(f)
-      }
-      cnt
-    }
-    Op_scnName(s, fs) => {
-      let mut cnt = @fmt.Format::count(s)
-      for f in fs {
-        cnt += @fmt.Format::count(f)
-      }
-      cnt
-    }
-    Op_SCNName(s, fs) => {
-      let mut cnt = @fmt.Format::count(s)
-      for f in fs {
-        cnt += @fmt.Format::count(f)
-      }
-      cnt
-    }
+    Op_SC(fs) => fs.fold(init=0, (acc, x) => @fmt.Format::count(x) + acc)
+    Op_SCN(fs) => fs.fold(init=0, (acc, x) => @fmt.Format::count(x) + acc)
+    Op_scn(fs) => fs.fold(init=0, (acc, x) => @fmt.Format::count(x) + acc)
+    Op_scnName(s, fs) =>
+      fs.fold(init=@fmt.Format::count(s), (acc, x) => acc +
+        @fmt.Format::count(x))
+    Op_SCNName(s, fs) =>
+      fs.fold(init=@fmt.Format::count(s), (acc, x) => acc +
+        @fmt.Format::count(x))
     Op_G(k) => @fmt.Format::count(k)
     Op_g(k) => @fmt.Format::count(k)
     Op_RG(r, g, b) =>
@@ -352,13 +322,7 @@ impl @fmt.Format for GraphicsOp with count(value : GraphicsOp) -> Int {
     OP_EX => 0
     Op_Unknown(s) => 0
     Op_Comment(s) => @fmt.Format::count(s)
-    Op_sc(fs) => {
-      let mut cnt = 0
-      for f in fs {
-        cnt += @fmt.Format::count(f)
-      }
-      cnt
-    }
+    Op_sc(fs) => fs.fold(init=0, (acc, x) => acc + @fmt.Format::count(x))
   }
   // 10 exceeds the actual required size.
   count + 10
