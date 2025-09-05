@@ -1,5 +1,5 @@
 ///|
-fn write_ops(xs : Array[GraphicsOp], buf : @fmt.Memory, start : Int) -> Int {
+fn write_graphics_operator_sequence(xs : Array[GraphicsOp], buf : @fmt.Memory, start : Int) -> Int {
   let mut offset = start
   for x in xs {
     offset += @fmt.Format::write(x, buf, offset)

@@ -30,7 +30,7 @@ test "test write to file" {
   let op4 = Op_Tj("Hello, World!")
   let op5 = Op_ET
   let ops = [op1, op2, op3, op4, op5]
-  let offset = write_ops(ops, buf, 0)
+  let offset = write_graphics_operator_sequence(ops, buf, 0)
   let bytes = bytes_of_memory(buf, offset)
   let len = bytes.length()
   let stm = Object::Stream(Dictionary([("/Length", Integer(len))]), bytes)
@@ -73,7 +73,7 @@ test (t : @test.T) {
   let op4 = Op_Tj("Hello, World!")
   let op5 = Op_ET
   let ops = [op1, op2, op3, op4, op5]
-  let offset = write_ops(ops, buf, 0)
+  let offset = write_graphics_operator_sequence(ops, buf, 0)
   inspect(
     string_of_memory(buf, offset),
     content=" 1 0 0 1 50 770 cm BT /F0 36 Tf (Hello, World!) Tj ET",
@@ -174,7 +174,7 @@ test "image" (t : @test.T) {
     f: 770,
   }
   let ops = [Op_cm(tm), Op_Do("/Im0")]
-  let offset = write_ops(ops, buf, 0)
+  let offset = write_graphics_operator_sequence(ops, buf, 0)
   let bytes = bytes_of_memory(buf, offset)
   let len = bytes.length()
 
