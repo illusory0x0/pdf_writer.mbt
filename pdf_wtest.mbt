@@ -56,7 +56,7 @@ test {
 }
 
 ///|
-test {
+test (t : @test.T) {
   let buffer = @fmt.Memory::make(4096, Byte::default())
   let buf = buffer
   let tm : TransformMatrix = TransformMatrix::{
@@ -156,10 +156,12 @@ test {
   let offset = @fmt.Format::write(pdf, buf, 0)
   let pdf_file = bytes_of_memory(buf, offset)
   @fs.write_bytes_to_file("./output/hello.pdf", pdf_file)
+  t.writeln(pdf_file)
+  t.snapshot(filename="hello.pdf.bytes")
 }
 
 ///|
-test "image" {
+test "image" (t : @test.T) {
   let buffer = @fmt.Memory::make(1_000_000, Byte::default())
   let buf = buffer
   let times = 28.0
@@ -205,4 +207,6 @@ test "image" {
   let offset = @fmt.Format::write(pdf, buf, 0)
   let bytes = bytes_of_memory(buf, offset)
   @fs.write_bytes_to_file("./output/ocaml.pdf", bytes)
+  t.writeln(bytes)
+  t.snapshot(filename="ocaml.pdf.bytes")
 }
