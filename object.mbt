@@ -42,13 +42,7 @@ fn write_pdf_name(n : Bytes, buf : @fmt.Memory, start : Int) -> Int {
 }
 
 ///|
-fn hexbyte(x : Int) -> Byte {
-  match x {
-    0..=9 => Int::to_byte('0'.to_int() + x)
-    10..=15 => Int::to_byte('A'.to_int() + (x - 10))
-    _ => panic()
-  }
-}
+const HEX_DIGITS = b"0123456789ABCDEF"
 
 ///|
 fn write_pdf_name_inner(n : @bytes.View, buf : @fmt.Memory, start : Int) -> Int {
@@ -61,9 +55,9 @@ fn write_pdf_name_inner(n : @bytes.View, buf : @fmt.Memory, start : Int) -> Int 
       }
       h if h < '\x21' || h > '\x7e' || is_delimiter(h) || h == '#' => {
         offset += @fmt.Format::write(b"#", buf, offset)
-        buf[offset] = hexbyte(h.to_int() / 16)
+        buf[offset] = HEX_DIGITS[h.to_int() / 16]
         offset += 1
-        buf[offset] = hexbyte(h.to_int() % 16)
+        buf[offset] = HEX_DIGITS[h.to_int() % 16]
         offset += 1
       }
       h => {
