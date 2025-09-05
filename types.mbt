@@ -112,9 +112,9 @@ pub(all) enum GraphicsOp {
   Op_single_quote(Bytes)
   // ditto, extra parameters 
   Op_double_quote(Double, Double, Bytes)
-  // set glpyh width info 
+  // set glyph width info 
   Op_d0(Double, Double)
-  // set glpyh width info 
+  // set glyph width info 
   Op_d1(Double, Double, Double, Double, Double, Double)
   // set color space 
   Op_CS(Bytes)
