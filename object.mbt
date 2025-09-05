@@ -1,42 +1,42 @@
 ///|
-fn write_pdf_string(s : Bytes, buf : @fmt.Memory, start : Int) -> Int {
+fn write_pdf_string(pdf_string : Bytes, buffer : @fmt.Memory, start : Int) -> Int {
   let mut offset = start
-  offset += @fmt.Format::write(b"(", buf, offset)
-  for x in s {
+  offset += @fmt.Format::write(b"(", buffer, offset)
+  for x in pdf_string {
     match x {
       '(' | ')' | '\\' as c => {
-        offset += @fmt.Format::write(b"\\", buf, offset)
-        buf[offset] = c
+        offset += @fmt.Format::write(b"\\", buffer, offset)
+        buffer[offset] = c
         offset += 1
       }
-      '\n' => offset += @fmt.Format::write(b"\\n", buf, offset)
-      '\r' => offset += @fmt.Format::write(b"\\r", buf, offset)
-      '\t' => offset += @fmt.Format::write(b"\\t", buf, offset)
-      '\b' => offset += @fmt.Format::write(b"\\b", buf, offset)
-      '\x0c' => offset += @fmt.Format::write(b"\\f", buf, offset)
+      '\n' => offset += @fmt.Format::write(b"\\n", buffer, offset)
+      '\r' => offset += @fmt.Format::write(b"\\r", buffer, offset)
+      '\t' => offset += @fmt.Format::write(b"\\t", buffer, offset)
+      '\b' => offset += @fmt.Format::write(b"\\b", buffer, offset)
+      '\x0c' => offset += @fmt.Format::write(b"\\f", buffer, offset)
       c => {
-        buf[offset] = c
+        buffer[offset] = c
         offset += 1
       }
     }
   }
-  offset += @fmt.Format::write(b")", buf, offset)
+  offset += @fmt.Format::write(b")", buffer, offset)
   offset - start
 }
 
 ///|
-fn write_pdf_name(n : Bytes, buf : @fmt.Memory, start : Int) -> Int {
+fn write_pdf_name(pdf_name : Bytes, buffer : @fmt.Memory, start : Int) -> Int {
   let mut offset = start
-  if needs_processing(n) {
-    if n == b"" || n[0] != '/' {
+  if needs_processing(pdf_name) {
+    if pdf_name == b"" || pdf_name[0] != '/' {
       println("warning: bad name")
-      offset += @fmt.Format::write(b"/", buf, offset)
+      offset += @fmt.Format::write(b"/", buffer, offset)
     } else {
-      offset += @fmt.Format::write(b"/", buf, offset)
-      offset += write_pdf_name_inner(n, buf, offset)
+      offset += @fmt.Format::write(b"/", buffer, offset)
+      offset += write_pdf_name_inner(pdf_name, buffer, offset)
     }
   } else {
-    offset += @fmt.Format::write(n, buf, offset)
+    offset += @fmt.Format::write(pdf_name, buffer, offset)
   }
   offset - start
 }
@@ -45,23 +45,23 @@ fn write_pdf_name(n : Bytes, buf : @fmt.Memory, start : Int) -> Int {
 const HEX_DIGITS = b"0123456789ABCDEF"
 
 ///|
-fn write_pdf_name_inner(n : @bytes.View, buf : @fmt.Memory, start : Int) -> Int {
+fn write_pdf_name_inner(pdf_name : @bytes.View, buffer : @fmt.Memory, start : Int) -> Int {
   let mut offset = start
-  for ch in n {
+  for ch in pdf_name {
     match ch {
       '\x00' => {
-        println("Warning: name \{n} contains the null character\n")
-        offset += @fmt.Format::write(b"#00", buf, offset)
+        println("Warning: name \{pdf_name} contains the null character\n")
+        offset += @fmt.Format::write(b"#00", buffer, offset)
       }
       h if h < '\x21' || h > '\x7e' || is_delimiter(h) || h == '#' => {
-        offset += @fmt.Format::write(b"#", buf, offset)
+        offset += @fmt.Format::write(b"#", buffer, offset)
         // write high nibble
-        offset += @fmt.Format::write(HEX_DIGITS[h.to_int() / 16], buf, offset)
+        offset += @fmt.Format::write(HEX_DIGITS[h.to_int() / 16], buffer, offset)
         // write low nibble
-        offset += @fmt.Format::write(HEX_DIGITS[h.to_int() % 16], buf, offset)
+        offset += @fmt.Format::write(HEX_DIGITS[h.to_int() % 16], buffer, offset)
       }
       h => {
-        buf[offset] = h
+        buffer[offset] = h
         offset += 1
       }
     }
