@@ -25,7 +25,10 @@ test "@fmt.Format for Object" {
   let value = @pdf.Array([Integer(1), Integer(2), Integer(3)])
   let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="[1 2 3]")
-  let value = @pdf.Dictionary([("/Type", Name(b"/Example")), ("/Count", Integer(3))])
+  let value = @pdf.Dictionary([
+    ("/Type", Name(b"/Example")),
+    ("/Count", Integer(3)),
+  ])
   let offset = @fmt.Format::write(value, buffer, 0)
   inspect(
     string_of_memory(buffer, offset),
