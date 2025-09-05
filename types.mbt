@@ -17,6 +17,9 @@ pub(all) enum Object {
 }
 
 ///|
+/// 
+/// [PDF – Graphic Operators – Cheat Sheet](https://pdfa.org/wp-content/uploads/2023/08/PDF-Operators-CheatSheet.pdf)
+/// 
 pub(all) enum GraphicOperator {
   // set line width
   Op_w(Double)
