@@ -1,5 +1,5 @@
 ///|
-impl @fmt.Format for Pdf with write(
+pub impl @fmt.Format for Pdf with write(
   value : Pdf,
   buffer : @fmt.Memory,
   start : Int,
@@ -24,7 +24,7 @@ impl @fmt.Format for Pdf with write(
 }
 
 ///|
-impl @fmt.Format for Pdf with count(value : Pdf) -> Int {
+pub impl @fmt.Format for Pdf with count(value : Pdf) -> Int {
   let mut total = 0
   total += count_pdf_header(value)
   for n, obj in value.objects.iter2() {

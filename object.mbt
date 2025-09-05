@@ -107,7 +107,7 @@ fn is_delimiter(x : Byte) -> Bool {
 }
 
 ///|
-impl @fmt.Format for Object with write(
+pub impl @fmt.Format for Object with write(
   value : Object,
   buffer : @fmt.Memory,
   start : Int,
@@ -187,7 +187,7 @@ impl @fmt.Format for Object with write(
 }
 
 ///|
-impl @fmt.Format for Object with count(value : Object) -> Int {
+pub impl @fmt.Format for Object with count(value : Object) -> Int {
   match value {
     Stream(obj, stm) => @fmt.Format::count(obj) + stm.inner().length()
     // 6 for `<<\n` and `\n>>`

@@ -1,9 +1,9 @@
 ///|
-struct Stream(Bytes)
+pub(all) struct Stream(Bytes)
 
 ///|
 /// pdf object 
-enum Object {
+pub(all) enum Object {
   Null
   Boolean(Bool)
   Integer(Int)
@@ -17,7 +17,7 @@ enum Object {
 }
 
 ///|
-enum GraphicsOp {
+pub(all) enum GraphicsOp {
   // set line width
   Op_w(Double)
   // set line cap
