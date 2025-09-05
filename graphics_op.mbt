@@ -81,7 +81,7 @@ impl @fmt.Format for GraphicsOp with write(
       Op_TJ(obj) => {
         let mut offset = start
         offset += @fmt.Format::write(b" ", buffer, offset)
-        offset += write_pdf_object(obj, buffer, offset)
+        offset += @fmt.Format::write(obj, buffer, offset)
         offset += @fmt.Format::write(b" TJ", buffer, offset)
         offset - start
       }
@@ -155,7 +155,7 @@ impl @fmt.Format for GraphicsOp with write(
       Op_DP(s, o) => {
         let mut offset = start
         offset += @fmt.format_write(" {}", [s[:]], buffer, offset)
-        offset += write_pdf_object(o, buffer, offset)
+        offset += @fmt.Format::write(o, buffer, offset)
         offset += @fmt.format_write(" DP", [], buffer, offset)
         offset - start
       }
@@ -163,7 +163,7 @@ impl @fmt.Format for GraphicsOp with write(
       Op_BDC(s, obj) => {
         let mut offset = start
         offset += @fmt.format_write(" {} ", [s[:]], buffer, offset)
-        offset += write_pdf_object(obj, buffer, offset)
+        offset += @fmt.Format::write(obj, buffer, offset)
         offset += @fmt.format_write(" BDC", [], buffer, offset)
         offset - start
       }
@@ -269,7 +269,7 @@ impl @fmt.Format for GraphicsOp with count(value : GraphicsOp) -> Int {
       @fmt.Format::count(t.e) +
       @fmt.Format::count(t.f)
     Op_T_star => 0
-    Op_TJ(obj) => 2 + count_pdf_object(obj)
+    Op_TJ(obj) => 2 + @fmt.Format::count(obj)
     Op_single_quote(s) => @fmt.Format::count(s)
     Op_double_quote(k, k_, s) =>
       @fmt.Format::count(k) + @fmt.Format::count(k_) + @fmt.Format::count(s)
@@ -337,13 +337,13 @@ impl @fmt.Format for GraphicsOp with count(value : GraphicsOp) -> Int {
     Op_sh(s) => @fmt.Format::count(s)
     Op_Do(s) => @fmt.Format::count(s)
     Op_MP(s) => @fmt.Format::count(s)
-    Op_DP(s, o) => @fmt.Format::count(s) + count_pdf_object(o)
+    Op_DP(s, o) => @fmt.Format::count(s) + @fmt.Format::count(o)
     Op_BMC(s) => @fmt.Format::count(s)
-    Op_BDC(s, obj) => @fmt.Format::count(s) + count_pdf_object(obj)
+    Op_BDC(s, obj) => @fmt.Format::count(s) + @fmt.Format::count(obj)
     InlineImage(o, os, xs) =>
-      count_pdf_object(o) +
+      @fmt.Format::count(o) +
       (match os {
-        Some(o) => count_pdf_object(o)
+        Some(o) => @fmt.Format::count(o)
         None => 0
       }) +
       xs.length()

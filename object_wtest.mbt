@@ -8,34 +8,34 @@ fn write_ops(xs : Array[GraphicsOp], buf : @fmt.Memory, start : Int) -> Int {
 }
 
 ///|
-test "write_pdf_object" {
+test "@fmt.Format for Object" {
   let buffer = @fmt.Memory::make(4096, Byte::default())
   let value = Object::Integer(42)
-  let offset = write_pdf_object(value, buffer, 0)
+  let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="42")
   let value = Null
-  let offset = write_pdf_object(value, buffer, 0)
+  let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="null")
   let value = Boolean(true)
-  let offset = write_pdf_object(value, buffer, 0)
+  let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="true")
   let value = Boolean(false)
-  let offset = write_pdf_object(value, buffer, 0)
+  let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="false")
   let value = Real(3.14)
-  let offset = write_pdf_object(value, buffer, 0)
+  let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="3.14")
   let value = String(b"Hello, World!")
-  let offset = write_pdf_object(value, buffer, 0)
+  let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="(Hello, World!)")
   let value = Name(b"/Name")
-  let offset = write_pdf_object(value, buffer, 0)
+  let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="/Name")
   let value = Array([Integer(1), Integer(2), Integer(3)])
-  let offset = write_pdf_object(value, buffer, 0)
+  let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="[1 2 3]")
   let value = Dictionary([("/Type", Name(b"/Example")), ("/Count", Integer(3))])
-  let offset = write_pdf_object(value, buffer, 0)
+  let offset = @fmt.Format::write(value, buffer, 0)
   inspect(
     string_of_memory(buffer, offset),
     content=(
@@ -49,7 +49,7 @@ test "write_pdf_object" {
     Dictionary([("/Length", Integer(11))]),
     b"Hello World",
   )
-  let offset = write_pdf_object(value, buffer, 0)
+  let offset = @fmt.Format::write(value, buffer, 0)
   inspect(
     string_of_memory(buffer, offset),
     content=(
@@ -62,14 +62,14 @@ test "write_pdf_object" {
     ),
   )
   let value = Indirect(1)
-  let offset = write_pdf_object(value, buffer, 0)
+  let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="1 0 R")
   let value = Dictionary([
     ("/Type", Name("/Pages")),
     ("/Kids", Integer(1)),
     ("/Count", Integer(1)),
   ])
-  let offset = write_pdf_object(value, buffer, 0)
+  let offset = @fmt.Format::write(value, buffer, 0)
   inspect(
     string_of_memory(buffer, offset),
     content=(
@@ -81,7 +81,7 @@ test "write_pdf_object" {
     ),
   )
   let value = Array([Indirect(1)])
-  let offset = write_pdf_object(value, buffer, 0)
+  let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="[1 0 R]")
 }
 
@@ -101,7 +101,7 @@ test "test write to file" {
 
   // Use define_pages helper function
   let pages = define_pages([4])
-  let offset = write_pdf_object(pages, buf, 0)
+  let offset = @fmt.Format::write(pages, buf, 0)
   inspect(
     string_of_memory(buffer, offset),
     content=(
@@ -130,7 +130,7 @@ test "test write to file" {
   let bytes = bytes_of_memory(buf, offset)
   let len = bytes.length()
   let stm = Object::Stream(Dictionary([("/Length", Integer(len))]), bytes)
-  let offset = write_pdf_object(stm, buf, 0)
+  let offset = @fmt.Format::write(stm, buf, 0)
   inspect(
     string_of_memory(buffer, offset),
     content=(
@@ -194,7 +194,7 @@ test {
   let font_f0 = define_font_item("/F0", times_italic_font)
   let font_resources = define_fonts([font_f0])
   let page = define_page(1, 2, [font_resources])
-  let offset = write_pdf_object(stm, buf, 0)
+  let offset = @fmt.Format::write(stm, buf, 0)
   inspect(
     string_of_memory(buf, offset),
     content=(
@@ -206,7 +206,7 @@ test {
       #|endstream
     ),
   )
-  let offset = write_pdf_object(pages, buf, 0)
+  let offset = @fmt.Format::write(pages, buf, 0)
   inspect(
     string_of_memory(buf, offset),
     content=(
@@ -217,7 +217,7 @@ test {
       #|>>
     ),
   )
-  let offset = write_pdf_object(catalog, buf, 0)
+  let offset = @fmt.Format::write(catalog, buf, 0)
   inspect(
     string_of_memory(buf, offset),
     content=(
@@ -227,7 +227,7 @@ test {
       #|>>
     ),
   )
-  let offset = write_pdf_object(page, buf, 0)
+  let offset = @fmt.Format::write(page, buf, 0)
   inspect(
     string_of_memory(buf, offset),
     content=(

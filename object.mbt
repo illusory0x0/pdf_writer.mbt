@@ -1,112 +1,4 @@
 ///|
-fn write_pdf_object(obj : Object, buf : @fmt.Memory, start : Int) -> Int {
-  try {
-    match obj {
-      Null => @fmt.Format::write(b"null", buf, start)
-      Boolean(true) => @fmt.Format::write(b"true", buf, start)
-      Boolean(false) => @fmt.Format::write(b"false", buf, start)
-      Integer(n) => @fmt.Format::write(n, buf, start)
-      Real(r) => @fmt.Format::write(r, buf, start)
-      String(s) => write_pdf_string(s, buf, start)
-      Name(n) => write_pdf_name(n, buf, start)
-      Array(elts) => {
-        let mut offset = start
-        match elts {
-          [] => offset += @fmt.Format::write(b"[]", buf, offset)
-          [x] => {
-            offset += @fmt.Format::write(b"[", buf, offset)
-            offset += write_pdf_object(x, buf, offset)
-            offset += @fmt.Format::write(b"]", buf, offset)
-          }
-          [x, .. xs] => {
-            offset += @fmt.Format::write(b"[", buf, offset)
-            offset += write_pdf_object(x, buf, offset)
-            for x in xs {
-              offset += @fmt.Format::write(b" ", buf, offset)
-              offset += write_pdf_object(x, buf, offset)
-            }
-            offset += @fmt.Format::write(b"]", buf, offset)
-          }
-        }
-        offset - start
-      }
-      Dictionary(entries) => {
-        let mut offset = start
-        offset += @fmt.Format::write(b"<<\n", buf, offset)
-        match entries {
-          [] => ()
-          [(k, v)] => {
-            offset += @fmt.Format::write(b"  ", buf, offset)
-            offset += @fmt.Format::write(k, buf, offset)
-            offset += @fmt.Format::write(b" ", buf, offset)
-            offset += write_pdf_object(v, buf, offset)
-          }
-          [(k, v), .. xs] => {
-            offset += @fmt.Format::write(b"  ", buf, offset)
-            offset += @fmt.Format::write(k, buf, offset)
-            offset += @fmt.Format::write(b" ", buf, offset)
-            offset += write_pdf_object(v, buf, offset)
-            for x in xs {
-              let (k, v) = x
-              offset += @fmt.Format::write(b"  ", buf, offset)
-              offset += @fmt.Format::write(b"\n  ", buf, offset)
-              offset += @fmt.Format::write(k, buf, offset)
-              offset += @fmt.Format::write(b" ", buf, offset)
-              offset += write_pdf_object(v, buf, offset)
-            }
-          }
-        }
-        offset += @fmt.Format::write(b"\n>>", buf, offset)
-        offset - start
-      }
-      Stream(dict, data) => {
-        let mut offset = start
-        offset += write_pdf_object(dict, buf, offset)
-        offset += @fmt.Format::write(b"\nstream\n", buf, offset)
-        offset += @fmt.Format::write(data.inner(), buf, offset)
-        offset += @fmt.Format::write(b"\nendstream", buf, offset)
-        offset - start
-      }
-      Indirect(n) => @fmt.format_write(b"{} 0 R", [n], buf, start)
-    }
-  } catch {
-    _ => panic()
-  }
-}
-
-///|
-fn count_pdf_object(obj : Object) -> Int {
-  match obj {
-    Stream(obj, stm) => count_pdf_object(obj) + stm.inner().length()
-    Dictionary(entries) => {
-      let mut total = 0
-      for elem in entries {
-        total += elem.0.length() * 2
-        total += 1 // space
-        total += count_pdf_object(elem.1)
-        total += 2 // indent and newline
-      }
-      total + 4 // << \n and \n >>
-    }
-    Array(elts) => {
-      let mut total = 0
-      for elem in elts {
-        total += count_pdf_object(elem)
-        total += 1 // space
-      }
-      total
-    }
-    Name(bytes) => bytes.length() * 2
-    String(bytes) => bytes.length() * 2
-    Real(x) => @fmt.Format::count(x)
-    Integer(x) => @fmt.Format::count(x)
-    Boolean(_) => 5
-    Null => 4
-    Indirect(x) => @fmt.Format::count(x) + 5
-  }
-}
-
-///|
 fn write_pdf_string(s : Bytes, buf : @fmt.Memory, start : Int) -> Int {
   let mut offset = start
   offset += @fmt.Format::write(b"(", buf, offset)
@@ -207,5 +99,117 @@ fn is_delimiter(x : Byte) -> Bool {
   match x {
     '(' | ')' | '<' | '>' | '[' | ']' | '{' | '}' | '/' | '%' => true
     _ => false
+  }
+}
+
+///|
+impl @fmt.Format for Object with write(
+  value : Object,
+  buffer : @fmt.Memory,
+  start : Int,
+) -> Int {
+  try {
+    match value {
+      Null => @fmt.Format::write(b"null", buffer, start)
+      Boolean(true) => @fmt.Format::write(b"true", buffer, start)
+      Boolean(false) => @fmt.Format::write(b"false", buffer, start)
+      Integer(n) => @fmt.Format::write(n, buffer, start)
+      Real(r) => @fmt.Format::write(r, buffer, start)
+      String(s) => write_pdf_string(s, buffer, start)
+      Name(n) => write_pdf_name(n, buffer, start)
+      Array(elts) => {
+        let mut offset = start
+        match elts {
+          [] => offset += @fmt.Format::write(b"[]", buffer, offset)
+          [x] => {
+            offset += @fmt.Format::write(b"[", buffer, offset)
+            offset += @fmt.Format::write(x, buffer, offset)
+            offset += @fmt.Format::write(b"]", buffer, offset)
+          }
+          [x, .. xs] => {
+            offset += @fmt.Format::write(b"[", buffer, offset)
+            offset += @fmt.Format::write(x, buffer, offset)
+            for x in xs {
+              offset += @fmt.Format::write(b" ", buffer, offset)
+              offset += @fmt.Format::write(x, buffer, offset)
+            }
+            offset += @fmt.Format::write(b"]", buffer, offset)
+          }
+        }
+        offset - start
+      }
+      Dictionary(entries) => {
+        let mut offset = start
+        offset += @fmt.Format::write(b"<<\n", buffer, offset)
+        match entries {
+          [] => ()
+          [(key, value)] => {
+            offset += @fmt.Format::write(b"  ", buffer, offset)
+            offset += @fmt.Format::write(key, buffer, offset)
+            offset += @fmt.Format::write(b" ", buffer, offset)
+            offset += @fmt.Format::write(value, buffer, offset)
+          }
+          [(key, value), .. xs] => {
+            offset += @fmt.Format::write(b"  ", buffer, offset)
+            offset += @fmt.Format::write(key, buffer, offset)
+            offset += @fmt.Format::write(b" ", buffer, offset)
+            offset += @fmt.Format::write(value, buffer, offset)
+            for x in xs {
+              let (key, value) = x
+              offset += @fmt.Format::write(b"  ", buffer, offset)
+              offset += @fmt.Format::write(b"\n  ", buffer, offset)
+              offset += @fmt.Format::write(key, buffer, offset)
+              offset += @fmt.Format::write(b" ", buffer, offset)
+              offset += @fmt.Format::write(value, buffer, offset)
+            }
+          }
+        }
+        offset += @fmt.Format::write(b"\n>>", buffer, offset)
+        offset - start
+      }
+      Stream(dict, data) => {
+        let mut offset = start
+        offset += @fmt.Format::write(dict, buffer, offset)
+        offset += @fmt.Format::write(b"\nstream\n", buffer, offset)
+        offset += @fmt.Format::write(data.inner(), buffer, offset)
+        offset += @fmt.Format::write(b"\nendstream", buffer, offset)
+        offset - start
+      }
+      Indirect(n) => @fmt.format_write(b"{} 0 R", [n], buffer, start)
+    }
+  } catch {
+    _ => panic()
+  }
+}
+
+///|
+impl @fmt.Format for Object with count(value : Object) -> Int {
+  match value {
+    Stream(obj, stm) => @fmt.Format::count(obj) + stm.inner().length()
+    Dictionary(entries) => {
+      let mut total = 0
+      for elem in entries {
+        total += elem.0.length() * 2
+        total += 1 // space
+        total += @fmt.Format::count(elem.1)
+        total += 2 // indent and newline
+      }
+      total + 4 // << \n and \n >>
+    }
+    Array(elts) => {
+      let mut total = 0
+      for elem in elts {
+        total += @fmt.Format::count(elem)
+        total += 1 // space
+      }
+      total
+    }
+    Name(bytes) => bytes.length() * 2
+    String(bytes) => bytes.length() * 2
+    Real(x) => @fmt.Format::count(x)
+    Integer(x) => @fmt.Format::count(x)
+    Boolean(_) => 5
+    Null => 4
+    Indirect(x) => @fmt.Format::count(x) + 5
   }
 }

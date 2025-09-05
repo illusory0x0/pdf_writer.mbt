@@ -73,7 +73,7 @@ fn write_pdf_obj(obj : Object, n : Int, buf : @fmt.Memory, start : Int) -> Int {
   try {
     let mut offset = start
     offset += @fmt.format_write("{} 0 obj\n", [n], buf, offset)
-    offset += write_pdf_object(obj, buf, offset)
+    offset += @fmt.Format::write(obj, buf, offset)
     offset += @fmt.Format::write(b"\nendobj\n"[:], buf, offset)
     offset - start
   } catch {
@@ -83,7 +83,7 @@ fn write_pdf_obj(obj : Object, n : Int, buf : @fmt.Memory, start : Int) -> Int {
 
 ///|
 fn count_pdf_obj(obj : Object, n : Int) -> Int {
-  @fmt.Format::count(n) + 7 + count_pdf_object(obj) + 7
+  @fmt.Format::count(n) + 7 + @fmt.Format::count(obj) + 7
 }
 
 ///|
@@ -163,12 +163,12 @@ fn write_pdf_trailer(
 ) -> Int {
   let mut offset = start
   offset += @fmt.Format::write(b"trailer\n", buf, offset)
-  offset += write_pdf_object(trailer_dict, buf, offset)
+  offset += @fmt.Format::write(trailer_dict, buf, offset)
   offset += @fmt.Format::write(b"\n"[:], buf, offset)
   offset - start
 }
 
 ///|
 fn count_pdf_trailer(trailer_dict : Object) -> Int {
-  8 + count_pdf_object(trailer_dict) + 1
+  8 + @fmt.Format::count(trailer_dict) + 1
 }
