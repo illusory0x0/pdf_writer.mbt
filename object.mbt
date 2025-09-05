@@ -189,28 +189,48 @@ pub impl @fmt.Format for Object with write(
 ///|
 pub impl @fmt.Format for Object with count(value : Object) -> Int {
   match value {
-    Stream(obj, stm) => @fmt.Format::count(obj) + stm.inner().length()
-    // 6 for `<<\n` and `\n>>`
-    // x.0 * 2 for pdf escape in names
-    // 1 for space between key and value
-    // x.1 for value
-    // 2 for `\n  ` before each entry except the first
-    Dictionary(entries) =>
-      entries.fold(init=6, (acc, x) => acc +
-        @fmt.Format::count(x.0) * 2 +
-        1 +
-        @fmt.Format::count(x.1) +
-        2)
+    Null => 4 // "null"
+    Boolean(true) => 4 // "true"
+    Boolean(false) => 5 // "false"
+    Integer(n) => @fmt.Format::count(n)
+    Real(r) => @fmt.Format::count(r)
+    String(s) => s.length() * 2 + 2 // simplified as requested: multiply by 2 + parentheses
+    Name(n) => n.length() * 2 // simplified as requested: multiply by 2
     Array(elts) =>
-      elts.fold(init=1, (acc, x) => @fmt.Format::count(x) + acc + 1)
-    // * 2 for pdf escape in names
-    Name(bytes) => bytes.length() * 2
-    // * 2 for pdf escape in strings
-    String(bytes) => bytes.length() * 2
-    Real(x) => @fmt.Format::count(x)
-    Integer(x) => @fmt.Format::count(x)
-    Boolean(_) => 5
-    Null => 4
-    Indirect(x) => @fmt.Format::count(x) + 5
+      match elts {
+        [] => 2 // "[]"
+        [x] => 2 + @fmt.Format::count(x) // "[" + element + "]"
+        _ => {
+          // "[" + first_element + (" " + element)* + "]"
+          let content_count = elts.fold(init=0, (acc, x) => acc +
+            @fmt.Format::count(x))
+          let spaces_count = elts.length() - 1 // spaces between elements
+          2 + content_count + spaces_count
+        }
+      }
+    Dictionary(entries) =>
+      match entries {
+        [] => 6 // "<<\n\n>>"
+        [(key, value)] =>
+          // "<<\n  " + key + " " + value + "\n>>"
+          6 + 2 + key.length() * 2 + 1 + @fmt.Format::count(value)
+        [(key, value), .. xs] => {
+          // "<<\n  " + first_entry + ("\n  " + key + " " + value)* + "\n>>"
+          let mut total = 6 +
+            2 +
+            key.length() * 2 +
+            1 +
+            @fmt.Format::count(value)
+          for x in xs {
+            let (k, v) = x
+            total += 4 + k.length() * 2 + 1 + @fmt.Format::count(v) // "\n  " + key + " " + value
+          }
+          total
+        }
+      }
+    Stream(dict, data) =>
+      // dict + "\nstream\n" + data + "\nendstream"
+      @fmt.Format::count(dict) + 9 + data.inner().length() + 10
+    Indirect(n) => @fmt.Format::count(n) + 4 // number + " 0 R"
   }
 }
