@@ -27,17 +27,17 @@ pub impl @fmt.Format for File with write(
 pub impl @fmt.Format for File with count(value : File) -> Int {
   let mut total = 0
   total += count_pdf_header(value)
-  for n, obj in value.objects.iter2() {
-    total += count_pdf_obj(obj, n + 1)
-  }
   let xref_offsets = []
   for n, obj in value.objects.iter2() {
-    let xref_offset = count_pdf_obj(obj, n + 1)
-    xref_offsets.push(xref_offset)
+    let obj_size = count_pdf_obj(obj, n + 1)
+    xref_offsets.push(total)
+    total += obj_size
   }
   total += count_pdf_xrefs(xref_offsets)
   total += count_pdf_trailer(value.trailer)
-  total += 20 // startxref and %%EOF
+  total += 11 // "startxref\n"
+  total += @fmt.Format::count(total)
+  total += 7 // "\n%%EOF\n"
   total
 }
 
@@ -65,7 +65,14 @@ fn write_pdf_header(pdf : File, buf : @fmt.Memory, start : Int) -> Int {
 
 ///|
 fn count_pdf_header(pdf : File) -> Int {
-  10 + @fmt.Format::count(pdf.major) + @fmt.Format::count(pdf.minor) + 12
+  5 + // "%PDF-"
+  @fmt.Format::count(pdf.major) +
+  1 + // "."
+  @fmt.Format::count(pdf.minor) +
+  1 + // "\n"
+  1 + // "%"
+  4 + // BigEndian(0x80818283)
+  1 // "\n"
 }
 
 ///|
@@ -83,7 +90,10 @@ fn write_pdf_obj(obj : Object, n : Int, buf : @fmt.Memory, start : Int) -> Int {
 
 ///|
 fn count_pdf_obj(obj : Object, n : Int) -> Int {
-  @fmt.Format::count(n) + 7 + @fmt.Format::count(obj) + 7
+  @fmt.Format::count(n) +
+  7 + // " 0 obj\n"
+  @fmt.Format::count(obj) +
+  8 // "\nendobj\n"
 }
 
 ///|
@@ -122,7 +132,8 @@ fn write_pdf_xref(xref_offset : Int, buf : @fmt.Memory, start : Int) -> Int {
 
 ///|
 fn count_pdf_xref(xref_offset : Int) -> Int {
-  10 + 7
+  10 + // 10-digit zero-padded offset
+  10 // " 00000 n \n"
 }
 
 ///|
@@ -152,7 +163,16 @@ fn write_pdf_xrefs(
 
 ///|
 fn count_pdf_xrefs(xref_offsets : Array[Int]) -> Int {
-  5 + 10 + 20 + xref_offsets.length() * count_pdf_xref(0)
+  let mut total = 0
+  total += 5 // "xref\n"
+  total += 2 // "0 "
+  total += @fmt.Format::count(xref_offsets.length() + 1)
+  total += 1 // "\n"
+  total += 18 // "0000000000 65535 f \n"
+  for xref_offset in xref_offsets {
+    total += count_pdf_xref(xref_offset)
+  }
+  total
 }
 
 ///|
@@ -170,5 +190,7 @@ fn write_pdf_trailer(
 
 ///|
 fn count_pdf_trailer(trailer_dict : Object) -> Int {
-  8 + @fmt.Format::count(trailer_dict) + 1
+  8 + // "trailer\n"
+  @fmt.Format::count(trailer_dict) +
+  1 // "\n"
 }
