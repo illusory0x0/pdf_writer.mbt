@@ -55,10 +55,10 @@ fn write_pdf_name_inner(n : @bytes.View, buf : @fmt.Memory, start : Int) -> Int 
       }
       h if h < '\x21' || h > '\x7e' || is_delimiter(h) || h == '#' => {
         offset += @fmt.Format::write(b"#", buf, offset)
-        buf[offset] = HEX_DIGITS[h.to_int() / 16]
-        offset += 1
-        buf[offset] = HEX_DIGITS[h.to_int() % 16]
-        offset += 1
+        // write high nibble
+        offset += @fmt.Format::write(HEX_DIGITS[h.to_int() / 16], buf, offset)
+        // write low nibble
+        offset += @fmt.Format::write(HEX_DIGITS[h.to_int() % 16], buf, offset)
       }
       h => {
         buf[offset] = h
