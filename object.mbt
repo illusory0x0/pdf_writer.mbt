@@ -30,13 +30,13 @@ fn write_pdf_name(n : Bytes, buf : @fmt.Memory, start : Int) -> Int {
   if needs_processing(n) {
     if n == b"" || n[0] != '/' {
       println("warning: bad name")
-      offset += @fmt.Format::write(b"/"[:], buf, offset)
+      offset += @fmt.Format::write(b"/", buf, offset)
     } else {
-      offset += @fmt.Format::write(b"/"[:], buf, offset)
+      offset += @fmt.Format::write(b"/", buf, offset)
       offset += write_pdf_name_inner(n, buf, offset)
     }
   } else {
-    offset += @fmt.Format::write(n[:], buf, offset)
+    offset += @fmt.Format::write(n, buf, offset)
   }
   offset - start
 }
@@ -60,7 +60,7 @@ fn write_pdf_name_inner(n : @bytes.View, buf : @fmt.Memory, start : Int) -> Int 
         offset += @fmt.Format::write(b"#00", buf, offset)
       }
       h if h < '\x21' || h > '\x7e' || is_delimiter(h) || h == '#' => {
-        offset += @fmt.Format::write(b"#"[:], buf, offset)
+        offset += @fmt.Format::write(b"#", buf, offset)
         buf[offset] = hexbyte(h.to_int() / 16)
         offset += 1
         buf[offset] = hexbyte(h.to_int() % 16)
