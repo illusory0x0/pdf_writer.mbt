@@ -16,7 +16,8 @@ pub impl @fmt.Format for File with write(
     offset += write_pdf_xrefs(xref_offsets, buffer, offset)
     offset += write_pdf_trailer(value.trailer, buffer, offset)
     offset += @fmt.Format::write(b"startxref\n", buffer, offset)
-    offset += @fmt.format_write(b"{}\n%%EOF\n", [offset], buffer, offset)
+    let startxref_offset = offset
+    offset += @fmt.format_write(b"{}\n%%EOF\n", [startxref_offset], buffer, offset)
     offset - start
   } catch {
     _ => panic()
@@ -36,7 +37,8 @@ pub impl @fmt.Format for File with count(value : File) -> Int {
   total += count_pdf_xrefs(xref_offsets)
   total += count_pdf_trailer(value.trailer)
   total += 11 // "startxref\n"
-  total += @fmt.Format::count(total)
+  let startxref_offset = total
+  total += @fmt.Format::count(startxref_offset)
   total += 7 // "\n%%EOF\n"
   total
 }
