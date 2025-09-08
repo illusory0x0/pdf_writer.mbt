@@ -148,7 +148,8 @@ pub impl @fmt.Format for GraphicOperator with write(
       Op_MP(s) => @fmt.format_write(" {} MP", [s[:]], buffer, start)
       Op_DP(s, o) => @fmt.format_write(" {} {} DP", [s[:], o], buffer, start)
       Op_BMC(s) => @fmt.format_write(" {} BMC", [s[:]], buffer, start)
-      Op_BDC(s, obj) => @fmt.format_write(" {} {} BDC", [s[:], obj], buffer, start)
+      Op_BDC(s, obj) =>
+        @fmt.format_write(" {} {} BDC", [s[:], obj], buffer, start)
       Op_EMC => @fmt.format_write(" EMC", [], buffer, start)
       Op_BX => @fmt.format_write(" Bx", [], buffer, start)
       Op_Unknown(_) => 0
