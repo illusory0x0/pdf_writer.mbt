@@ -17,7 +17,12 @@ pub impl @fmt.Format for File with write(
     offset += write_pdf_trailer(value.trailer, buffer, offset)
     offset += @fmt.Format::write(b"startxref\n", buffer, offset)
     let startxref_offset = offset
-    offset += @fmt.format_write(b"{}\n%%EOF\n", [startxref_offset], buffer, offset)
+    offset += @fmt.format_write(
+      b"{}\n%%EOF\n",
+      [startxref_offset],
+      buffer,
+      offset,
+    )
     offset - start
   } catch {
     _ => panic()
