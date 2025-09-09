@@ -122,7 +122,6 @@ fn write_graphics_operator_sequence(
   offset - start
 }
 
-
 ///|
 /// 
 /// PDF object stream 
