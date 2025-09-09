@@ -5,6 +5,15 @@
 /// other bytes is binary data.
 ///
 /// PDF object stream can be encoding as UTF-8 or UTF-16BE.
+/// 
+/// 
+/// PDF file structure:
+/// 
+/// 1. Header
+/// 2. Body
+/// 3. Cross-reference table
+/// 4. Trailer
+/// 
 pub impl @fmt.Format for File with write(
   value : File,
   buffer : @fmt.Memory,
@@ -64,6 +73,10 @@ fn write_pdf_header(pdf : File, buf : @fmt.Memory, start : Int) -> Int {
       buf,
       offset,
     )
+    // write pdf binary comment for editors to recognize this is a binary file
+    // 
+    // PDF file should transport as binary file
+    //
     offset += @fmt.format_write(
       "%{}\n",
       [@fmt.BigEndian(0x80818283)],

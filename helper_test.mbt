@@ -121,3 +121,21 @@ fn write_graphics_operator_sequence(
   }
   offset - start
 }
+
+
+///|
+/// 
+/// PDF object stream 
+/// 
+/// `/Filter` schemas:
+/// 
+///   FILTER name         Parameters     Description
+/// - `/ASCIIHexDecode`   no             ASCII hexadecimal encoding
+/// - `/ASCII85Decode`    no             ASCII base-85 encoding
+/// - `/LZWDecode`        no             LZW compression
+/// - `/FlateDecode`      yes            Flate (zlib/deflate) compression
+/// - `/CCITTFaxDecode`   yes            CCITT Group 3 or 4 compression for monochrome images(1 bit per pixel)
+/// - `/JBIG2Decode`      yes            JBIG2 compression for monochrome images(1 bit per pixel)
+/// - `/DCTDecode`        no             JPEG compression 
+/// - `/JPXDecode`        no             JPEG 2000 compression
+/// - `/Crypt`            yes            Decryption filter

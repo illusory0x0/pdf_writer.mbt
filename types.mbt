@@ -4,15 +4,63 @@ pub(all) struct Stream(Bytes)
 ///|
 /// pdf object 
 pub(all) enum Object {
+  /// `null` keyword
   Null
+  /// `true` or `false` keyword
   Boolean(Bool)
   Integer(Int)
   Real(Double)
+  /// PDF string can be represented in two ways:
+  /// - `Literal string`: enclosed in parentheses `(...)`
+  /// - `Hexadecimal string`: enclosed in angle brackets `<...>`
+  ///
+  /// those reprentations are for parsing.
+  /// here all encoded as bytes sequence.
+  ///
   String(Bytes)
+  /// although SOLIDUS `/` is not considered as part of the name in PDF spec,
+  /// But here we include it as part of the name.
   Name(Bytes)
+  /// PDF array object is surrounded by square brackets, separated by whitespace.
+  /// `[a b c ...]` 
   Array(Array[Object])
+  /// PDF dictionary object is surrounded by double angle brackets.
+  /// `<< /Key1 Value1 /Key2 Value2 ... >>`
+  /// keys are PDF names, values are PDF objects.
   Dictionary(Array[(Bytes, Object)])
+  /// PDF stream object is a sequence of binary bytes.
+  /// 
+  /// `
+  /// <dictionary>
+  /// stream
+  /// ...
+  /// endstream
+  /// `
+  ///
+  /// dictionary: 
+  ///
+  /// - `/Length <n>` is **required**, where `<n>` is the length of the stream in bytes.
+  ///
+  /// - `/Filter <name|array>` is **optional**, if present, the stream data is encoded.
+  ///
+  /// - `/DecodeParms <dictionary|array>` is **optional**, if present, it specifies the parameters for the filters.
+  ///
+  /// other entries are optional and not listed here.
+  ///
   Stream(Object, Stream)
+  /// it should be positive integer, by default with 0 integer generation number
+  ///
+  /// `<n> <m> R`
+  ///
+  /// <n> is indirect object number
+  /// <m> is generation number, by default 0
+  ///
+  /// indirect object definition:
+  /// `
+  /// <n> <m> obj
+  /// ...
+  /// endobj
+  /// `
   Indirect(Int)
 }
 

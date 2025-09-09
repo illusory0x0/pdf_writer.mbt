@@ -1,4 +1,10 @@
 ///|
+/// 
+/// escape sequences:
+/// 
+/// `\n`, `\r`, `\t`, `\b`, `\f`, `\\`, `\(`, `\)`, `\\`, 
+/// 
+/// `\ddd` ddd is octal number.
 fn write_pdf_string(
   pdf_string : Bytes,
   buffer : @fmt.Memory,
@@ -19,6 +25,7 @@ fn write_pdf_string(
       '\b' => offset += @fmt.Format::write(b"\\b", buffer, offset)
       '\x0c' => offset += @fmt.Format::write(b"\\f", buffer, offset)
       c => {
+        // here we do not handle octal escape sequence for some non-printable ASCII characters
         buffer[offset] = c
         offset += 1
       }
@@ -49,6 +56,8 @@ fn write_pdf_name(pdf_name : Bytes, buffer : @fmt.Memory, start : Int) -> Int {
 const HEX_DIGITS = b"0123456789ABCDEF"
 
 ///|
+/// 
+/// `#xx` where `xx` is the two-digit hexadecimal representation of the character's byte value.
 fn write_pdf_name_inner(
   pdf_name : @bytes.View,
   buffer : @fmt.Memory,
@@ -61,6 +70,9 @@ fn write_pdf_name_inner(
         println("Warning: name \{pdf_name} contains the null character\n")
         offset += @fmt.Format::write(b"#00", buffer, offset)
       }
+      // outside the range of ``!'' (0x21) to ``~'' (0x7E)
+      // should be written in `#xx` notation
+      //
       h if h < '\x21' || h > '\x7e' || is_delimiter(h) || h == '#' => {
         offset += @fmt.Format::write(b"#", buffer, offset)
         // write high nibble
