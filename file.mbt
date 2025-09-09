@@ -145,7 +145,7 @@ fn fill(mem : @fmt.Memory, ofs : Int, len : Int, value : Byte) -> Unit {
 
 ///|
 /// 
-/// `nnnnnnnnnn ggggg n \n`
+/// `nnnnnnnnnn ggggg n <eol>`
 /// 
 /// `nnnnnnnnnn` is a 10-digit, zero-padded byte offset
 /// 
@@ -154,10 +154,14 @@ fn fill(mem : @fmt.Memory, ofs : Int, len : Int, value : Byte) -> Unit {
 /// `n` is a keyword indentifying this as an in-use entry
 /// `f` is for free entry
 ///
+/// <eol> shall be two end-of-line characters.
 /// 
+///  SP CR, SP LF, LF, or CR
+/// 
+/// In this implementation, we use CR LF (`\r\n`)
 fn write_pdf_xref(xref_offset : Int, buf : @fmt.Memory, start : Int) -> Int {
   try! @fmt.format_write(
-    b"{} 00000 n \n",
+    b"{} 00000 n\r\n",
     [@padding.Left(xref_offset, width=10, padding=b'0')],
     buf,
     start,
@@ -167,7 +171,7 @@ fn write_pdf_xref(xref_offset : Int, buf : @fmt.Memory, start : Int) -> Int {
 ///|
 fn count_pdf_xref(xref_offset : Int) -> Int {
   10 + // 10-digit zero-padded offset
-  10 // " 00000 n \n"
+  10 // " 00000 n \r\n"
 }
 
 ///|
