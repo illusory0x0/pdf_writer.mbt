@@ -144,6 +144,17 @@ fn fill(mem : @fmt.Memory, ofs : Int, len : Int, value : Byte) -> Unit {
 }
 
 ///|
+/// 
+/// `nnnnnnnnnn ggggg n \n`
+/// 
+/// `nnnnnnnnnn` is a 10-digit, zero-padded byte offset
+/// 
+/// `ggggg` is the generation number, which is always `00000` in this implementation
+///
+/// `n` is a keyword indentifying this as an in-use entry
+/// `f` is for free entry
+///
+/// 
 fn write_pdf_xref(xref_offset : Int, buf : @fmt.Memory, start : Int) -> Int {
   let mut offset = start
   // offset += @fmt.Format::write(xref_offset, buf, offset)
