@@ -151,7 +151,7 @@ fn fill(mem : @fmt.Memory, ofs : Int, len : Int, value : Byte) -> Unit {
 /// 
 /// `ggggg` is the generation number, which is always `00000` in this implementation
 ///
-/// `n` is a keyword indentifying this as an in-use entry
+/// `n` is a keyword identifying this as an in-use entry
 /// `f` is for free entry
 ///
 /// <eol> shall be two end-of-line characters.
