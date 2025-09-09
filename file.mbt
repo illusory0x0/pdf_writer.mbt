@@ -157,7 +157,7 @@ fn fill(mem : @fmt.Memory, ofs : Int, len : Int, value : Byte) -> Unit {
 /// 
 fn write_pdf_xref(xref_offset : Int, buf : @fmt.Memory, start : Int) -> Int {
   let mut offset = start
-  // offset += @fmt.Format::write(xref_offset, buf, offset)
+  // FixMe: use `@fmt/padding` library 
   let n = @fmt.Format::write(xref_offset, buf, offset)
   let padding_len = 10 - n
   memcpy(buf, padding_len + offset, buf, offset, n) |> ignore
