@@ -1,4 +1,10 @@
 ///|
+/// 
+/// A PDF file is represented by a sequence of 8-bit bytes. 
+/// if this byte is ASCII char encoding, it is represented as such.
+/// other bytes is binary data.
+///
+/// PDF object stream can be encoding as UTF-8 or UTF-16BE.
 pub impl @fmt.Format for File with write(
   value : File,
   buffer : @fmt.Memory,
