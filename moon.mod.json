@@ -9,5 +9,5 @@
   "repository": "https://github.com/illusory0x0/pdf_writer.mbt",
   "license": "Apache-2.0",
   "keywords": [],
-  "description": ""
+  "description": "A MoonBit library for generating standards-compliant PDF documents with comprehensive support for PDF objects, graphics operators."
 }
