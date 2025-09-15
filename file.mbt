@@ -107,7 +107,7 @@ fn write_pdf_obj(obj : Object, n : Int, buf : @fmt.Memory, start : Int) -> Int {
     let mut offset = start
     offset += @fmt.format_write("{} 0 obj\n", [n], buf, offset)
     offset += @fmt.Format::write(obj, buf, offset)
-    offset += @fmt.Format::write(b"\nendobj\n"[:], buf, offset)
+    offset += @fmt.Format::write(b"\nendobj\n", buf, offset)
     offset - start
   } catch {
     _ => panic()
@@ -189,7 +189,7 @@ fn write_pdf_xrefs(
       buf,
       offset,
     )
-    offset += @fmt.Format::write(b"0000000000 65535 f \n"[:], buf, offset)
+    offset += @fmt.Format::write(b"0000000000 65535 f \n", buf, offset)
     for xref_offset in xref_offsets {
       offset += write_pdf_xref(xref_offset, buf, offset)
     }
@@ -222,7 +222,7 @@ fn write_pdf_trailer(
   let mut offset = start
   offset += @fmt.Format::write(b"trailer\n", buf, offset)
   offset += @fmt.Format::write(trailer_dict, buf, offset)
-  offset += @fmt.Format::write(b"\n"[:], buf, offset)
+  offset += @fmt.Format::write(b"\n", buf, offset)
   offset - start
 }
 

@@ -19,8 +19,8 @@ pub impl @fmt.Format for GraphicOperator with write(
         )
       Op_BT => @fmt.format_write(" BT", [], buffer, start)
       Op_ET => @fmt.format_write(" ET", [], buffer, start)
-      Op_Tf(k, s) => @fmt.format_write(" {} {} Tf", [k[:], s], buffer, start)
-      Op_Tj(s) => @fmt.format_write(" ({}) Tj", [s[:]], buffer, start)
+      Op_Tf(k, s) => @fmt.format_write(" {} {} Tf", [k, s], buffer, start)
+      Op_Tj(s) => @fmt.format_write(" ({}) Tj", [s], buffer, start)
       Op_d(fl, y) => {
         let mut offset = start
         for f in fl {
@@ -29,9 +29,9 @@ pub impl @fmt.Format for GraphicOperator with write(
         offset += @fmt.format_write(" {} d", [y], buffer, offset)
         offset - start
       }
-      Op_ri(s) => @fmt.format_write(" {} ri", [s[:]], buffer, start)
+      Op_ri(s) => @fmt.format_write(" {} ri", [s], buffer, start)
       Op_i(i) => @fmt.format_write(" {} i", [i], buffer, start)
-      Op_gs(s) => @fmt.format_write(" {} gs", [s[:]], buffer, start)
+      Op_gs(s) => @fmt.format_write(" {} gs", [s], buffer, start)
       Op_q => @fmt.format_write(" q", [], buffer, start)
       Op_Q => @fmt.format_write(" Q", [], buffer, start)
       Op_m(a, b) => @fmt.format_write(" {} {} m", [a, b], buffer, start)
@@ -79,9 +79,9 @@ pub impl @fmt.Format for GraphicOperator with write(
         )
       Op_T_star => @fmt.format_write(" T*", [], buffer, start)
       Op_TJ(obj) => @fmt.format_write(" {} TJ", [obj], buffer, start)
-      Op_single_quote(s) => @fmt.format_write(" {}'", [s[:]], buffer, start)
+      Op_single_quote(s) => @fmt.format_write(" ({})'", [s], buffer, start)
       Op_double_quote(k, k_, s) =>
-        @fmt.format_write(" {} {} {} \"", [k, k_, s[:]], buffer, start)
+        @fmt.format_write(" {} {} ({}) \"", [k, k_, s], buffer, start)
       Op_d0(k, k_) => @fmt.format_write(" {} {} d0", [k, k_], buffer, start)
       Op_d1(a, b, c, d, e, k) =>
         @fmt.format_write(
@@ -90,8 +90,8 @@ pub impl @fmt.Format for GraphicOperator with write(
           buffer,
           start,
         )
-      Op_CS(s) => @fmt.format_write(" {} CS", [s[:]], buffer, start)
-      Op_cs(s) => @fmt.format_write(" {} cs", [s[:]], buffer, start)
+      Op_CS(s) => @fmt.format_write(" {} CS", [s], buffer, start)
+      Op_cs(s) => @fmt.format_write(" {} cs", [s], buffer, start)
       Op_SC(fs) => {
         let mut offset = start
         for f in fs {
@@ -121,7 +121,7 @@ pub impl @fmt.Format for GraphicOperator with write(
         for f in fs {
           offset += @fmt.format_write(" {}", [f], buffer, offset)
         }
-        offset += @fmt.format_write(" {} scn", [s[:]], buffer, offset)
+        offset += @fmt.format_write(" {} scn", [s], buffer, offset)
         offset - start
       }
       Op_SCNName(s, fs) => {
@@ -129,7 +129,7 @@ pub impl @fmt.Format for GraphicOperator with write(
         for f in fs {
           offset += @fmt.format_write(" {}", [f], buffer, offset)
         }
-        offset += @fmt.format_write(" {} SCN", [s[:]], buffer, offset)
+        offset += @fmt.format_write(" {} SCN", [s], buffer, offset)
         offset - start
       }
       Op_G(k) => @fmt.format_write(" {} G", [k], buffer, start)
@@ -142,18 +142,17 @@ pub impl @fmt.Format for GraphicOperator with write(
         @fmt.format_write(" {} {} {} {} K", [c, m, y, k], buffer, start)
       Op_k(c, m, y, k) =>
         @fmt.format_write(" {} {} {} {} k", [c, m, y, k], buffer, start)
-      Op_sh(s) => @fmt.format_write(" {} sh", [s[:]], buffer, start)
+      Op_sh(s) => @fmt.format_write(" {} sh", [s], buffer, start)
       InlineImage(dict, dp, data) => abort("TODO")
-      Op_Do(s) => @fmt.format_write(" {} Do", [s[:]], buffer, start)
-      Op_MP(s) => @fmt.format_write(" {} MP", [s[:]], buffer, start)
-      Op_DP(s, o) => @fmt.format_write(" {} {} DP", [s[:], o], buffer, start)
-      Op_BMC(s) => @fmt.format_write(" {} BMC", [s[:]], buffer, start)
-      Op_BDC(s, obj) =>
-        @fmt.format_write(" {} {} BDC", [s[:], obj], buffer, start)
+      Op_Do(s) => @fmt.format_write(" {} Do", [s], buffer, start)
+      Op_MP(s) => @fmt.format_write(" {} MP", [s], buffer, start)
+      Op_DP(s, o) => @fmt.format_write(" {} {} DP", [s, o], buffer, start)
+      Op_BMC(s) => @fmt.format_write(" {} BMC", [s], buffer, start)
+      Op_BDC(s, obj) => @fmt.format_write(" {} {} BDC", [s, obj], buffer, start)
       Op_EMC => @fmt.format_write(" EMC", [], buffer, start)
       Op_BX => @fmt.format_write(" Bx", [], buffer, start)
       Op_Unknown(_) => 0
-      Op_Comment(s) => @fmt.format_write(" % {}\n", [s[:]], buffer, start)
+      Op_Comment(s) => @fmt.format_write(" % {}\n", [s], buffer, start)
       OP_EX => @fmt.format_write(" EX", [], buffer, start)
       Op_sc(fs) => {
         let mut offset = start
@@ -333,7 +332,7 @@ pub impl @fmt.Format for GraphicOperator with count(value : GraphicOperator) -> 
     // " " + count(obj) + " TJ" = 1 + count(obj) + 3
     Op_TJ(obj) => 1 + @fmt.Format::count(obj) + 3
     // " {}'" = 1 + count(s) + 1
-    Op_single_quote(s) => 1 + @fmt.Format::count(s) + 1
+    Op_single_quote(s) => 1 + @fmt.Format::count(s) + 1 + 2
     // " {} {} {} \"" = 1 + count(k) + 1 + count(k_) + 1 + count(s) + 2
     Op_double_quote(k, k_, s) =>
       1 +

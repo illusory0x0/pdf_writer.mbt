@@ -1,18 +1,18 @@
 ///|
-fn make_pdf(catalog : Int, objects : Array[@pdf.Object]) -> @pdf.File {
+fn make_pdf(catalog : @pdf.Object, objects : Array[@pdf.Object]) -> @pdf.File {
   @pdf.File::{
     major: 1,
     minor: 4,
-    trailer: Dictionary([("/Size", Integer(5)), ("/Root", Indirect(catalog))]),
+    trailer: Dictionary([("/Size", Integer(5)), ("/Root", catalog)]),
     objects,
   }
 }
 
 ///|
-let default_font : @pdf.Object = @pdf.Dictionary([
-  ("/Type", @pdf.Name("/Font")),
-  ("/Subtype", @pdf.Name("/Type1")),
-  ("/BaseFont", @pdf.Name("/Helvetica")),
+let default_font : @pdf.Object = Dictionary([
+  ("/Type", Name("/Font")),
+  ("/Subtype", Name("/Type1")),
+  ("/BaseFont", Name("/Helvetica")),
 ])
 
 ///|
@@ -22,52 +22,44 @@ fn define_font_item(name~ : Bytes, font~ : @pdf.Object) -> (Bytes, @pdf.Object) 
 
 ///|
 fn define_fonts(fonts~ : Array[(Bytes, @pdf.Object)]) -> (Bytes, @pdf.Object) {
-  ("/Font", @pdf.Dictionary(fonts))
+  ("/Font", Dictionary(fonts))
 }
 
 ///|
 fn define_xobject(xobjs~ : Array[(Bytes, @pdf.Object)]) -> (Bytes, @pdf.Object) {
-  ("/XObject", @pdf.Dictionary(xobjs))
+  ("/XObject", Dictionary(xobjs))
 }
 
 ///|
-fn define_pages(pages~ : Array[Int]) -> @pdf.Object {
-  @pdf.Dictionary([
-    ("/Type", @pdf.Name("/Pages")),
-    ("/Kids", @pdf.Array(pages.map(@pdf.Indirect(_)))),
-    ("/Count", @pdf.Integer(pages.length())),
+fn define_pages(pages~ : Array[@pdf.Object]) -> @pdf.Object {
+  Dictionary([
+    ("/Type", Name("/Pages")),
+    ("/Kids", Array(pages)),
+    ("/Count", Integer(pages.length())),
   ])
 }
 
 ///|
 fn define_page(
-  contents~ : Int,
-  parent~ : Int,
+  contents~ : @pdf.Object,
+  parent~ : @pdf.Object,
   resources~ : Array[(Bytes, @pdf.Object)],
 ) -> @pdf.Object {
-  @pdf.Dictionary([
-    ("/Type", @pdf.Name("/Page")),
-    ("/Contents", @pdf.Indirect(contents)),
-    ("/Parent", @pdf.Indirect(parent)),
+  Dictionary([
+    ("/Type", Name("/Page")),
+    ("/Contents", contents),
+    ("/Parent", parent),
     (
       "/MediaBox",
-      @pdf.Array([
-        @pdf.Integer(0),
-        @pdf.Integer(0),
-        @pdf.Real(595.2765),
-        @pdf.Real(841.89105),
-      ]),
+      Array([Integer(0), Integer(0), Real(595.2765), Real(841.89105)]),
     ),
-    ("/Resources", @pdf.Dictionary(resources)),
+    ("/Resources", Dictionary(resources)),
   ])
 }
 
 ///|
-fn define_catalog(pages~ : Int) -> @pdf.Object {
-  @pdf.Dictionary([
-    ("/Type", @pdf.Name("/Catalog")),
-    ("/Pages", @pdf.Indirect(pages)),
-  ])
+fn define_catalog(pages~ : @pdf.Object) -> @pdf.Object {
+  Dictionary([("/Type", Name("/Catalog")), ("/Pages", pages)])
 }
 
 ///|
@@ -79,25 +71,25 @@ fn define_jpeg_image(
   icc~ : Int,
 ) -> @pdf.Object {
   let obj = @pdf.Dictionary([
-    ("/Type", @pdf.Name("/XObject")),
-    ("/Subtype", @pdf.Name("/Image")),
-    ("/Width", @pdf.Integer(width)),
-    ("/Height", @pdf.Integer(height)),
-    ("/ColorSpace", @pdf.Array([@pdf.Name("/ICCBased"), @pdf.Indirect(icc)])),
-    ("/BitsPerComponent", @pdf.Integer(bpc)),
-    ("/Filter", @pdf.Name("/DCTDecode")),
-    ("/Length", @pdf.Integer(image.length())),
+    ("/Type", Name("/XObject")),
+    ("/Subtype", Name("/Image")),
+    ("/Width", Integer(width)),
+    ("/Height", Integer(height)),
+    ("/ColorSpace", Array([Name("/ICCBased"), Indirect(icc)])),
+    ("/BitsPerComponent", Integer(bpc)),
+    ("/Filter", Name("/DCTDecode")),
+    ("/Length", Integer(image.length())),
   ])
-  @pdf.Stream(obj, @pdf.Stream(image))
+  Stream(obj, Stream(image))
 }
 
 ///|
 fn define_icc(icc~ : Bytes) -> @pdf.Object {
-  @pdf.Stream(
-    @pdf.Dictionary([
-      ("/Length", @pdf.Integer(icc.length())),
-      ("/N", @pdf.Integer(3)),
-      ("/Range", @pdf.Array([0, 1, 0, 1, 0, 1].map(@pdf.Integer(_)))),
+  Stream(
+    Dictionary([
+      ("/Length", Integer(icc.length())),
+      ("/N", Integer(3)),
+      ("/Range", Array([0, 1, 0, 1, 0, 1].map(Integer(_)))),
     ]),
     icc,
   )
@@ -115,24 +107,6 @@ fn string_of_memory(mem : @fmt.Memory, len : Int) -> String {
 ///|
 fn bytes_of_memory(mem : @fmt.Memory, len : Int) -> Bytes {
   Bytes::makei(len, i => mem[i])
-}
-
-///|
-fn write_graphics_operator_sequence(
-  xs : Array[@pdf.GraphicOperator],
-  buf : @fmt.Memory,
-  start : Int,
-) -> Int {
-  let mut offset = start
-  for x in xs {
-    offset += @fmt.Format::write(x, buf, offset)
-  }
-  offset - start
-}
-
-///|
-fn count_graphics_operator_sequence(xs : Array[@pdf.GraphicOperator]) -> Int {
-  xs.fold(init=0, (acc, x) => @fmt.Format::count(x) + acc)
 }
 
 ///|

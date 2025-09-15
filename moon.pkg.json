@@ -1,6 +1,5 @@
 {
   "import": ["illusory0x0/fmt", "illusory0x0/fmt/padding"],
-
   "test-import": ["moonbitlang/x/fs"],
   "warn-list": "-1-6-4-2-7"
 }

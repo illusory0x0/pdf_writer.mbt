@@ -1,0 +1,15 @@
+{
+  "import": [
+        "moonbitlang/x/fs",
+    "rami3l/cmark/cmark",
+    "illusory0x0/fmt",
+    "illusory0x0/pdf"
+  ],
+  "test-import": [
+    "moonbitlang/x/fs",
+    "rami3l/cmark/cmark",
+    "illusory0x0/fmt",
+    "illusory0x0/pdf"
+  ],
+  "warn-list": "-A"
+}
