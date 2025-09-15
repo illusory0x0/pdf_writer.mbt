@@ -138,3 +138,34 @@ fn write_graphics_operator_sequence(
 /// - `/DCTDecode`        no             JPEG compression 
 /// - `/JPXDecode`        no             JPEG 2000 compression
 /// - `/Crypt`            yes            Decryption filter
+
+///|
+/// 
+/// PDF Font types:
+/// 
+/// Subtype Value 
+/// `Type0` 
+/// `Type1`
+/// `MMType1`
+/// `Type3`
+/// `TrueType`  A font based on the TrueType font format.
+/// `CIDFontType0`
+/// `CIDFontType2`
+
+///| ToUnicode CMaps:
+/// 
+/// ISO 32000-2:2020(E) 9.10.3 ToUnicode CMaps
+/// 
+/// CMap has special syntax embedded in PDF stream object.
+/// 
+/// you can find full examples via following partial example:
+/// 
+/// <n> 0 obj 
+/// <cmap-dictionary>
+/// stream
+/// /CIDInit /ProcSet findresource begin
+/// ... CMap content ...
+/// end 
+/// endstream
+/// endobj
+///

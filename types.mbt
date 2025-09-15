@@ -68,6 +68,13 @@ pub(all) enum Object {
 /// 
 /// [PDF – Graphic Operators – Cheat Sheet](https://pdfa.org/wp-content/uploads/2023/08/PDF-Operators-CheatSheet.pdf)
 /// 
+/// 
+/// Text positioning operators:
+/// - Td, TD, Tm, T*
+/// 
+/// Text showing operators:
+/// - Tj, TJ, ', "
+///
 pub(all) enum GraphicOperator {
   /// set line width
   Op_w(Double)
@@ -147,21 +154,43 @@ pub(all) enum GraphicOperator {
   Op_Tr(Int)
   /// set text rise 
   Op_Ts(Double)
-  /// move to next line, with `x` and `y` offset. 
+  /// move to start of next line, offset from start of current line by (x, y)
   Op_Td(Double, Double)
-  /// ditto, but set leading 
+  /// move to start of next line, offset from start of current line by (x, y).
+  /// this operator also sets leading to -y
+  /// 
+  /// the same as `-y TL x y Td` 
+  ///
   Op_TD(Double, Double)
-  /// set text and line matrices 
+  /// set the text matrix 
   Op_Tm(TransformMatrix)
-  /// T* operator. move text to the next line 
+  /// T* operator
+  /// 
+  /// move to start of the next line.
+  ///
+  /// the same as `0 -T1 TD`
+  ///
+  /// T1 is the current leading.
   Op_T_star
   /// show text string 
   Op_Tj(Bytes)
-  /// show text string 
+  /// show text string
+  /// 
+  /// parameters is an array of strings or numbers. 
+  /// - string: show text
+  /// - number: adjust text position 
+  ///
+  /// how to adjust text position depends on the `writing mode`:
+  /// - horizontal 
+  /// - vertical
+  ///
+  /// more details please refer to PDF spec.
   Op_TJ(Object)
   /// move to next line and show text 
   Op_single_quote(Bytes)
-  /// ditto, extra parameters 
+  /// move to next line and show text using `w` as the word spacing and `c` as the character spacing
+  ///
+  /// the same as `w Tw c Tc <string> '`
   Op_double_quote(Double, Double, Bytes)
   /// set glyph width info 
   Op_d0(Double, Double)
