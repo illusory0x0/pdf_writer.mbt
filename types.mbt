@@ -147,7 +147,7 @@ pub(all) enum GraphicOperator {
   Op_Tr(Int)
   // set text rise 
   Op_Ts(Double)
-  // move to next line 
+  // move to next line, with `x` and `y` offset. 
   Op_Td(Double, Double)
   // ditto, but set leading 
   Op_TD(Double, Double)
