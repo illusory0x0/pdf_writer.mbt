@@ -2,27 +2,56 @@
 package "illusory0x0/pdf/cmark_pdf"
 
 import(
+  "illusory0x0/pdf"
   "moonbitlang/core/json"
+  "moonbitlang/x/fs"
 )
 
 // Values
+fn write_single_page_pdf_file(path~ : String, Content) -> Unit raise @fs.IOError
 
 // Errors
 
 // Types and methods
-type Block
+pub(all) enum Block {
+  Heading(level~ : Int, text~ : String)
+  Paragraph(Array[String])
+  BlankLine
+}
 impl ToJson for Block
 impl @json.FromJson for Block
 
-type Content
+pub(all) struct Content(Array[@pdf.GraphicOperator])
+fn Content::inner(Self) -> Array[@pdf.GraphicOperator]
 
-type Doc
+pub(all) struct Doc(Array[Block])
+fn Doc::inner(Self) -> Array[Block]
 impl ToJson for Doc
 impl @json.FromJson for Doc
 
-type FlatHeading
+pub(all) struct FlatHeading {
+  num : Array[Int]
+  text : String
+}
 impl ToJson for FlatHeading
 impl @json.FromJson for FlatHeading
+
+pub(all) enum StandardFont {
+  TimesRoman
+  TimesBold
+  TimesItalic
+  TimesBoldItalic
+  Helvetica
+  HelveticaBold
+  HelveticaOblique
+  HelveticaBoldOblique
+  Courier
+  CourierBold
+  CourierOblique
+  CourierBoldOblique
+  Symbol
+  ZapfDingbats
+}
 
 // Type aliases
 

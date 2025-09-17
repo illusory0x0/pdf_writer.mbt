@@ -9,13 +9,6 @@ fn make_pdf(catalog : @pdf.Object, objects : Array[@pdf.Object]) -> @pdf.File {
 }
 
 ///|
-let default_font : @pdf.Object = Dictionary([
-  ("/Type", Name("/Font")),
-  ("/Subtype", Name("/Type1")),
-  ("/BaseFont", Name("/Helvetica")),
-])
-
-///|
 fn define_font_item(name~ : Bytes, font~ : @pdf.Object) -> (Bytes, @pdf.Object) {
   (name, font)
 }
@@ -23,11 +16,6 @@ fn define_font_item(name~ : Bytes, font~ : @pdf.Object) -> (Bytes, @pdf.Object) 
 ///|
 fn define_fonts(fonts~ : Array[(Bytes, @pdf.Object)]) -> (Bytes, @pdf.Object) {
   ("/Font", Dictionary(fonts))
-}
-
-///|
-fn define_xobject(xobjs~ : Array[(Bytes, @pdf.Object)]) -> (Bytes, @pdf.Object) {
-  ("/XObject", Dictionary(xobjs))
 }
 
 ///|
@@ -60,48 +48,6 @@ fn define_page(
 ///|
 fn define_catalog(pages~ : @pdf.Object) -> @pdf.Object {
   Dictionary([("/Type", Name("/Catalog")), ("/Pages", pages)])
-}
-
-///|
-fn define_jpeg_image(
-  image~ : Bytes,
-  width~ : Int,
-  height~ : Int,
-  bpc~ : Int,
-  icc~ : Int,
-) -> @pdf.Object {
-  let obj = @pdf.Dictionary([
-    ("/Type", Name("/XObject")),
-    ("/Subtype", Name("/Image")),
-    ("/Width", Integer(width)),
-    ("/Height", Integer(height)),
-    ("/ColorSpace", Array([Name("/ICCBased"), Indirect(icc)])),
-    ("/BitsPerComponent", Integer(bpc)),
-    ("/Filter", Name("/DCTDecode")),
-    ("/Length", Integer(image.length())),
-  ])
-  Stream(obj, Stream(image))
-}
-
-///|
-fn define_icc(icc~ : Bytes) -> @pdf.Object {
-  Stream(
-    Dictionary([
-      ("/Length", Integer(icc.length())),
-      ("/N", Integer(3)),
-      ("/Range", Array([0, 1, 0, 1, 0, 1].map(Integer(_)))),
-    ]),
-    icc,
-  )
-}
-
-///|
-fn string_of_memory(mem : @fmt.Memory, len : Int) -> String {
-  let buf = StringBuilder::new(size_hint=len)
-  for i in 0..<len {
-    buf.write_char(mem[i].to_char())
-  }
-  buf.to_string()
 }
 
 ///|

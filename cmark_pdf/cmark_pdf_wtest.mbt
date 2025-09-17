@@ -1,5 +1,5 @@
 ///|
-test (t : @test.T) {
+test {
   markdown_write_to_pdf_file(md_str, path="./output/hello_md.pdf")
 }
 
@@ -33,12 +33,6 @@ fn markdown_write_to_pdf_file(
       ..doc.to_graphic_operators(),
       Op_ET,
     ])
-  let content : Content = [
-      Op_cm(tm),
-      Op_BT,
-      ..doc.remove_contiguous_blanklines().to_graphic_operators(),
-      Op_ET,
-    ]
   write_multiple_page_pdf_file(path~, [table_of_contents, ..contents])
 }
 
