@@ -1,19 +1,4 @@
 ///|
-fn multi_line_to_graphics_operator_sequence(lines : Array[Bytes]) -> Content {
-  let result = []
-  match lines {
-    [] => ()
-    [x, .. xs] => {
-      result.push(@pdf.Op_Tj(x))
-      for x in xs {
-        result.push(@pdf.Op_single_quote(x))
-      }
-    }
-  }
-  result
-}
-
-///|
 fn plain_paragraph_to_ascii_multi_line(
   input : Array[String],
   limits? : Int = 80,
@@ -57,22 +42,25 @@ fn Block::from_cmark(block : @cmark.Block) -> Block {
     }
     Paragraph(node) => {
       let block_paragraph = node.v
-      let para = []
-      match block_paragraph.inline {
-        Text({ v: text, .. }) => para.push(text)
-        Inlines(node) => {
-          let inlines = node.v.to_array()
-          for inline in inlines {
-            if inline is Text({ v: text, .. }) {
-              para.push(text)
-            }
-          }
-        }
-        _ => panic()
-      }
+      let para = Inline::from_cmark(block_paragraph.inline)
       Paragraph(para)
     }
     BlankLine(_) => BlankLine
     _ => abort("Unsupported block type")
   }
+}
+
+///|
+fn utf16_string_to_ascii_bytes(s : String) -> Bytes {
+  let bytes = FixedArray::make(s.length(), b'?')
+  for i in 0..<s.length() {
+    let ch = s[i]
+    // TODO: make this function Unicode safe
+    if Char::is_ascii(ch.unsafe_to_char()) {
+      bytes[i] = ch.to_byte()
+    } else {
+      bytes[i] = b'?'
+    }
+  }
+  bytes.unsafe_reinterpret_as_bytes()
 }

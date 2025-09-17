@@ -173,6 +173,13 @@ pub(all) enum GraphicOperator {
   /// T1 is the current leading.
   Op_T_star
   /// show text string 
+  ///
+  /// `(hello) Tj ( world) tj` is the same as `(hello world) Tj`
+  ///
+  /// This operator will change the text position by the width of the string.
+  ///
+  /// when any operator move the next line, text position will be reset to the start of the line.
+  ///
   Op_Tj(Bytes)
   /// show text string
   /// 

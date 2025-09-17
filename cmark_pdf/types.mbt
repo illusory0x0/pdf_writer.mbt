@@ -1,8 +1,15 @@
 ///|
 pub(all) enum Block {
   Heading(level~ : Int, text~ : String)
-  Paragraph(Array[String])
+  Paragraph(Array[Inline])
   BlankLine
+} derive(@json.FromJson, ToJson)
+
+///|
+pub(all) enum Inline {
+  Plain(String)
+  StrongEmphasis(String)
+  Emphasis(String)
 } derive(@json.FromJson, ToJson)
 
 ///|
