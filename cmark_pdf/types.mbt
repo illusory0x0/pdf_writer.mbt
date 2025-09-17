@@ -21,3 +21,21 @@ struct Content(Array[@pdf.GraphicOperator])
 fn Content::iter(xs : Self) -> Iter[@pdf.GraphicOperator] {
   xs.0.iter()
 }
+
+///|
+enum StandardFont {
+  TimesRoman
+  TimesBold
+  TimesItalic
+  TimesBoldItalic
+  Helvetica
+  HelveticaBold
+  HelveticaOblique
+  HelveticaBoldOblique
+  Courier
+  CourierBold
+  CourierOblique
+  CourierBoldOblique
+  Symbol
+  ZapfDingbats
+}
