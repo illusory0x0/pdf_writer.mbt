@@ -23,6 +23,17 @@ fn Content::iter(xs : Self) -> Iter[@pdf.GraphicOperator] {
 }
 
 ///|
+/// 
+/// The PostScript language names of 14 Type 1 fonts, known as the 
+/// standard 14 fonts.
+/// 
+/// in PDF 1.0 to PDF 1.7, some PDF dictionary object fields is optional.
+/// 
+/// - `FirstChar` 
+/// - `LastChar`
+/// - `Widths`
+/// - `FontDescriptor`
+/// 
 enum StandardFont {
   TimesRoman
   TimesBold
