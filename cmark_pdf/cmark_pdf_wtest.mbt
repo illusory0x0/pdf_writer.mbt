@@ -26,8 +26,8 @@ fn markdown_write_to_pdf_file(
       Op_ET,
     ]
   let trim_doc = doc.remove_contiguous_blanklines()
-  let splited_doc = trim_doc.split(max_height=700)
-  let contents : Array[Content] = splited_doc.map(doc => [
+  let split_doc = trim_doc.split(max_height=700)
+  let contents : Array[Content] = split_doc.map(doc => [
       Op_cm(tm),
       Op_BT,
       ..doc.to_graphic_operators(),
@@ -39,7 +39,6 @@ fn markdown_write_to_pdf_file(
       ..doc.remove_contiguous_blanklines().to_graphic_operators(),
       Op_ET,
     ]
-  println(contents.length())
   write_multiple_page_pdf_file(path~, [table_of_contents, ..contents])
 }
 
