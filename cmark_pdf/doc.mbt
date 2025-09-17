@@ -109,7 +109,9 @@ fn Doc::split(self : Doc, max_height~ : Double) -> Array[Doc] {
         font_size // Op_TL sets leading to font_size, Op_T_star consumes it
       }
       // TODO: need to optimize
-      Paragraph(para) => plain_paragraph_to_ascii_multi_line(para).length().to_double() * font_size_body // Op_TL sets leading to font_size_body, Op_T_star consumes it
+      Paragraph(para) =>
+        plain_paragraph_to_ascii_multi_line(para).length().to_double() *
+        font_size_body // Op_TL sets leading to font_size_body, Op_T_star consumes it
       BlankLine => font_size_body // Op_TL sets leading to font_size_body, Op_T_star consumes it
     }
 

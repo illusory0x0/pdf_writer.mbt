@@ -39,9 +39,7 @@ fn markdown_write_to_pdf_file(
       ..doc.remove_contiguous_blanklines().to_graphic_operators(),
       Op_ET,
     ]
-  
   println(contents.length())
-
   write_multiple_page_pdf_file(path~, [table_of_contents, ..contents])
 }
 
