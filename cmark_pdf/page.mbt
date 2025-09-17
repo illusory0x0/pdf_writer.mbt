@@ -1,5 +1,5 @@
 ///|
-fn write_single_page_pdf_file(
+pub fn write_single_page_pdf_file(
   path~ : String,
   content : Content,
 ) -> Unit raise @fs.IOError {
@@ -25,11 +25,7 @@ fn write_multiple_page_pdf_file(
 ///|
 fn single_page(content : Content) -> @pdf.File {
   // Font resources
-  let times_italic_font = @pdf.Dictionary([
-    ("/Type", Name("/Font")),
-    ("/Subtype", Name("/Type1")),
-    ("/BaseFont", Name("/Times-Roman")),
-  ])
+  let times_italic_font = TimesRoman.to_pdf_dictionary()
   let font_f0 = define_font_item(name="/F0", font=times_italic_font)
   let font_resources = define_fonts(fonts=[font_f0])
 

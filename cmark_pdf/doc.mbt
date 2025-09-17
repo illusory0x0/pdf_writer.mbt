@@ -99,7 +99,7 @@ fn Doc::split(self : Doc, max_height~ : Double) -> Array[Doc] {
   for block in self.inner() {
     // Calculate the height that this block would add
     let block_height = match block {
-      Heading(level~, text~) => {
+      Heading(level~, ..) => {
         let font_size = match level {
           1 => font_size_h1
           2 => font_size_h2
