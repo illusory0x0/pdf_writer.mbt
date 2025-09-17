@@ -4,7 +4,7 @@ test "test write to file" {
   let buf = buffer
 
   // Use define_pages helper function
-  let pages = define_pages([4])
+  let pages = define_pages(pages=[4])
   let offset = @fmt.Format::write(pages, buf, 0)
   inspect(
     string_of_memory(buffer, offset),
@@ -16,7 +16,7 @@ test "test write to file" {
       #|>>
     ),
   )
-  let tm : TransformMatrix = TransformMatrix::{
+  let tm : @pdf.TransformMatrix = @pdf.TransformMatrix::{
     a: 1,
     b: 0,
     c: 0,
@@ -33,7 +33,10 @@ test "test write to file" {
   let offset = write_graphics_operator_sequence(ops, buf, 0)
   let bytes = bytes_of_memory(buf, offset)
   let len = bytes.length()
-  let stm = Object::Stream(Dictionary([("/Length", Integer(len))]), bytes)
+  let stm = @pdf.Object::Stream(
+    @pdf.Dictionary([("/Length", @pdf.Integer(len))]),
+    bytes,
+  )
   let offset = @fmt.Format::write(stm, buf, 0)
   inspect(
     string_of_memory(buffer, offset),
@@ -59,7 +62,7 @@ test {
 test (t : @test.T) {
   let buffer = @fmt.Memory::make(4096, Byte::default())
   let buf = buffer
-  let tm : TransformMatrix = TransformMatrix::{
+  let tm : @pdf.TransformMatrix = @pdf.TransformMatrix::{
     a: 1,
     b: 0,
     c: 0,
@@ -82,12 +85,15 @@ test (t : @test.T) {
   let len = bytes.length()
 
   // 1 0 obj
-  let stm = Object::Stream(Dictionary([("/Length", Integer(len))]), bytes)
+  let stm = @pdf.Object::Stream(
+    @pdf.Dictionary([("/Length", @pdf.Integer(len))]),
+    bytes,
+  )
   // 2 0 obj - Use define_pages helper
-  let pages = define_pages([4])
+  let pages = define_pages(pages=[4])
 
   // 3 0 obj - Use define_catalog helper
-  let catalog = define_catalog(2)
+  let catalog = define_catalog(pages=2)
 
   // 4 0 obj - Use define_page and helper functions for resources
   let times_italic_font = @pdf.Dictionary([
@@ -95,9 +101,9 @@ test (t : @test.T) {
     ("/Subtype", Name("/Type1")),
     ("/BaseFont", Name("/Times-Italic")),
   ])
-  let font_f0 = define_font_item("/F0", times_italic_font)
-  let font_resources = define_fonts([font_f0])
-  let page = define_page(1, 2, [font_resources])
+  let font_f0 = define_font_item(name="/F0", font=times_italic_font)
+  let font_resources = define_fonts(fonts=[font_f0])
+  let page = define_page(contents=1, parent=2, resources=[font_resources])
   let offset = @fmt.Format::write(stm, buf, 0)
   inspect(
     string_of_memory(buf, offset),
@@ -165,7 +171,7 @@ test "image" (t : @test.T) {
   let buffer = @fmt.Memory::make(1_000_000, Byte::default())
   let buf = buffer
   let times = 28.0
-  let tm : TransformMatrix = TransformMatrix::{
+  let tm : @pdf.TransformMatrix = @pdf.TransformMatrix::{
     a: 3.6 * times,
     b: 0,
     c: 0,
@@ -179,12 +185,15 @@ test "image" (t : @test.T) {
   let len = bytes.length()
 
   // 1 0 obj
-  let stm = Object::Stream(Dictionary([("/Length", Integer(len))]), bytes)
+  let stm = @pdf.Object::Stream(
+    @pdf.Dictionary([("/Length", @pdf.Integer(len))]),
+    bytes,
+  )
   // 2 0 obj - Use define_pages helper
-  let pages = define_pages([4])
+  let pages = define_pages(pages=[4])
 
   // 3 0 obj - Use define_catalog helper
-  let catalog = define_catalog(2)
+  let catalog = define_catalog(pages=2)
 
   // 4 0 obj - Use define_page and helper functions for resources
   let times_italic_font = @pdf.Dictionary([
@@ -195,14 +204,22 @@ test "image" (t : @test.T) {
   let image_bytes = @fs.read_file_to_bytes("images/ocaml.jpg")
   // 5 0 obj 
   //2187x601
-  let image = define_jpeg_image(image_bytes, 2187, 601, 8, 6)
+  let image = define_jpeg_image(
+    image=image_bytes,
+    width=2187,
+    height=601,
+    bpc=8,
+    icc=6,
+  )
   let icc_bytes = @fs.read_file_to_bytes("./typst.icc")
   // 6 0 obj 
-  let icc = define_icc(icc_bytes)
-  let font_f0 = define_font_item("/F0", times_italic_font)
-  let font_resources = define_fonts([font_f0])
-  let xobjects = define_xobject([("/Im0", Indirect(5))])
-  let page = define_page(1, 2, [font_resources, xobjects])
+  let icc = define_icc(icc=icc_bytes)
+  let font_f0 = define_font_item(name="/F0", font=times_italic_font)
+  let font_resources = define_fonts(fonts=[font_f0])
+  let xobjects = define_xobject(xobjs=[("/Im0", Indirect(5))])
+  let page = define_page(contents=1, parent=2, resources=[
+    font_resources, xobjects,
+  ])
   let pdf = make_pdf(3, [stm, pages, catalog, page, image, icc])
   let offset = @fmt.Format::write(pdf, buf, 0)
   let bytes = bytes_of_memory(buf, offset)

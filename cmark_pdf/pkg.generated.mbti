@@ -1,0 +1,30 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "illusory0x0/pdf/cmark_pdf"
+
+import(
+  "moonbitlang/core/json"
+)
+
+// Values
+
+// Errors
+
+// Types and methods
+type Block
+impl ToJson for Block
+impl @json.FromJson for Block
+
+type Content
+
+type Doc
+impl ToJson for Doc
+impl @json.FromJson for Doc
+
+type FlatHeading
+impl ToJson for FlatHeading
+impl @json.FromJson for FlatHeading
+
+// Type aliases
+
+// Traits
+

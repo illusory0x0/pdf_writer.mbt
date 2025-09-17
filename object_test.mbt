@@ -1,7 +1,7 @@
 ///|
 test "@fmt.Format for Object" {
   let buffer = @fmt.Memory::make(4096, Byte::default())
-  let value = Object::Integer(42)
+  let value = @pdf.Object::Integer(42)
   let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="42")
   let value = @pdf.Null
@@ -22,12 +22,12 @@ test "@fmt.Format for Object" {
   let value = @pdf.Name(b"/Name")
   let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="/Name")
-  let value = @pdf.Array([Integer(1), Integer(2), Integer(3)])
+  let value = @pdf.Array([@pdf.Integer(1), @pdf.Integer(2), @pdf.Integer(3)])
   let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="[1 2 3]")
   let value = @pdf.Dictionary([
-    ("/Type", Name(b"/Example")),
-    ("/Count", Integer(3)),
+    ("/Type", @pdf.Name(b"/Example")),
+    ("/Count", @pdf.Integer(3)),
   ])
   let offset = @fmt.Format::write(value, buffer, 0)
   inspect(
@@ -39,8 +39,8 @@ test "@fmt.Format for Object" {
       #|>>
     ),
   )
-  let value = Object::Stream(
-    Dictionary([("/Length", Integer(11))]),
+  let value = @pdf.Object::Stream(
+    @pdf.Dictionary([("/Length", @pdf.Integer(11))]),
     b"Hello World",
   )
   let offset = @fmt.Format::write(value, buffer, 0)
@@ -59,9 +59,9 @@ test "@fmt.Format for Object" {
   let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="1 0 R")
   let value = @pdf.Dictionary([
-    ("/Type", Name("/Pages")),
-    ("/Kids", Integer(1)),
-    ("/Count", Integer(1)),
+    ("/Type", @pdf.Name("/Pages")),
+    ("/Kids", @pdf.Integer(1)),
+    ("/Count", @pdf.Integer(1)),
   ])
   let offset = @fmt.Format::write(value, buffer, 0)
   inspect(
@@ -74,7 +74,7 @@ test "@fmt.Format for Object" {
       #|>>
     ),
   )
-  let value = @pdf.Array([Indirect(1)])
+  let value = @pdf.Array([@pdf.Indirect(1)])
   let offset = @fmt.Format::write(value, buffer, 0)
   inspect(string_of_memory(buffer, offset), content="[1 0 R]")
 }
