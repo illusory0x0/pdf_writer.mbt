@@ -22,7 +22,12 @@ fn multiple_pages(contents : Array[Content]) -> @pdf.File {
     name="/F2",
     font=TimesItalic.to_pdf_dictionary(),
   )
-  let font_resources = define_fonts(fonts=[font_f0, font_f1, font_f2])
+  let font_f3 = define_font_item(
+    name="/F3",
+    font=TimesBoldItalic.to_pdf_dictionary(),
+  )
+
+  let font_resources = define_fonts(fonts=[font_f0, font_f1, font_f2, font_f3])
 
   // 1 0 obj
   let catalog = define_catalog(pages=Indirect(2))
