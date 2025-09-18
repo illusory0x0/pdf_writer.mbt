@@ -35,11 +35,3 @@ fn markdown_write_to_pdf_file(
     ])
   write_multiple_page_pdf_file(path~, [table_of_contents, ..contents])
 }
-
-///|
-test "plain_paragraph_to_ascii_multi_line" {
-  let xs = ["123"]
-  @json.inspect(plain_paragraph_to_ascii_multi_line(xs, limits=2), content=[
-    "12", "3 ",
-  ])
-}

@@ -121,6 +121,14 @@ fn Doc::to_graphic_operators(self : Doc) -> Content {
         content.push(@pdf.Op_TL(font_size_body))
         content.push(@pdf.Op_T_star)
       }
+      CodeBlock(code~, ..) => {
+        content.push(@pdf.Op_Tf(b"/F4", font_size_body))
+        for col, line in code {
+          let lineno = (col + 1).to_string().pad_end(4, ' ') |> bytes_of_string
+          content.push(@pdf.Op_single_quote(lineno + line))
+        }
+        content.push(@pdf.Op_T_star)
+      }
     }
   }
   content
@@ -128,6 +136,7 @@ fn Doc::to_graphic_operators(self : Doc) -> Content {
 
 ///|
 fn Doc::split(self : Doc, max_height~ : Double) -> Array[Doc] {
+  // TODO: need refactor
   let result = []
   let mut current_height = 0.0
   let mut current_blocks = []
@@ -155,6 +164,7 @@ fn Doc::split(self : Doc, max_height~ : Double) -> Array[Doc] {
         plain_paragraph_to_ascii_multi_line(para).length().to_double() *
         font_size_body // Op_TL sets leading to font_size_body, Op_T_star consumes it
       }
+      CodeBlock(code~, ..) => code.length().to_double() * font_size_body
       BlankLine => font_size_body // Op_TL sets leading to font_size_body, Op_T_star consumes it
     }
 
