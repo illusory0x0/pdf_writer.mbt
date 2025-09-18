@@ -77,9 +77,43 @@ fn Doc::to_graphic_operators(self : Doc) -> Content {
         content.push(@pdf.Op_T_star)
       }
       Paragraph(para) => {
-        content.push(@pdf.Op_Tf("/F0", font_size_body))
         content.push(@pdf.Op_TL(font_size_body))
-        content.push_iter(paragraph_to_graphic_operators(para).iter())
+        content.push(@pdf.Op_Tf("/F0", font_size_body))
+        // TODO
+
+        let max_cols = 80
+        let mut cur_cols = 0
+        for text in para {
+          let (s, f) = match text {
+            Plain(s) => (s, b"/F0")
+            StrongEmphasis(s) => (s, b"/F1")
+            Emphasis(s) => (s, b"/F2")
+          }
+          let s = utf16_string_to_ascii_bytes(s)
+          let len = s.length()
+          // set font and font size 
+          content.push(@pdf.Op_Tf(f, font_size_body))
+          if cur_cols + len > max_cols {
+            // split text not exceeding max_cols
+            let split_parts = split_bytes(s, init_cols=cur_cols, max_cols~)
+            // TODO: need refacotr, use pattern match, handle if array only has 1 element, then
+            // we not need `if` condition in the loop
+            for i in 0..<split_parts.length() {
+              if i > 0 {
+                // Move to next line for subsequent parts
+                content.push(@pdf.Op_T_star)
+              }
+              content.push(@pdf.Op_Tj(split_parts[i]))
+            }
+            // Calculate remaining columns on the last line
+            let last_part = split_parts[split_parts.length() - 1]
+            cur_cols = last_part.length()
+          } else {
+            // directly show text 
+            content.push(@pdf.Op_Tj(s))
+            cur_cols += len
+          }
+        }
         content.push(@pdf.Op_T_star)
       }
       BlankLine => {
@@ -109,9 +143,16 @@ fn Doc::split(self : Doc, max_height~ : Double) -> Array[Doc] {
         font_size // Op_TL sets leading to font_size, Op_T_star consumes it
       }
       // TODO: need to optimize
-      Paragraph(para) =>
+      Paragraph(para) => {
+        // TODO 
+        let para = para.map(x => match x {
+          Plain(x) => x
+          StrongEmphasis(x) => x
+          Emphasis(x) => x
+        })
         plain_paragraph_to_ascii_multi_line(para).length().to_double() *
         font_size_body // Op_TL sets leading to font_size_body, Op_T_star consumes it
+      }
       BlankLine => font_size_body // Op_TL sets leading to font_size_body, Op_T_star consumes it
     }
 
@@ -141,8 +182,31 @@ fn Doc::split(self : Doc, max_height~ : Double) -> Array[Doc] {
 }
 
 ///|
-fn paragraph_to_graphic_operators(input : Array[String]) -> Content {
-  multi_line_to_graphics_operator_sequence(
-    plain_paragraph_to_ascii_multi_line(input),
-  )
+fn split_bytes(
+  input : Bytes,
+  init_cols~ : Int,
+  max_cols~ : Int,
+) -> Array[Bytes] {
+  let mut cur_cols = init_cols
+  let result = []
+  let buffer = @buffer.new()
+  for i in 0..<input.length() {
+    let byte = input[i]
+
+    // Check if adding this byte would exceed max_cols
+    if cur_cols >= max_cols {
+      // Flush current buffer to result and start new line
+      result.push(buffer.to_bytes())
+      buffer.reset()
+      cur_cols = 0
+    }
+    buffer.write_byte(byte)
+    cur_cols += 1
+  }
+
+  // Add remaining content in buffer if any
+  if buffer.length() > 0 {
+    result.push(buffer.to_bytes())
+  }
+  result
 }

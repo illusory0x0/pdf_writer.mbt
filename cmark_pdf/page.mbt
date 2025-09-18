@@ -1,16 +1,4 @@
 ///|
-pub fn write_single_page_pdf_file(
-  path~ : String,
-  content : Content,
-) -> Unit raise @fs.IOError {
-  let pdf = single_page(content)
-  let buf = @fmt.Memory::make(@fmt.Format::count(pdf), 0)
-  let offset = @fmt.Format::write(pdf, buf, 0)
-  let pdf_file = bytes_of_memory(buf, offset)
-  @fs.write_bytes_to_file(path, pdf_file)
-}
-
-///|
 fn write_multiple_page_pdf_file(
   path~ : String,
   contents : Array[Content],
@@ -23,36 +11,18 @@ fn write_multiple_page_pdf_file(
 }
 
 ///|
-fn single_page(content : Content) -> @pdf.File {
-  // Font resources
-  let times_italic_font = TimesRoman.to_pdf_dictionary()
-  let font_f0 = define_font_item(name="/F0", font=times_italic_font)
-  let font_resources = define_fonts(fonts=[font_f0])
-
-  // 1 0 obj
-  let catalog = define_catalog(pages=Indirect(2))
-  let (content_stream, page, page_id) = make_content_and_page(
-    start_id=3,
-    content,
-    parent=Indirect(2),
-    resources=[font_resources],
-  )
-  // 2 0 obj
-  let pages = define_pages(pages=[Indirect(page_id)])
-  let pdf = make_pdf(Indirect(1), [catalog, pages, content_stream, page])
-  pdf
-}
-
-///|
 fn multiple_pages(contents : Array[Content]) -> @pdf.File {
   // Font resources
-  let times_italic_font = @pdf.Dictionary([
-    ("/Type", Name("/Font")),
-    ("/Subtype", Name("/Type1")),
-    ("/BaseFont", Name("/Times-Roman")),
-  ])
-  let font_f0 = define_font_item(name="/F0", font=times_italic_font)
-  let font_resources = define_fonts(fonts=[font_f0])
+  let font_f0 = define_font_item(
+    name="/F0",
+    font=TimesRoman.to_pdf_dictionary(),
+  )
+  let font_f1 = define_font_item(name="/F1", font=TimesBold.to_pdf_dictionary())
+  let font_f2 = define_font_item(
+    name="/F2",
+    font=TimesItalic.to_pdf_dictionary(),
+  )
+  let font_resources = define_fonts(fonts=[font_f0, font_f1, font_f2])
 
   // 1 0 obj
   let catalog = define_catalog(pages=Indirect(2))

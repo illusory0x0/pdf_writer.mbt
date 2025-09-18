@@ -6,6 +6,8 @@ let md_str =
   #|
   #| ### H1.1.1
   #|
+  #| hello **world** *hello* moonbit
+  #|
   #|Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod consequat mollis. Ut sodales arcu nec magna gravida, nec vestibulum erat porta. Vestibulum vestibulum porttitor sapien ac condimentum. Sed eget ligula ac justo tincidunt condimentum. Fusce ornare nunc non arcu commodo, ac dignissim quam ultricies. Fusce pellentesque ligula nisi, et consectetur diam tincidunt sit amet. Ut in augue congue, porta tortor vitae, euismod turpis. Nam porta augue eget turpis eleifend, sed pharetra ligula faucibus. Donec diam arcu, venenatis ut purus in, elementum rutrum libero. Phasellus lacinia eleifend dolor, vel laoreet leo tristique non. Etiam quis elementum metus, nec consectetur libero.
   #|
   #| 
