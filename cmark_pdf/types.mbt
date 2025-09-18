@@ -3,9 +3,8 @@ pub(all) enum Block {
   Heading(level~ : Int, text~ : String)
   Paragraph(Array[Inline])
   BlankLine
-  CodeBlock(language~: String, code~ : Array[Bytes])
+  CodeBlock(language~ : String, code~ : Array[Bytes])
 } derive(@json.FromJson, ToJson)
-
 
 ///|
 pub(all) enum Inline {

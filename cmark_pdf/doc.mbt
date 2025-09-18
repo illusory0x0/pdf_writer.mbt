@@ -123,8 +123,8 @@ fn Doc::to_graphic_operators(self : Doc) -> Content {
       }
       CodeBlock(code~, ..) => {
         content.push(@pdf.Op_Tf(b"/F4", font_size_body))
-        for col,line in code {
-          let lineno = (col+1).to_string().pad_end(4,' ') |> bytes_of_string
+        for col, line in code {
+          let lineno = (col + 1).to_string().pad_end(4, ' ') |> bytes_of_string
           content.push(@pdf.Op_single_quote(lineno + line))
         }
         content.push(@pdf.Op_T_star)

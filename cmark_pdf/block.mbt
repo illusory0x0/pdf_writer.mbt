@@ -45,7 +45,7 @@ fn Block::from_cmark(block : @cmark.Block) -> Block {
       let para = Inline::from_cmark(block_paragraph.inline)
       Paragraph(para)
     }
-    CodeBlock({ v: code_block,.. }) => {
+    CodeBlock({ v: code_block, .. }) => {
       let code = code_block.code.to_array().map(x => x.v |> bytes_of_string)
       let language = match code_block.info_string {
         None => ""
