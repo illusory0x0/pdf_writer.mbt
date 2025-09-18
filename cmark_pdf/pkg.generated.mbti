@@ -21,6 +21,40 @@ pub(all) enum Block {
 impl ToJson for Block
 impl @json.FromJson for Block
 
+type Canvas
+fn Canvas::begin_text(Self) -> Unit
+fn Canvas::close_path(Self) -> Unit
+fn Canvas::end_path(Self) -> Unit
+fn Canvas::end_text(Self) -> Unit
+fn Canvas::fill(Self) -> Unit
+fn Canvas::fill_and_stroke(Self) -> Unit
+fn Canvas::line_to(Self, Double, Double) -> Unit
+fn Canvas::move_text(Self, Double, Double) -> Unit
+fn Canvas::move_text_set_leading(Self, Double, Double) -> Unit
+fn Canvas::move_to(Self, Double, Double) -> Unit
+fn Canvas::new() -> Self
+fn Canvas::next_line(Self) -> Unit
+fn Canvas::rectangle(Self, Double, Double, Double, Double) -> Unit
+fn Canvas::restore_state(Self) -> Unit
+fn Canvas::save_state(Self) -> Unit
+fn Canvas::set_char_spacing(Self, Double) -> Unit
+fn Canvas::set_font(Self, Bytes, Double) -> Unit
+fn Canvas::set_gray_fill(Self, Double) -> Unit
+fn Canvas::set_gray_stroke(Self, Double) -> Unit
+fn Canvas::set_horizontal_scaling(Self, Double) -> Unit
+fn Canvas::set_leading(Self, Double) -> Unit
+fn Canvas::set_line_width(Self, Double) -> Unit
+fn Canvas::set_rgb_fill_color(Self, Double, Double, Double) -> Unit
+fn Canvas::set_rgb_stroke_color(Self, Double, Double, Double) -> Unit
+fn Canvas::set_text_rendering_mode(Self, Int) -> Unit
+fn Canvas::set_text_rise(Self, Double) -> Unit
+fn Canvas::set_word_spacing(Self, Double) -> Unit
+fn Canvas::show_text(Self, Bytes) -> Unit
+fn Canvas::show_text_next_line(Self, Bytes) -> Unit
+fn Canvas::stroke(Self) -> Unit
+fn Canvas::to_array(Self) -> Array[@pdf.GraphicOperator]
+fn Canvas::to_content(Self) -> Content
+
 pub(all) struct Content(Array[@pdf.GraphicOperator])
 fn Content::inner(Self) -> Array[@pdf.GraphicOperator]
 
