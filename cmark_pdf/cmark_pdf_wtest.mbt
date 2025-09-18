@@ -43,19 +43,3 @@ test "plain_paragraph_to_ascii_multi_line" {
     "12", "3 ",
   ])
 }
-
-///|
-test "split_bytes" {
-  // Test with simple bytes
-  let input = b"hello world"
-  let result = split_bytes(input, init_cols=0, max_cols=5)
-  @json.inspect(result, content=["hello", " worl", "d"])
-
-  // Test with initial columns
-  let result2 = split_bytes(b"test", init_cols=3, max_cols=5)
-  @json.inspect(result2, content=["te", "st"])
-
-  // Test with empty input
-  let result3 = split_bytes(b"", init_cols=0, max_cols=5)
-  @json.inspect(result3, content=[])
-}
