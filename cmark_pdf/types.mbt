@@ -32,6 +32,9 @@ fn Content::iter(xs : Self) -> Iter[@pdf.GraphicOperator] {
 }
 
 ///|
+struct Canvas(Array[@pdf.GraphicOperator])
+
+///|
 /// 
 /// The PostScript language names of 14 Type 1 fonts, known as the 
 /// standard 14 fonts.

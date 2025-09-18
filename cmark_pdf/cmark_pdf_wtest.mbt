@@ -1,13 +1,14 @@
 ///|
-test {
-  markdown_write_to_pdf_file(md_str, path="./output/hello_md.pdf")
+test (t : @test.T) {
+  let path = "./output/hello_md.pdf"
+  let bytes = markdown_to_bytes(md_str)
+  @fs.write_bytes_to_file(path, bytes)
+  t.writeln(bytes)
+  t.snapshot(filename="hello_md.pdf.bytes")
 }
 
 ///|
-fn markdown_write_to_pdf_file(
-  md_str : String,
-  path~ : String,
-) -> Unit raise @fs.IOError {
+fn markdown_to_bytes(md_str : String) -> Bytes {
   let tm : @pdf.TransformMatrix = @pdf.TransformMatrix::{
     a: 1,
     b: 0,
@@ -33,5 +34,5 @@ fn markdown_write_to_pdf_file(
       ..doc.to_graphic_operators(),
       Op_ET,
     ])
-  write_multiple_page_pdf_file(path~, [table_of_contents, ..contents])
+  multiple_page_to_bytes([table_of_contents, ..contents])
 }

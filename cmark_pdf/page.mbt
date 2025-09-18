@@ -1,13 +1,9 @@
 ///|
-fn write_multiple_page_pdf_file(
-  path~ : String,
-  contents : Array[Content],
-) -> Unit raise @fs.IOError {
+fn multiple_page_to_bytes(contents : Array[Content]) -> Bytes {
   let pdf = multiple_pages(contents)
   let buf = @fmt.Memory::make(@fmt.Format::count(pdf), 0)
   let offset = @fmt.Format::write(pdf, buf, 0)
-  let pdf_file = bytes_of_memory(buf, offset)
-  @fs.write_bytes_to_file(path, pdf_file)
+  bytes_of_memory(buf, offset)
 }
 
 ///|

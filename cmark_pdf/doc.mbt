@@ -61,7 +61,7 @@ fn Doc::to_flatheadings(self : Doc) -> Array[FlatHeading] {
 
 ///|
 fn Doc::to_graphic_operators(self : Doc) -> Content {
-  let content = []
+  let canvas = Canvas::new()
   for block in self.inner() {
     match block {
       Heading(level~, text~) => {
@@ -71,16 +71,14 @@ fn Doc::to_graphic_operators(self : Doc) -> Content {
           3 => font_size_h3
           _ => font_size_body
         }
-        content.push(@pdf.Op_Tf("/F0", font_size))
-        content.push(@pdf.Op_Tj(bytes_of_string(text)))
-        content.push(@pdf.Op_TL(font_size))
-        content.push(@pdf.Op_T_star)
+        canvas.set_font(b"/F0", font_size)
+        canvas.show_text(bytes_of_string(text))
+        canvas.set_leading(font_size)
+        canvas.next_line()
       }
       Paragraph(para) => {
-        content.push(@pdf.Op_TL(font_size_body))
-        content.push(@pdf.Op_Tf("/F0", font_size_body))
-        // TODO
-
+        canvas.set_leading(font_size_body)
+        canvas.set_font(b"/F0", font_size_body)
         let max_cols = 80
         let mut cur_cols = 0
         for text in para {
@@ -93,7 +91,7 @@ fn Doc::to_graphic_operators(self : Doc) -> Content {
           let s = utf16_string_to_ascii_bytes(s)
           let len = s.length()
           // set font and font size 
-          content.push(@pdf.Op_Tf(f, font_size_body))
+          canvas.set_font(f, font_size_body)
           if cur_cols + len > max_cols {
             // split text not exceeding max_cols
             let split_parts = split_bytes(s, init_cols=cur_cols, max_cols~)
@@ -102,36 +100,36 @@ fn Doc::to_graphic_operators(self : Doc) -> Content {
             for i in 0..<split_parts.length() {
               if i > 0 {
                 // Move to next line for subsequent parts
-                content.push(@pdf.Op_T_star)
+                canvas.next_line()
               }
-              content.push(@pdf.Op_Tj(split_parts[i]))
+              canvas.show_text(split_parts[i])
             }
             // Calculate remaining columns on the last line
             let last_part = split_parts[split_parts.length() - 1]
             cur_cols = last_part.length()
           } else {
             // directly show text 
-            content.push(@pdf.Op_Tj(s))
+            canvas.show_text(s)
             cur_cols += len
           }
         }
-        content.push(@pdf.Op_T_star)
+        canvas.next_line()
       }
       BlankLine => {
-        content.push(@pdf.Op_TL(font_size_body))
-        content.push(@pdf.Op_T_star)
+        canvas.set_leading(font_size_body)
+        canvas.next_line()
       }
       CodeBlock(code~, ..) => {
-        content.push(@pdf.Op_Tf(b"/F4", font_size_body))
+        canvas.set_font(b"/F4", font_size_body)
         for col, line in code {
           let lineno = (col + 1).to_string().pad_end(4, ' ') |> bytes_of_string
-          content.push(@pdf.Op_single_quote(lineno + line))
+          canvas.show_text_next_line(lineno + line)
         }
-        content.push(@pdf.Op_T_star)
+        canvas.next_line()
       }
     }
   }
-  content
+  canvas.to_content()
 }
 
 ///|
