@@ -88,7 +88,7 @@ fn Doc::to_graphic_operators(self : Doc) -> Content {
             Plain(s) => (s, b"/F0")
             StrongEmphasis(s) => (s, b"/F1")
             Emphasis(s) => (s, b"/F2")
-            StrongEmphasis_Emphasis(s) => (s, b"/F3") 
+            StrongEmphasis_Emphasis(s) => (s, b"/F3")
           }
           let s = utf16_string_to_ascii_bytes(s)
           let len = s.length()

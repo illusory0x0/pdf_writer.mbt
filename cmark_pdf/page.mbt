@@ -26,7 +26,6 @@ fn multiple_pages(contents : Array[Content]) -> @pdf.File {
     name="/F3",
     font=TimesBoldItalic.to_pdf_dictionary(),
   )
-
   let font_resources = define_fonts(fonts=[font_f0, font_f1, font_f2, font_f3])
 
   // 1 0 obj

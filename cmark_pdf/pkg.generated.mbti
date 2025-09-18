@@ -39,8 +39,10 @@ pub(all) enum Inline {
   Plain(String)
   StrongEmphasis(String)
   Emphasis(String)
+  StrongEmphasis_Emphasis(String)
 }
 fn Inline::from_cmark(@cmark.Inline) -> Array[Self]
+impl Show for Inline
 impl ToJson for Inline
 impl @json.FromJson for Inline
 
