@@ -139,6 +139,16 @@ pub(all) enum GraphicOperator {
   /// begin a text object 
   Op_BT
   /// end a text object 
+  ///
+  /// This operator will reset all state for text object
+  ///
+  ///  (1): `BT (hello world)Tj ET` 
+  ///  (2): `BT (hello )Tj ET BT (world)Tj ET`
+  /// 
+  ///  (2) will write "hello " and "world" at the same start position. 
+  ///  render effect is overlap.
+  ///
+  ///  (1) will render correctly.
   Op_ET
   /// set character spacing 
   Op_Tc(Double)

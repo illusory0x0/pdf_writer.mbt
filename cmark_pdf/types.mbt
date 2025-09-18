@@ -10,7 +10,8 @@ pub(all) enum Inline {
   Plain(String)
   StrongEmphasis(String)
   Emphasis(String)
-} derive(@json.FromJson, ToJson)
+  StrongEmphasis_Emphasis(String)
+} derive(@json.FromJson, ToJson, Show)
 
 ///|
 pub(all) struct FlatHeading {

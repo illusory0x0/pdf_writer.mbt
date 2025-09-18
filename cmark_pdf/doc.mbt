@@ -88,6 +88,7 @@ fn Doc::to_graphic_operators(self : Doc) -> Content {
             Plain(s) => (s, b"/F0")
             StrongEmphasis(s) => (s, b"/F1")
             Emphasis(s) => (s, b"/F2")
+            StrongEmphasis_Emphasis(s) => (s, b"/F3")
           }
           let s = utf16_string_to_ascii_bytes(s)
           let len = s.length()
@@ -149,6 +150,7 @@ fn Doc::split(self : Doc, max_height~ : Double) -> Array[Doc] {
           Plain(x) => x
           StrongEmphasis(x) => x
           Emphasis(x) => x
+          StrongEmphasis_Emphasis(x) => x
         })
         plain_paragraph_to_ascii_multi_line(para).length().to_double() *
         font_size_body // Op_TL sets leading to font_size_body, Op_T_star consumes it
