@@ -1,25 +1,34 @@
-
+///|
 pub suberror ParseError {
   UnexpectedToken(Token, (Position, Position), Array[TokenKind])
   UnexpectedEndOfInput(Position, Array[TokenKind])
 }
 
+///|
 typealias Error as YYObj
 
+///|
 priv suberror YYObj_Void
 
+///|
 priv suberror YYObj_Int Int
 
+///|
 priv suberror YYObj_Unit Unit
 
+///|
 priv suberror YYObj_Bytes Bytes
 
+///|
 priv suberror YYObj_Double Double
 
+///|
 typealias (YYSymbol) -> YYDecision as YYState
 
+///|
 typealias (Position, ArrayView[(YYObj, Position, Position)]) -> YYObj as YYAction
 
+///|
 priv enum YYDecision {
   Accept
   Shift(YYState)
@@ -28,6 +37,7 @@ priv enum YYDecision {
   Error
 }
 
+///|
 priv enum YYSymbol {
   T_LEFT_PARENTHESIS
   T_RIGHT_PARENTHESIS
@@ -52,6 +62,8 @@ priv enum YYSymbol {
 }
 
 // Workaround for EOI unused warning
+
+///|
 fn init {
   match (EOI : YYSymbol) {
     EOI => ()
@@ -61,12 +73,27 @@ fn init {
 
 // file:///./parser.mbty
 // 66|     EOF { $1 }
-fn yy_action_0(_last_pos : Position, _args : ArrayView[(YYObj, Position, Position)]) -> YYObj {
+
+///|
+fn yy_action_0(
+  _last_pos : Position,
+  _args : ArrayView[(YYObj, Position, Position)],
+) -> YYObj {
   let _dollar1 = ()
-  YYObj_Unit({();  _dollar1 })
+  YYObj_Unit(
+    {
+      ()
+      _dollar1
+    },
+  )
 }
 
-fn yy_input(token : Token, _start_pos : Position, _end_pos : Position) -> (YYSymbol, YYObj) {
+///|
+fn yy_input(
+  token : Token,
+  _start_pos : Position,
+  _end_pos : Position,
+) -> (YYSymbol, YYObj) {
   match token {
     LEFT_PARENTHESIS => (T_LEFT_PARENTHESIS, YYObj_Void)
     RIGHT_PARENTHESIS => (T_RIGHT_PARENTHESIS, YYObj_Void)
@@ -89,6 +116,7 @@ fn yy_input(token : Token, _start_pos : Position, _end_pos : Position) -> (YYSym
   }
 }
 
+///|
 fn yy_state_0(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_parse => Shift(yy_state_1)
@@ -97,14 +125,17 @@ fn yy_state_0(_lookahead : YYSymbol) -> YYDecision {
   }
 }
 
+///|
 fn yy_state_1(_lookahead : YYSymbol) -> YYDecision {
   Accept
 }
 
+///|
 fn yy_state_2(_lookahead : YYSymbol) -> YYDecision {
   ReduceNoLookahead(1, NT_parse, yy_action_0)
 }
 
+///|
 fn[T] yy_parse(
   tokens : Array[(Token, Position, Position)],
   start : YYState,
@@ -116,28 +147,28 @@ fn[T] yy_parse(
   let data_stack : Array[(YYObj, Position, Position)] = []
   let mut last_pos = initial_pos.unwrap_or(tokens[0].1)
   let mut state = start
-  let mut lookahead : Option[(YYSymbol, (YYObj, Position, Position), Token?)] = None
+  let mut lookahead : (YYSymbol, (YYObj, Position, Position), Token?)? = None
   let mut last_shifted_state_stack = state_stack
   while true {
     let decision = match state(EOI) {
       ReduceNoLookahead(_) | Accept as t => t
-      _ => {
+      _ =>
         match lookahead {
           Some(la) => state(la.0)
-          None => {
+          None =>
             if cursor < tokens.length() {
               let (token, start_pos, end_pos) = tokens[cursor]
               cursor += 1
               let (symbol, data) = yy_input(token, start_pos, end_pos)
-              lookahead = Some((symbol, (data, start_pos, end_pos), Some(token)))
+              lookahead = Some(
+                (symbol, (data, start_pos, end_pos), Some(token)),
+              )
               state(symbol)
             } else {
               lookahead = Some((EOI, (YYObj_Void, last_pos, last_pos), None))
               state(EOI)
             }
-          }
         }
-      }
     }
     match decision {
       Accept => return return_(data_stack.unsafe_pop().0)
@@ -151,7 +182,7 @@ fn[T] yy_parse(
         lookahead = None
       }
       Reduce(count, symbol, action)
-      | ReduceNoLookahead(count, symbol, action) => {
+      | ReduceNoLookahead(count, symbol, action) =>
         loop (count, symbol, action) {
           _ => {
             let args = data_stack[data_stack.length() - count:]
@@ -174,12 +205,12 @@ fn[T] yy_parse(
                 state = next_state
               }
               Reduce(count, symbol, action)
-              | ReduceNoLookahead(count, symbol, action) => continue (count, symbol, action)
+              | ReduceNoLookahead(count, symbol, action) =>
+                continue (count, symbol, action)
               _ => panic()
             }
           }
         }
-      }
       Error => {
         let (_, (_, start_pos, end_pos), token) = lookahead.unwrap()
         error(last_shifted_state_stack, token, (start_pos, end_pos))
@@ -189,13 +220,18 @@ fn[T] yy_parse(
   panic()
 }
 
-fn error(stack : @list.List[YYState], token : Token?, loc : (Position, Position)) -> Unit raise ParseError {
+///|
+fn error(
+  stack : @list.List[YYState],
+  token : Token?,
+  loc : (Position, Position),
+) -> Unit raise ParseError {
   let expected = []
   fn try_add(symbol : YYSymbol, kind : TokenKind) {
     fn go(stack : @list.List[YYState]) {
       match stack {
         Empty => ()
-        More(state, ..) => {
+        More(state, ..) =>
           match state(symbol) {
             Accept | Shift(_) => expected.push(kind)
             Reduce(count, symbol, _) | ReduceNoLookahead(count, symbol, _) => {
@@ -204,20 +240,45 @@ fn error(stack : @list.List[YYState], token : Token?, loc : (Position, Position)
                 guard stack is More(state, ..)
                 match state(symbol) {
                   Shift(state) => go(@list.cons(state, stack))
-                  Reduce(count, symbol, _) | ReduceNoLookahead(count, symbol, _) => inner_go(stack, count, symbol)
+                  Reduce(count, symbol, _)
+                  | ReduceNoLookahead(count, symbol, _) =>
+                    inner_go(stack, count, symbol)
                   _ => panic()
                 }
               }
+
               inner_go(stack, count, symbol)
             }
             Error => ()
           }
-        }
       }
     }
+
     go(stack)
   }
-  for term in ([(T_LEFT_PARENTHESIS, TK_LEFT_PARENTHESIS), (T_RIGHT_PARENTHESIS, TK_RIGHT_PARENTHESIS), (T_LEFT_CURLY_BRACE, TK_LEFT_CURLY_BRACE), (T_RIGHT_CURLY_BRACE, TK_RIGHT_CURLY_BRACE), (T_LEFT_SQUARE_BRACKET, TK_LEFT_SQUARE_BRACKET), (T_RIGHT_SQUARE_BRACKET, TK_RIGHT_SQUARE_BRACKET), (T_LESS_THAN_SIGN, TK_LESS_THAN_SIGN), (T_GREATER_THAN_SIGN, TK_GREATER_THAN_SIGN), (T_SOLIDUS, TK_SOLIDUS), (T_DICT_BEGIN, TK_DICT_BEGIN), (T_DICT_END, TK_DICT_END), (T_TRUE, TK_TRUE), (T_FALSE, TK_FALSE), (T_INTERGER, TK_INTERGER), (T_REAL, TK_REAL), (T_STRING, TK_STRING), (T_NAME, TK_NAME), (T_EOF, TK_EOF)] : Array[(YYSymbol, TokenKind)]) {
+
+  for
+    term in (
+      [
+        (T_LEFT_PARENTHESIS, TK_LEFT_PARENTHESIS),
+        (T_RIGHT_PARENTHESIS, TK_RIGHT_PARENTHESIS),
+        (T_LEFT_CURLY_BRACE, TK_LEFT_CURLY_BRACE),
+        (T_RIGHT_CURLY_BRACE, TK_RIGHT_CURLY_BRACE),
+        (T_LEFT_SQUARE_BRACKET, TK_LEFT_SQUARE_BRACKET),
+        (T_RIGHT_SQUARE_BRACKET, TK_RIGHT_SQUARE_BRACKET),
+        (T_LESS_THAN_SIGN, TK_LESS_THAN_SIGN),
+        (T_GREATER_THAN_SIGN, TK_GREATER_THAN_SIGN),
+        (T_SOLIDUS, TK_SOLIDUS),
+        (T_DICT_BEGIN, TK_DICT_BEGIN),
+        (T_DICT_END, TK_DICT_END),
+        (T_TRUE, TK_TRUE),
+        (T_FALSE, TK_FALSE),
+        (T_INTERGER, TK_INTERGER),
+        (T_REAL, TK_REAL),
+        (T_STRING, TK_STRING),
+        (T_NAME, TK_NAME),
+        (T_EOF, TK_EOF),
+      ] : Array[(YYSymbol, TokenKind)]) {
     try_add(term.0, term.1)
   }
   match token {
@@ -226,11 +287,15 @@ fn error(stack : @list.List[YYState], token : Token?, loc : (Position, Position)
   }
 }
 
-pub fn parse(tokens : Array[(Token, Position, Position)], initial_pos? : Position) -> Unit raise ParseError {
+///|
+pub fn parse(
+  tokens : Array[(Token, Position, Position)],
+  initial_pos? : Position,
+) -> Unit raise ParseError {
   yy_parse(
     tokens,
     yy_state_0,
-    (it) => {
+    it => {
       guard it is YYObj_Unit(result)
       result
     },

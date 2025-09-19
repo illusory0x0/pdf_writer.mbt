@@ -1,3 +1,4 @@
+///|
 pub(all) enum Token {
   LEFT_PARENTHESIS
   RIGHT_PARENTHESIS
@@ -19,6 +20,7 @@ pub(all) enum Token {
   EOF
 } derive(Show)
 
+///|
 pub fn Token::kind(self : Token) -> TokenKind {
   match self {
     LEFT_PARENTHESIS => TK_LEFT_PARENTHESIS
@@ -42,6 +44,7 @@ pub fn Token::kind(self : Token) -> TokenKind {
   }
 }
 
+///|
 pub(all) enum TokenKind {
   TK_LEFT_PARENTHESIS
   TK_RIGHT_PARENTHESIS
@@ -63,6 +66,7 @@ pub(all) enum TokenKind {
   TK_EOF
 } derive(Eq)
 
+///|
 pub impl Show for TokenKind with output(self, logger) {
   logger.write_string(
     match self {
@@ -84,7 +88,6 @@ pub impl Show for TokenKind with output(self, logger) {
       TK_STRING => "STRING"
       TK_NAME => "NAME"
       TK_EOF => "EOF"
-    }
+    },
   )
 }
-
