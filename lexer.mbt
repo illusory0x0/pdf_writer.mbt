@@ -166,3 +166,101 @@ pub fn tokenize(input : @string.View) -> Array[(Token, Position, Position)] {
   }
   result
 }
+
+///|
+pub fn tokenize_pdf_literal(input : @string.View) -> Bytes {
+  let buffer = @buffer.new(size_hint=input.length())
+  loop input {
+    // Escape sequences
+    ['\\', 'n', .. rest] => {
+      buffer.write_byte(b'\n')
+      continue rest
+    }
+    ['\\', 'r', .. rest] => {
+      buffer.write_byte(b'\r')
+      continue rest
+    }
+    ['\\', 't', .. rest] => {
+      buffer.write_byte(b'\t')
+      continue rest
+    }
+    ['\\', 'b', .. rest] => {
+      buffer.write_byte(b'\b')
+      continue rest
+    }
+    ['\\', 'f', .. rest] => {
+      buffer.write_byte(b'\x0c') // form feed
+      continue rest
+    }
+    ['\\', '\\', .. rest] => {
+      buffer.write_byte(b'\\')
+      continue rest
+    }
+    ['\\', '(', .. rest] => {
+      buffer.write_byte(b'(')
+      continue rest
+    }
+    ['\\', ')', .. rest] => {
+      buffer.write_byte(b')')
+      continue rest
+    }
+    // Multi-line string handling: backslash followed by end-of-line marker is ignored
+    ['\\', '\r', '\n', .. rest] =>
+      // Backslash followed by CRLF - ignore both the backslash and the end-of-line
+      continue rest
+    ['\\', '\r', .. rest] =>
+      // Backslash followed by CR - ignore both
+      continue rest
+    ['\\', '\n', .. rest] =>
+      // Backslash followed by LF - ignore both
+      continue rest
+    // Octal escape sequences: \ddd where d is 0-7
+    ['\\', d1, d2, d3, .. rest] if d1 >= '0' &&
+      d1 <= '7' &&
+      d2 >= '0' &&
+      d2 <= '7' &&
+      d3 >= '0' &&
+      d3 <= '7' => {
+      let octal_value = (d1.to_int() - '0'.to_int()) * 64 +
+        (d2.to_int() - '0'.to_int()) * 8 +
+        (d3.to_int() - '0'.to_int())
+      buffer.write_byte(octal_value.to_byte())
+      continue rest
+    }
+    // Two-digit octal escape sequences: \dd
+    ['\\', d1, d2, .. rest] if d1 >= '0' && d1 <= '7' && d2 >= '0' && d2 <= '7' => {
+      let octal_value = (d1.to_int() - '0'.to_int()) * 8 +
+        (d2.to_int() - '0'.to_int())
+      buffer.write_byte(octal_value.to_byte())
+      continue rest
+    }
+    // One-digit octal escape sequences: \d
+    ['\\', d1, .. rest] if d1 >= '0' && d1 <= '7' => {
+      let octal_value = d1.to_int() - '0'.to_int()
+      buffer.write_byte(octal_value.to_byte())
+      continue rest
+    }
+    // Unrecognized escape sequence - ignore the backslash
+    ['\\', _, .. rest] => continue rest
+    // End-of-line markers in string literals are converted to \n
+    ['\r', '\n', .. rest] => {
+      buffer.write_byte(b'\n')
+      continue rest
+    }
+    ['\r', .. rest] => {
+      buffer.write_byte(b'\n')
+      continue rest
+    }
+    ['\n', .. rest] => {
+      buffer.write_byte(b'\n')
+      continue rest
+    }
+    // Regular characters
+    [c, .. rest] => {
+      buffer.write_byte(c.to_int().to_byte())
+      continue rest
+    }
+    // End of input
+    [] => buffer.to_bytes()
+  }
+}
