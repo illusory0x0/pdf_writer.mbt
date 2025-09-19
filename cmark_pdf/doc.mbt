@@ -134,7 +134,6 @@ fn Doc::to_graphic_operators(self : Doc) -> Content {
 
 ///|
 fn Doc::split(self : Doc, max_height~ : Double) -> Array[Doc] {
-  // TODO: need refactor
   let result = []
   let mut current_height = 0.0
   let mut current_blocks = []
@@ -150,9 +149,7 @@ fn Doc::split(self : Doc, max_height~ : Double) -> Array[Doc] {
         }
         font_size // Op_TL sets leading to font_size, Op_T_star consumes it
       }
-      // TODO: need to optimize
       Paragraph(para) => {
-        // TODO 
         let para = para.map(x => match x {
           Plain(x) => x
           StrongEmphasis(x) => x
