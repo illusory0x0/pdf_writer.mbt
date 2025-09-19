@@ -143,7 +143,8 @@ pub impl @fmt.Format for GraphicOperator with write(
       Op_k(c, m, y, k) =>
         @fmt.format_write(" {} {} {} {} k", [c, m, y, k], buffer, start)
       Op_sh(s) => @fmt.format_write(" {} sh", [s], buffer, start)
-      InlineImage(dict, data) => abort("TODO")
+      InlineImage(dict, data) =>
+        @fmt.format_write(" BI {} ID {} EI", [dict, data], buffer, start)
       Op_Do(s) => @fmt.format_write(" {} Do", [s], buffer, start)
       Op_MP(s) => @fmt.format_write(" {} MP", [s], buffer, start)
       Op_DP(s, o) => @fmt.format_write(" {} {} DP", [s, o], buffer, start)
@@ -430,8 +431,9 @@ pub impl @fmt.Format for GraphicOperator with count(value : GraphicOperator) -> 
       2
     // " {} sh" = 1 + count(s) + 3
     Op_sh(s) => 1 + @fmt.Format::count(s) + 3
-    // abort("TODO") - returns 0 bytes
-    InlineImage(dict, data) => 0
+    // " BI {} ID {} EI" = 4 + count(dict) + 4 + count(data) + 3
+    InlineImage(dict, data) =>
+      4 + @fmt.Format::count(dict) + 4 + @fmt.Format::count(data) + 3
     // " {} Do" = 1 + count(s) + 3
     Op_Do(s) => 1 + @fmt.Format::count(s) + 3
     // " {} MP" = 1 + count(s) + 3
