@@ -3,11 +3,27 @@ package "illusory0x0/pdf"
 
 import(
   "illusory0x0/fmt"
+  "moonbitlang/core/json"
 )
 
 // Values
+fn ascii_string_of_bytes(Bytes) -> String
+
+fn parse(Array[(Token, Position, Position)], initial_pos? : Position) -> Unit raise ParseError
+
+fn tokenize(BytesView) -> Array[(Token, Position, Position)]
+
+fn tokenize_pdf_hexadecimal_string(BytesView) -> Bytes
+
+fn tokenize_pdf_literal_string(BytesView) -> Bytes
+
+fn tokenize_pdf_name(BytesView) -> Bytes
 
 // Errors
+pub suberror ParseError {
+  UnexpectedToken(Token, (Position, Position), Array[TokenKind])
+  UnexpectedEndOfInput(Position, Array[TokenKind])
+}
 
 // Types and methods
 pub(all) struct File {
@@ -17,6 +33,10 @@ pub(all) struct File {
   trailer : Object
 }
 impl @fmt.Format for File
+
+type Func
+impl ToJson for Func
+impl @json.FromJson for Func
 
 pub(all) enum GraphicOperator {
   Op_w(Double)
@@ -97,6 +117,10 @@ pub(all) enum GraphicOperator {
 }
 impl @fmt.Format for GraphicOperator
 
+type NonTerminal
+impl ToJson for NonTerminal
+impl @json.FromJson for NonTerminal
+
 pub(all) enum Object {
   Null
   Boolean(Bool)
@@ -111,8 +135,69 @@ pub(all) enum Object {
 }
 impl @fmt.Format for Object
 
+type Parm
+impl ToJson for Parm
+impl @json.FromJson for Parm
+
+pub struct Position {
+  row : Int
+  col : Int
+}
+impl Show for Position
+impl ToJson for Position
+impl @json.FromJson for Position
+
+type SourceLocation
+
 pub(all) struct Stream(Bytes)
+#deprecated
 fn Stream::inner(Self) -> Bytes
+
+pub(all) enum Token {
+  LEFT_PARENTHESIS
+  RIGHT_PARENTHESIS
+  LEFT_CURLY_BRACE
+  RIGHT_CURLY_BRACE
+  LEFT_SQUARE_BRACKET
+  RIGHT_SQUARE_BRACKET
+  LESS_THAN_SIGN
+  GREATER_THAN_SIGN
+  SOLIDUS
+  DICT_BEGIN
+  DICT_END
+  TRUE
+  FALSE
+  INTEGER(Int)
+  REAL(Double)
+  STRING(Bytes)
+  NAME(Bytes)
+  EOF
+}
+fn Token::kind(Self) -> TokenKind
+impl Show for Token
+
+pub(all) enum TokenKind {
+  TK_LEFT_PARENTHESIS
+  TK_RIGHT_PARENTHESIS
+  TK_LEFT_CURLY_BRACE
+  TK_RIGHT_CURLY_BRACE
+  TK_LEFT_SQUARE_BRACKET
+  TK_RIGHT_SQUARE_BRACKET
+  TK_LESS_THAN_SIGN
+  TK_GREATER_THAN_SIGN
+  TK_SOLIDUS
+  TK_DICT_BEGIN
+  TK_DICT_END
+  TK_TRUE
+  TK_FALSE
+  TK_INTEGER
+  TK_REAL
+  TK_STRING
+  TK_NAME
+  TK_EOF
+}
+impl Eq for TokenKind
+impl Show for TokenKind
 
 pub(all) struct TransformMatrix {
   a : Double
