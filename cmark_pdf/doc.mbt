@@ -159,8 +159,11 @@ fn Doc::split(self : Doc, max_height~ : Double) -> Array[Doc] {
           Emphasis(x) => x
           StrongEmphasis_Emphasis(x) => x
         })
-        plain_paragraph_to_ascii_multi_line(para).length().to_double() *
-        font_size_body // Op_TL sets leading to font_size_body, Op_T_star consumes it
+        let ascii_count = para.fold(init=0, (acc, s) => acc + s.length())
+        let max_cols = 80
+        let lines = (ascii_count + max_cols - 1) / max_cols // Ceiling division
+        lines.to_double() * font_size_body
+        // Op_TL sets leading to font_size_body, Op_T_star consumes it
       }
       CodeBlock(code~, ..) => code.length().to_double() * font_size_body
       BlankLine => font_size_body // Op_TL sets leading to font_size_body, Op_T_star consumes it
