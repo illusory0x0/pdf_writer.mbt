@@ -2,7 +2,7 @@
 test "PDF comment lexing with different end-of-line markers" {
   // Test PDF comments with \r\n (CRLF)
   let input1 = "% This is a comment\r\ntrue"
-  let tokens1 = tokenize(input1.to_string_view())
+  let tokens1 = tokenize(input1)
   // Should tokenize TRUE after the comment and newline
   let token_kinds1 = tokens1.map(fn(triplet) {
     let (tok, _, _) = triplet
@@ -12,7 +12,7 @@ test "PDF comment lexing with different end-of-line markers" {
 
   // Test PDF comments with \r (CR only)
   let input2 = "% This is a comment\rtrue"
-  let tokens2 = tokenize(input2.to_string_view())
+  let tokens2 = tokenize(input2)
   let token_kinds2 = tokens2.map(fn(triplet) {
     let (tok, _, _) = triplet
     tok
@@ -21,7 +21,7 @@ test "PDF comment lexing with different end-of-line markers" {
 
   // Test PDF comments with \n (LF only)
   let input3 = "% This is a comment\ntrue"
-  let tokens3 = tokenize(input3.to_string_view())
+  let tokens3 = tokenize(input3)
   let token_kinds3 = tokens3.map(fn(triplet) {
     let (tok, _, _) = triplet
     tok
@@ -30,7 +30,7 @@ test "PDF comment lexing with different end-of-line markers" {
 
   // Test PDF comment at end of file (no end-of-line marker)
   let input4 = "true % This is a comment"
-  let tokens4 = tokenize(input4.to_string_view())
+  let tokens4 = tokenize(input4)
   let token_kinds4 = tokens4.map(fn(triplet) {
     let (tok, _, _) = triplet
     tok
@@ -39,7 +39,7 @@ test "PDF comment lexing with different end-of-line markers" {
 
   // Test multiple comments with different end-of-line markers
   let input5 = "% Comment 1\r\n% Comment 2\r% Comment 3\ntrue"
-  let tokens5 = tokenize(input5.to_string_view())
+  let tokens5 = tokenize(input5)
   let token_kinds5 = tokens5.map(fn(triplet) {
     let (tok, _, _) = triplet
     tok
@@ -51,7 +51,7 @@ test "PDF comment lexing with different end-of-line markers" {
 test "PDF comment position tracking" {
   // Test that row/column positions are correctly updated after comments
   let input = "% Comment line 1\n% Comment line 2\ntrue"
-  let tokens = tokenize(input.to_string_view())
+  let tokens = tokenize(input)
 
   // The TRUE token should be at row 2 (after two comment lines)
   let true_token = tokens[0]
@@ -94,16 +94,16 @@ test "ascii_string_of_bytes escaping" {
 test "tokenize_pdf_literal basic escape sequences" {
   // Test basic escape sequences
   let input1 = "Hello\\nWorld"
-  let result1 = tokenize_pdf_literal(input1.to_string_view())
+  let result1 = tokenize_pdf_literal(input1)
   inspect(ascii_string_of_bytes(result1), content="Hello\\nWorld")
   let input2 = "Tab\\tSeparated"
-  let result2 = tokenize_pdf_literal(input2.to_string_view())
+  let result2 = tokenize_pdf_literal(input2)
   inspect(ascii_string_of_bytes(result2), content="Tab\\tSeparated")
   let input3 = "Backslash\\\\Test"
-  let result3 = tokenize_pdf_literal(input3.to_string_view())
+  let result3 = tokenize_pdf_literal(input3)
   inspect(ascii_string_of_bytes(result3), content="Backslash\\\\Test")
   let input4 = "Parens\\(\\)Test"
-  let result4 = tokenize_pdf_literal(input4.to_string_view())
+  let result4 = tokenize_pdf_literal(input4)
   inspect(ascii_string_of_bytes(result4), content="Parens()Test")
 }
 
@@ -111,17 +111,17 @@ test "tokenize_pdf_literal basic escape sequences" {
 test "tokenize_pdf_literal octal escape sequences" {
   // Test 3-digit octal escape sequences
   let input1 = "Hello\\101World" // \101 is 'A' (65)
-  let result1 = tokenize_pdf_literal(input1.to_string_view())
+  let result1 = tokenize_pdf_literal(input1)
   inspect(ascii_string_of_bytes(result1), content="HelloAWorld")
 
   // Test 2-digit octal escape sequences
   let input2 = "Bell\\07Sound" // \07 is bell character
-  let result2 = tokenize_pdf_literal(input2.to_string_view())
+  let result2 = tokenize_pdf_literal(input2)
   inspect(ascii_string_of_bytes(result2), content="Bell\\007Sound")
 
   // Test 1-digit octal escape sequences
   let input3 = "Null\\0Char" // \0 is null character
-  let result3 = tokenize_pdf_literal(input3.to_string_view())
+  let result3 = tokenize_pdf_literal(input3)
   inspect(ascii_string_of_bytes(result3), content="Null\\000Char")
 }
 
@@ -129,17 +129,17 @@ test "tokenize_pdf_literal octal escape sequences" {
 test "tokenize_pdf_literal end-of-line handling" {
   // Test CRLF conversion to LF
   let input1 = "Line1\r\nLine2"
-  let result1 = tokenize_pdf_literal(input1.to_string_view())
+  let result1 = tokenize_pdf_literal(input1)
   inspect(ascii_string_of_bytes(result1), content="Line1\\nLine2")
 
   // Test CR conversion to LF
   let input2 = "Line1\rLine2"
-  let result2 = tokenize_pdf_literal(input2.to_string_view())
+  let result2 = tokenize_pdf_literal(input2)
   inspect(ascii_string_of_bytes(result2), content="Line1\\nLine2")
 
   // Test LF remains LF
   let input3 = "Line1\nLine2"
-  let result3 = tokenize_pdf_literal(input3.to_string_view())
+  let result3 = tokenize_pdf_literal(input3)
   inspect(ascii_string_of_bytes(result3), content="Line1\\nLine2")
 }
 
@@ -147,17 +147,17 @@ test "tokenize_pdf_literal end-of-line handling" {
 test "tokenize_pdf_literal multi-line continuation" {
   // Test backslash followed by CRLF (should be ignored)
   let input1 = "Line1\\\r\nLine2"
-  let result1 = tokenize_pdf_literal(input1.to_string_view())
+  let result1 = tokenize_pdf_literal(input1)
   inspect(ascii_string_of_bytes(result1), content="Line1Line2")
 
   // Test backslash followed by CR (should be ignored)
   let input2 = "Line1\\\rLine2"
-  let result2 = tokenize_pdf_literal(input2.to_string_view())
+  let result2 = tokenize_pdf_literal(input2)
   inspect(ascii_string_of_bytes(result2), content="Line1Line2")
 
   // Test backslash followed by LF (should be ignored)
   let input3 = "Line1\\\nLine2"
-  let result3 = tokenize_pdf_literal(input3.to_string_view())
+  let result3 = tokenize_pdf_literal(input3)
   inspect(ascii_string_of_bytes(result3), content="Line1Line2")
 }
 
@@ -165,7 +165,7 @@ test "tokenize_pdf_literal multi-line continuation" {
 test "tokenize_pdf_literal complex mixed content" {
   // Test combination of various escape sequences and content
   let input = "Start\\n\\tIndented\\\\Path\\(param\\)\\101nd\\12Bell\\0Null"
-  let result = tokenize_pdf_literal(input.to_string_view())
+  let result = tokenize_pdf_literal(input)
   inspect(
     ascii_string_of_bytes(result),
     content="Start\\n\\tIndented\\\\Path(param)And\\nBell\\000Null",
@@ -176,27 +176,27 @@ test "tokenize_pdf_literal complex mixed content" {
 test "tokenize_pdf_literal edge cases" {
   // Test empty string
   let input1 = ""
-  let result1 = tokenize_pdf_literal(input1.to_string_view())
+  let result1 = tokenize_pdf_literal(input1)
   inspect(ascii_string_of_bytes(result1), content="")
 
   // Test unrecognized escape sequence (backslash should be ignored)
   let input2 = "Test\\zInvalid"
-  let result2 = tokenize_pdf_literal(input2.to_string_view())
+  let result2 = tokenize_pdf_literal(input2)
   inspect(ascii_string_of_bytes(result2), content="TestInvalid")
 
   // Test form feed escape
   let input3 = "Page1\\fPage2"
-  let result3 = tokenize_pdf_literal(input3.to_string_view())
+  let result3 = tokenize_pdf_literal(input3)
   inspect(ascii_string_of_bytes(result3), content="Page1\\fPage2")
 
   // Test backspace escape
   let input4 = "Back\\bSpace"
-  let result4 = tokenize_pdf_literal(input4.to_string_view())
+  let result4 = tokenize_pdf_literal(input4)
   inspect(ascii_string_of_bytes(result4), content="Back\\bSpace")
 
   // Test carriage return escape
   let input5 = "Car\\rReturn"
-  let result5 = tokenize_pdf_literal(input5.to_string_view())
+  let result5 = tokenize_pdf_literal(input5)
   inspect(ascii_string_of_bytes(result5), content="Car\\rReturn")
 }
 
