@@ -1,4 +1,12 @@
-fmt-json: 
-    find . -name *.mod.json -exec npx prettier --write {} \;
-    find . -name *.pkg.json -exec npx prettier --write {} \;
-    
+build:
+  moon test 
+  .mooncakes/moonbitlang/yacc/moonyacc --mode only-tokens parser.mbty -o token_definition.mbt
+  .mooncakes/moonbitlang/yacc/moonyacc --no-comments --external-tokens parser.mbty -o parser_definition.mbt
+
+fmt-json:
+    fd moon.mod.json -x npx prettier --write {}
+    fd moon.pkg.json -x npx prettier --write {}
+
+soft-link-system-prompt:
+  ln -s ../system-prompt/Agents.mbt.md moonbit-system-prompt.md   
+   

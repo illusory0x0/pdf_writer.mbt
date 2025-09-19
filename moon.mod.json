@@ -3,8 +3,12 @@
   "version": "0.1.0",
   "deps": {
     "illusory0x0/fmt": "0.3.4",
-    "moonbitlang/x": "0.4.32",
-    "rami3l/cmark": "0.4.0"
+    "moonbitlang/x": "0.4.34",
+    "rami3l/cmark": "0.4.0",
+    "illusory0x0/lexer": "0.1.0"
+  },
+  "bin-deps": {
+    "moonbitlang/yacc": "0.6.14"
   },
   "readme": "README.md",
   "repository": "https://github.com/illusory0x0/pdf_writer.mbt",
