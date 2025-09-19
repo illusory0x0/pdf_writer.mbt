@@ -1,5 +1,5 @@
 ///|
-pub fn tokenize(input : @string.View) -> Array[(Token, Position, Position)] {
+pub fn tokenize(input : BytesView) -> Array[(Token, Position, Position)] {
   let mut input = input
   let mut start_row = 0
   let mut start_col = 0
@@ -168,7 +168,7 @@ pub fn tokenize(input : @string.View) -> Array[(Token, Position, Position)] {
 }
 
 ///|
-pub fn tokenize_pdf_literal(input : @string.View) -> Bytes {
+pub fn tokenize_pdf_literal(input : BytesView) -> Bytes {
   let buffer = @buffer.new(size_hint=input.length())
   loop input {
     // Escape sequences
