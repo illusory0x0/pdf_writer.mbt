@@ -168,7 +168,7 @@ pub fn tokenize(input : BytesView) -> Array[(Token, Position, Position)] {
 }
 
 ///|
-pub fn tokenize_pdf_literal(input : BytesView) -> Bytes {
+pub fn tokenize_pdf_literal_string(input : BytesView) -> Bytes {
   let buffer = @buffer.new(size_hint=input.length())
   loop input {
     // Escape sequences
@@ -262,5 +262,62 @@ pub fn tokenize_pdf_literal(input : BytesView) -> Bytes {
     }
     // End of input
     [] => buffer.to_bytes()
+  }
+}
+
+///|
+/// 1. whitespace is ignored
+/// 2. missing second hex digit is treated as if followed by 0
+pub fn tokenize_pdf_hexadecimal_string(input : BytesView) -> Bytes {
+  let output = []
+  let mut pending_digit : Int? = None
+  fn hex_byte_to_value(b : Byte) -> Int? {
+    match b {
+      b'0'..=b'9' => Some(b.to_int() - b'0'.to_int())
+      b'A'..=b'F' => Some(b.to_int() - b'A'.to_int() + 10)
+      b'a'..=b'f' => Some(b.to_int() - b'a'.to_int() + 10)
+      _ => None
+    }
+  }
+
+  loop input {
+    // Skip whitespace characters (space, tab, CR, LF)
+    [b' ', .. rest] | [b'\t', .. rest] | [b'\r', .. rest] | [b'\n', .. rest] =>
+      continue rest
+
+    // Process hex digits
+    [b, .. rest] =>
+      match hex_byte_to_value(b) {
+        Some(digit) =>
+          match pending_digit {
+            None => {
+              // First digit of a pair
+              pending_digit = Some(digit)
+              continue rest
+            }
+            Some(first_digit) => {
+              // Second digit of a pair - combine into byte
+              let byte_value = first_digit * 16 + digit
+              output.push(byte_value.to_byte())
+              pending_digit = None
+              continue rest
+            }
+          }
+        None =>
+          // Non-hex character, skip it (could be part of malformed input)
+          continue rest
+      }
+    [] => {
+      // End of input
+      // Handle odd number of hex digits by treating last digit as if followed by 0
+      match pending_digit {
+        Some(digit) => {
+          let byte_value = digit * 16 // digit followed by 0
+          output.push(byte_value.to_byte())
+        }
+        None => ()
+      }
+      Bytes::from_array(output)
+    }
   }
 }
