@@ -50,6 +50,10 @@ pub fn tokenize(input : @string.View) -> Array[(Token, Position, Position)] {
       }
 
       // PDF Comments at end of file (% until end of input without end-of-line)
+      // WARNING: This pattern is NOT redundant with the above pattern!
+      // The above pattern requires a newline after the comment: "%[^\r\n]*(\r\n|\r|\n)"
+      // This pattern handles comments at EOF WITHOUT trailing newlines: "%[^\r\n]*$"
+      // Example: "true % comment" (comment at end with no newline)
       "%[^\r\n]*$", rest =>
         // Comment at end of file, just advance position
         input = rest
