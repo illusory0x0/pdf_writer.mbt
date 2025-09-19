@@ -321,3 +321,79 @@ pub fn tokenize_pdf_hexadecimal_string(input : BytesView) -> Bytes {
     }
   }
 }
+
+///|
+/// 
+/// 1. ASCII printable character 
+/// 2. ASCII non-printable character (0-31) must be escaped as #XX
+/// 
+/// This function excludes the leading `/` character from PDF names
+/// 
+pub fn tokenize_pdf_name(input : BytesView) -> Bytes {
+  // Skip leading `/` if present
+  let actual_input = match input {
+    [b'/', .. rest] => rest
+    _ => input
+  }
+  let buffer = @buffer.new(size_hint=actual_input.length())
+  fn hex_char_to_value(c : Byte) -> Int? {
+    match c {
+      b'0'..=b'9' => Some(c.to_int() - b'0'.to_int())
+      b'A'..=b'F' => Some(c.to_int() - b'A'.to_int() + 10)
+      b'a'..=b'f' => Some(c.to_int() - b'a'.to_int() + 10)
+      _ => None
+    }
+  }
+
+  loop actual_input {
+    // Handle escape sequences (#XX)
+    [b'#', h1, h2, .. rest] =>
+      match (hex_char_to_value(h1), hex_char_to_value(h2)) {
+        (Some(v1), Some(v2)) => {
+          let byte_value = v1 * 16 + v2
+          buffer.write_byte(byte_value.to_byte())
+          continue rest
+        }
+        _ => {
+          // Invalid hex sequence, treat # as literal character
+          buffer.write_byte(b'#')
+          continue [h1, h2, ..rest]
+        }
+      }
+    [
+      b'#',
+
+      // Handle incomplete escape sequence at end
+      h1,
+      .. rest,
+    ] =>
+      match hex_char_to_value(h1) {
+        Some(v1) => {
+          // Incomplete hex sequence, treat as if followed by 0
+          let byte_value = v1 * 16
+          buffer.write_byte(byte_value.to_byte())
+          continue rest
+        }
+        _ => {
+          // Invalid hex character, treat # as literal
+          buffer.write_byte(b'#')
+          continue [h1, ..rest]
+        }
+      }
+    [b'#'] => {
+
+      // Handle lone # at end
+      buffer.write_byte(b'#')
+      continue []
+    }
+
+    // Regular characters
+    [c, .. rest] => {
+      buffer.write_byte(c)
+      continue rest
+    }
+
+    // End of input
+    [] => buffer.to_bytes()
+  }
+}

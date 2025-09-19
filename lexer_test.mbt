@@ -225,3 +225,117 @@ fn ascii_string_of_bytes(bytes : Bytes) -> String {
   }
   buffer.to_string()
 }
+
+///|
+test "tokenize_pdf_name basic characters" {
+  // Test normal ASCII printable characters
+  let input1 = b"SimpleNameTest"
+  let result1 = tokenize_pdf_name(input1[:])
+  inspect(ascii_string_of_bytes(result1), content="SimpleNameTest")
+
+  // Test with numbers and underscores
+  let input2 = b"Name123_Test"
+  let result2 = tokenize_pdf_name(input2[:])
+  inspect(ascii_string_of_bytes(result2), content="Name123_Test")
+
+  // Test empty input
+  let input3 = b""
+  let result3 = tokenize_pdf_name(input3[:])
+  inspect(ascii_string_of_bytes(result3), content="")
+}
+
+///|
+test "tokenize_pdf_name hex escape sequences" {
+  // Test basic hex escape sequences
+  let input1 = b"Name#41Test" // #41 is 'A' (65)
+  let result1 = tokenize_pdf_name(input1[:])
+  inspect(ascii_string_of_bytes(result1), content="NameATest")
+
+  // Test lowercase hex
+  let input2 = b"Name#61Test" // #61 is 'a' (97)
+  let result2 = tokenize_pdf_name(input2[:])
+  inspect(ascii_string_of_bytes(result2), content="NameaTest")
+
+  // Test uppercase hex
+  let input3 = b"Name#4FTest" // #4F is 'O' (79)
+  let result3 = tokenize_pdf_name(input3[:])
+  inspect(ascii_string_of_bytes(result3), content="NameOTest")
+
+  // Test mixed case hex
+  let input4 = b"Name#4fTest" // #4f is 'O' (79)
+  let result4 = tokenize_pdf_name(input4[:])
+  inspect(ascii_string_of_bytes(result4), content="NameOTest")
+}
+
+///|
+test "tokenize_pdf_name special characters" {
+  // Test space escape
+  let input1 = b"Name#20Test" // #20 is space (32)
+  let result1 = tokenize_pdf_name(input1[:])
+  inspect(ascii_string_of_bytes(result1), content="Name Test")
+
+  // Test null character
+  let input2 = b"Name#00Test" // #00 is null (0)
+  let result2 = tokenize_pdf_name(input2[:])
+  inspect(ascii_string_of_bytes(result2), content="Name\\000Test")
+
+  // Test control character
+  let input3 = b"Name#07Test" // #07 is bell (7)
+  let result3 = tokenize_pdf_name(input3[:])
+  inspect(ascii_string_of_bytes(result3), content="Name\\007Test")
+}
+
+///|
+test "tokenize_pdf_name edge cases" {
+  // Test invalid hex sequences (should treat # as literal)
+  let input1 = b"Name#GGTest" // Invalid hex characters
+  let result1 = tokenize_pdf_name(input1[:])
+  inspect(ascii_string_of_bytes(result1), content="Name#GGTest")
+
+  // Test incomplete hex sequence at end
+  let input2 = b"Name#4" // Incomplete, should be treated as #40
+  let result2 = tokenize_pdf_name(input2[:])
+  inspect(ascii_string_of_bytes(result2), content="Name@") // #40 is '@' (64)
+
+  // Test lone # at end
+  let input3 = b"Name#"
+  let result3 = tokenize_pdf_name(input3[:])
+  inspect(ascii_string_of_bytes(result3), content="Name#")
+
+  // Test invalid single hex character
+  let input4 = b"Name#XY" // X is invalid
+  let result4 = tokenize_pdf_name(input4[:])
+  inspect(ascii_string_of_bytes(result4), content="Name#XY")
+}
+
+///|
+test "tokenize_pdf_name complex mixed content" {
+  // Test combination of normal characters and hex escapes
+  let input = b"Page#20Title#28Section#203#29"
+  // #20 = space, #28 = '(', #29 = ')'
+  let result = tokenize_pdf_name(input[:])
+  inspect(ascii_string_of_bytes(result), content="Page Title(Section 3)")
+}
+
+///|
+test "tokenize_pdf_name slash exclusion" {
+  // Test that leading slash is excluded
+  let input_with_slash = b"/TestName"
+  let result_with_slash = tokenize_pdf_name(input_with_slash[:])
+  inspect(ascii_string_of_bytes(result_with_slash), content="TestName")
+  
+  // Test that leading slash is excluded with hex escape
+  let input_with_slash_hex = b"/Test#41Name"
+  let result_with_slash_hex = tokenize_pdf_name(input_with_slash_hex[:])
+  inspect(ascii_string_of_bytes(result_with_slash_hex), content="TestAName")
+  
+  // Test input without slash is unchanged
+  let input_without_slash = b"TestName"
+  let result_without_slash = tokenize_pdf_name(input_without_slash[:])
+  inspect(ascii_string_of_bytes(result_without_slash), content="TestName")
+  
+  // Test edge case: just a slash
+  let input_just_slash = b"/"
+  let result_just_slash = tokenize_pdf_name(input_just_slash[:])
+  inspect(ascii_string_of_bytes(result_just_slash), content="")
+}
