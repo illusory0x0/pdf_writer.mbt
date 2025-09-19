@@ -4,3 +4,5 @@ extend-exclude = ["cmark_pdf/markdown_data.mbt"]
 [default.extend-words]
 Flate = "Flate"
 Parms = "Parms"
+parm = "parm"
+typ = "typ"
