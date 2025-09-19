@@ -63,7 +63,6 @@ fn utf16_string_to_ascii_bytes(s : String) -> Bytes {
   let bytes = FixedArray::make(s.length(), b'?')
   for i in 0..<s.length() {
     let ch = s[i]
-    // TODO: make this function Unicode safe
     if Char::is_ascii(ch.unsafe_to_char()) {
       bytes[i] = ch.to_byte()
     } else {
