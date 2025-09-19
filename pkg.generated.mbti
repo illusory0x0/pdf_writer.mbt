@@ -83,7 +83,7 @@ pub(all) enum GraphicOperator {
   Op_K(Double, Double, Double, Double)
   Op_k(Double, Double, Double, Double)
   Op_sh(Bytes)
-  InlineImage(Object, Object?, FixedArray[Byte])
+  InlineImage(Object, Bytes)
   Op_Do(Bytes)
   Op_MP(Bytes)
   Op_DP(Bytes, Object)

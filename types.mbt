@@ -244,7 +244,18 @@ pub(all) enum GraphicOperator {
   /// shading pattern 
   Op_sh(Bytes)
   /// inline image dictionary, previous decodeparams if any, data 
-  InlineImage(Object, Object?, FixedArray[Byte])
+  ///
+  /// PDF Graphic operator syntax:
+  ///
+  /// ```plaintext
+  /// BI 
+  /// ...key-value-pairs...
+  /// ID
+  /// ...Image data... 
+  /// EI 
+  /// ```
+  /// more details see `ISO 32000-2:2020 (PDF 2.0)` section 8.9.7 `Inline Images`
+  InlineImage(Object, Bytes)
   /// introduce an XObject 
   Op_Do(Bytes)
   /// marked content point 
