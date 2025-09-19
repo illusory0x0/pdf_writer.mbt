@@ -271,15 +271,6 @@ pub fn tokenize_pdf_literal_string(input : BytesView) -> Bytes {
 pub fn tokenize_pdf_hexadecimal_string(input : BytesView) -> Bytes {
   let output = []
   let mut pending_digit : Int? = None
-  fn hex_byte_to_value(b : Byte) -> Int? {
-    match b {
-      b'0'..=b'9' => Some(b.to_int() - b'0'.to_int())
-      b'A'..=b'F' => Some(b.to_int() - b'A'.to_int() + 10)
-      b'a'..=b'f' => Some(b.to_int() - b'a'.to_int() + 10)
-      _ => None
-    }
-  }
-
   loop input {
     // Skip whitespace characters (space, tab, CR, LF)
     [b' ', .. rest] | [b'\t', .. rest] | [b'\r', .. rest] | [b'\n', .. rest] =>
@@ -336,19 +327,10 @@ pub fn tokenize_pdf_name(input : BytesView) -> Bytes {
     _ => input
   }
   let buffer = @buffer.new(size_hint=actual_input.length())
-  fn hex_char_to_value(c : Byte) -> Int? {
-    match c {
-      b'0'..=b'9' => Some(c.to_int() - b'0'.to_int())
-      b'A'..=b'F' => Some(c.to_int() - b'A'.to_int() + 10)
-      b'a'..=b'f' => Some(c.to_int() - b'a'.to_int() + 10)
-      _ => None
-    }
-  }
-
   loop actual_input {
     // Handle escape sequences (#XX)
     [b'#', h1, h2, .. rest] =>
-      match (hex_char_to_value(h1), hex_char_to_value(h2)) {
+      match (hex_byte_to_value(h1), hex_byte_to_value(h2)) {
         (Some(v1), Some(v2)) => {
           let byte_value = v1 * 16 + v2
           buffer.write_byte(byte_value.to_byte())
@@ -367,7 +349,7 @@ pub fn tokenize_pdf_name(input : BytesView) -> Bytes {
       h1,
       .. rest,
     ] =>
-      match hex_char_to_value(h1) {
+      match hex_byte_to_value(h1) {
         Some(v1) => {
           // Incomplete hex sequence, treat as if followed by 0
           let byte_value = v1 * 16
@@ -395,5 +377,15 @@ pub fn tokenize_pdf_name(input : BytesView) -> Bytes {
 
     // End of input
     [] => buffer.to_bytes()
+  }
+}
+
+///|
+fn hex_byte_to_value(c : Byte) -> Int? {
+  match c {
+    b'0'..=b'9' => Some(c.to_int() - b'0'.to_int())
+    b'A'..=b'F' => Some(c.to_int() - b'A'.to_int() + 10)
+    b'a'..=b'f' => Some(c.to_int() - b'a'.to_int() + 10)
+    _ => None
   }
 }
