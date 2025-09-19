@@ -95,14 +95,16 @@ fn Doc::to_graphic_operators(self : Doc) -> Content {
           if cur_cols + len > max_cols {
             // split text not exceeding max_cols
             let split_parts = split_bytes(s, init_cols=cur_cols, max_cols~)
-            // TODO: need refacotr, use pattern match, handle if array only has 1 element, then
-            // we not need `if` condition in the loop
-            for i in 0..<split_parts.length() {
-              if i > 0 {
-                // Move to next line for subsequent parts
-                canvas.next_line()
+            // Handle split parts with pattern matching
+            match split_parts {
+              [] => () // Should not happen, but handle gracefully
+              [first, .. rest] => {
+                canvas.show_text(first)
+                for part in rest {
+                  canvas.next_line()
+                  canvas.show_text(part)
+                }
               }
-              canvas.show_text(split_parts[i])
             }
             // Calculate remaining columns on the last line
             let last_part = split_parts[split_parts.length() - 1]
