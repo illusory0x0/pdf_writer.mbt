@@ -38,9 +38,20 @@ pub fn tokenize(input : @string.View) -> Array[(Token, Position, Position)] {
         input = rest
       }
 
-      // PDF Comments (% until end of line)
-      "%[^\r\n]*", rest =>
-        // Comments are ignored, just advance position
+      // PDF Comments (% until end of line, including the end-of-line marker)
+      // Handles all three PDF end-of-line markers: \r\n, \r, \n
+      "%[^\r\n]*(\r\n|\r|\n)", rest => {
+        // Comments are ignored, advance to next line
+        row += 1
+        col = 0
+        start_row = row
+        start_col = 0
+        input = rest
+      }
+
+      // PDF Comments at end of file (% until end of input without end-of-line)
+      "%[^\r\n]*$", rest =>
+        // Comment at end of file, just advance position
         input = rest
 
       // Dictionary delimiters (must come before < and >)
