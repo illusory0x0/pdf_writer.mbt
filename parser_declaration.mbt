@@ -29,8 +29,11 @@ test {
     #|// PDF end-of-line markers
     #|// `\r`, `\r\n`, `\n`, this can appear in  reverse solidus `\`
     #|// reverse solidus after an end-of-line marker is used for multi-line literal strings
+    #|// if string literal has end-of-line marker, it would be convert to `\n`.
+    #|// This is so toxic rule in PDF specification.
+    #|// you can see two kinds of multi-line string in PDF specification.
     #|
-    #|
+    #|//
     #|// PDF comment:
     #|// starting with a percent sign (%) and continuing to the end of the line
     #|// this comment should ouside a PDF string or inside a content stream.
