@@ -181,7 +181,10 @@ test "array with PDF bounding box" {
   let tokens = tokenize(s)
   let obj = parse(tokens)
   inspect(string_of_pdf_object(obj), content="[72 72 540 720]")
-  @json.inspect(obj, content=(["Array",[["Integer",72],["Integer",72],["Integer",540],["Integer",720]]]))
+  @json.inspect(obj, content=[
+    "Array",
+    [["Integer", 72], ["Integer", 72], ["Integer", 540], ["Integer", 720]],
+  ])
 }
 
 ///|
@@ -190,7 +193,10 @@ test "array with PDF dash pattern" {
   let tokens = tokenize(s)
   let obj = parse(tokens)
   inspect(string_of_pdf_object(obj), content="[3 2 1 4]")
-  @json.inspect(obj, content=(["Array",[["Integer",3],["Integer",2],["Integer",1],["Integer",4]]]))
+  @json.inspect(obj, content=[
+    "Array",
+    [["Integer", 3], ["Integer", 2], ["Integer", 1], ["Integer", 4]],
+  ])
 }
 
 ///|

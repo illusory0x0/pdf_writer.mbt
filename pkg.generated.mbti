@@ -9,7 +9,7 @@ import(
 // Values
 fn ascii_string_of_bytes(Bytes) -> String
 
-fn parse(Array[(Token, Position, Position)], initial_pos? : Position) -> Unit raise ParseError
+fn parse(Array[(Token, Position, Position)], initial_pos? : Position) -> Object raise ParseError
 
 fn tokenize(BytesView) -> Array[(Token, Position, Position)]
 
@@ -158,6 +158,7 @@ pub(all) enum Object {
   Indirect(Int)
 }
 impl @fmt.Format for Object
+impl ToJson for Object
 
 type Parm
 impl ToJson for Parm
@@ -184,6 +185,7 @@ type SourceLocation
 pub(all) struct Stream(Bytes)
 #deprecated
 fn Stream::inner(Self) -> Bytes
+impl ToJson for Stream
 
 type TRUE
 
