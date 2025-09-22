@@ -36,6 +36,9 @@
 
 // PDF Objects:
 
+// Null object, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.9
+%token NULL "null"
+
 // Booleans objects, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.2
 %token TRUE "true"
 %token FALSE "false"
@@ -59,17 +62,40 @@
 // this NAME token contains the leading solidus (/) character
 %token<Bytes> NAME
 
+// Indirect Object, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.10
+%token<INDIRECT> INDIRECT
+
 // Array objects, Dictionary objects and Stream objects aren't terminal symbols.
 
 // here define an EOF token to mark the end of input
-%token EOF 
-
-%left PLUS MINUS
+%token EOF
 
 %% 
 // moonyacc entry point must be declared using `%start <symbol_name>` directive
 // here is the definition of the entry point symbol
-parse  :  
-  |  EOF { $1 }
+parse -> Object :  
+  |  PDF_Array EOF { $1 }
 ;
 
+Atom -> Atom :
+  | NAME { Name($1) }
+  | STRING { String($1) }
+  | INTEGER { Integer($1) }
+  | REAL { Real($1) }
+  | NULL { Null }
+  | TRUE { Boolean(true) }
+  | FALSE { Boolean(false) }
+  | INDIRECT { Indirect($1.object_num) }
+;
+NonEmptyElems -> NonEmptyElems :
+  | Atom { [$1] }
+  | NonEmptyElems Atom { $1.push($2)
+      $1 }
+;
+PDF_Array -> PDF_Array :
+  | LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET { Object::Array([]) }
+  | LEFT_SQUARE_BRACKET NonEmptyElems RIGHT_SQUARE_BRACKET { Array($2) }
+;
+
+
+%%

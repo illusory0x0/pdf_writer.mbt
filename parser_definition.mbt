@@ -14,13 +14,25 @@ priv suberror YYObj_Void
 priv suberror YYObj_Int Int
 
 ///|
-priv suberror YYObj_Unit Unit
+priv suberror YYObj_Atom Atom
 
 ///|
 priv suberror YYObj_Bytes Bytes
 
 ///|
 priv suberror YYObj_Double Double
+
+///|
+priv suberror YYObj_Object Object
+
+///|
+priv suberror YYObj_INDIRECT INDIRECT
+
+///|
+priv suberror YYObj_PDF_Array PDF_Array
+
+///|
+priv suberror YYObj_NonEmptyElems NonEmptyElems
 
 ///|
 typealias (YYSymbol) -> YYDecision as YYState
@@ -50,14 +62,19 @@ priv enum YYSymbol {
   T_SOLIDUS
   T_DICT_BEGIN
   T_DICT_END
+  T_NULL
   T_TRUE
   T_FALSE
   T_INTEGER
   T_REAL
   T_STRING
   T_NAME
+  T_INDIRECT
   T_EOF
   NT_parse
+  NT_Atom
+  NT_NonEmptyElems
+  NT_PDF_Array
   EOI
 }
 
@@ -72,18 +89,221 @@ fn init {
 }
 
 // file:///./parser.mbty
-// 73|     EOF { $1 }
+// 77|     PDF_Array EOF { $1 }
 
 ///|
 fn yy_action_0(
   _last_pos : Position,
   _args : ArrayView[(YYObj, Position, Position)],
 ) -> YYObj {
-  let _dollar1 = ()
-  YYObj_Unit(
+  guard _args[0].0 is YYObj_PDF_Array(_dollar1)
+  YYObj_Object(
     {
       ()
       _dollar1
+    },
+  )
+}
+
+// file:///./parser.mbty
+// 91|    Atom { [$1] }
+
+///|
+fn yy_action_1(
+  _last_pos : Position,
+  _args : ArrayView[(YYObj, Position, Position)],
+) -> YYObj {
+  guard _args[0].0 is YYObj_Atom(_dollar1)
+  YYObj_NonEmptyElems(
+    {
+      ()
+      [_dollar1]
+    },
+  )
+}
+
+// file:///./parser.mbty
+// 81|    NAME { Name($1) }
+
+///|
+fn yy_action_2(
+  _last_pos : Position,
+  _args : ArrayView[(YYObj, Position, Position)],
+) -> YYObj {
+  guard _args[0].0 is YYObj_Bytes(_dollar1)
+  YYObj_Atom(
+    {
+      ()
+      Name(_dollar1)
+    },
+  )
+}
+
+// file:///./parser.mbty
+// 82|    STRING { String($1) }
+
+///|
+fn yy_action_3(
+  _last_pos : Position,
+  _args : ArrayView[(YYObj, Position, Position)],
+) -> YYObj {
+  guard _args[0].0 is YYObj_Bytes(_dollar1)
+  YYObj_Atom(
+    {
+      ()
+      String(_dollar1)
+    },
+  )
+}
+
+// file:///./parser.mbty
+// 83|    INTEGER { Integer($1) }
+
+///|
+fn yy_action_4(
+  _last_pos : Position,
+  _args : ArrayView[(YYObj, Position, Position)],
+) -> YYObj {
+  guard _args[0].0 is YYObj_Int(_dollar1)
+  YYObj_Atom(
+    {
+      ()
+      Integer(_dollar1)
+    },
+  )
+}
+
+// file:///./parser.mbty
+// 84|    REAL { Real($1) }
+
+///|
+fn yy_action_5(
+  _last_pos : Position,
+  _args : ArrayView[(YYObj, Position, Position)],
+) -> YYObj {
+  guard _args[0].0 is YYObj_Double(_dollar1)
+  YYObj_Atom(
+    {
+      ()
+      Real(_dollar1)
+    },
+  )
+}
+
+// file:///./parser.mbty
+// 85|    NULL { Null }
+
+///|
+fn yy_action_6(
+  _last_pos : Position,
+  _args : ArrayView[(YYObj, Position, Position)],
+) -> YYObj {
+  YYObj_Atom(
+    {
+      ()
+      Null
+    },
+  )
+}
+
+// file:///./parser.mbty
+// 86|    TRUE { Boolean(true) }
+
+///|
+fn yy_action_7(
+  _last_pos : Position,
+  _args : ArrayView[(YYObj, Position, Position)],
+) -> YYObj {
+  YYObj_Atom(
+    {
+      ()
+      Boolean(true)
+    },
+  )
+}
+
+// file:///./parser.mbty
+// 87|    FALSE { Boolean(false) }
+
+///|
+fn yy_action_8(
+  _last_pos : Position,
+  _args : ArrayView[(YYObj, Position, Position)],
+) -> YYObj {
+  YYObj_Atom(
+    {
+      ()
+      Boolean(false)
+    },
+  )
+}
+
+// file:///./parser.mbty
+// 88|    INDIRECT { Indirect($1.object_num) }
+
+///|
+fn yy_action_9(
+  _last_pos : Position,
+  _args : ArrayView[(YYObj, Position, Position)],
+) -> YYObj {
+  guard _args[0].0 is YYObj_INDIRECT(_dollar1)
+  YYObj_Atom(
+    {
+      ()
+      Indirect(_dollar1.object_num)
+    },
+  )
+}
+
+// file:///./parser.mbty
+// 92|    NonEmptyElems Atom { $1.push($2)
+// 93|      $1 }
+
+///|
+fn yy_action_10(
+  _last_pos : Position,
+  _args : ArrayView[(YYObj, Position, Position)],
+) -> YYObj {
+  guard _args[0].0 is YYObj_NonEmptyElems(_dollar1)
+  guard _args[1].0 is YYObj_Atom(_dollar2)
+  YYObj_NonEmptyElems(
+    {
+      ()
+      _dollar1.push(_dollar2)
+      _dollar1
+    },
+  )
+}
+
+// file:///./parser.mbty
+// 97|    LEFT_SQUARE_BRACKET NonEmptyElems RIGHT_SQUARE_BRACKET { Array($2) }
+
+///|
+fn yy_action_11(
+  _last_pos : Position,
+  _args : ArrayView[(YYObj, Position, Position)],
+) -> YYObj {
+  guard _args[1].0 is YYObj_NonEmptyElems(_dollar2)
+  YYObj_PDF_Array(
+    {
+      ()
+      Array(_dollar2)
+    },
+  )
+}
+
+// file:///./parser.mbty
+// 96|    LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET { Object::Array([]) }
+
+///|
+fn yy_action_12(
+  _last_pos : Position,
+  _args : ArrayView[(YYObj, Position, Position)],
+) -> YYObj {
+  YYObj_PDF_Array(
+    {
+      ()
+      Object::Array([])
     },
   )
 }
@@ -106,12 +326,14 @@ fn yy_input(
     SOLIDUS => (T_SOLIDUS, YYObj_Void)
     DICT_BEGIN => (T_DICT_BEGIN, YYObj_Void)
     DICT_END => (T_DICT_END, YYObj_Void)
+    NULL => (T_NULL, YYObj_Void)
     TRUE => (T_TRUE, YYObj_Void)
     FALSE => (T_FALSE, YYObj_Void)
     INTEGER(data) => (T_INTEGER, YYObj_Int(data))
     REAL(data) => (T_REAL, YYObj_Double(data))
     STRING(data) => (T_STRING, YYObj_Bytes(data))
     NAME(data) => (T_NAME, YYObj_Bytes(data))
+    INDIRECT(data) => (T_INDIRECT, YYObj_INDIRECT(data))
     EOF => (T_EOF, YYObj_Void)
   }
 }
@@ -120,7 +342,8 @@ fn yy_input(
 fn yy_state_0(_lookahead : YYSymbol) -> YYDecision {
   match _lookahead {
     NT_parse => Shift(yy_state_1)
-    T_EOF => Shift(yy_state_2)
+    T_LEFT_SQUARE_BRACKET => Shift(yy_state_2)
+    NT_PDF_Array => Shift(yy_state_16)
     _ => Error
   }
 }
@@ -132,7 +355,110 @@ fn yy_state_1(_lookahead : YYSymbol) -> YYDecision {
 
 ///|
 fn yy_state_2(_lookahead : YYSymbol) -> YYDecision {
-  ReduceNoLookahead(1, NT_parse, yy_action_0)
+  match _lookahead {
+    T_RIGHT_SQUARE_BRACKET => Shift(yy_state_3)
+    NT_NonEmptyElems => Shift(yy_state_4)
+    T_INDIRECT => Shift(yy_state_7)
+    T_FALSE => Shift(yy_state_8)
+    T_TRUE => Shift(yy_state_9)
+    T_NULL => Shift(yy_state_10)
+    T_REAL => Shift(yy_state_11)
+    T_INTEGER => Shift(yy_state_12)
+    T_STRING => Shift(yy_state_13)
+    T_NAME => Shift(yy_state_14)
+    NT_Atom => Shift(yy_state_15)
+    _ => Error
+  }
+}
+
+///|
+fn yy_state_3(_lookahead : YYSymbol) -> YYDecision {
+  ReduceNoLookahead(2, NT_PDF_Array, yy_action_12)
+}
+
+///|
+fn yy_state_4(_lookahead : YYSymbol) -> YYDecision {
+  match _lookahead {
+    T_RIGHT_SQUARE_BRACKET => Shift(yy_state_5)
+    NT_Atom => Shift(yy_state_6)
+    T_INDIRECT => Shift(yy_state_7)
+    T_FALSE => Shift(yy_state_8)
+    T_TRUE => Shift(yy_state_9)
+    T_NULL => Shift(yy_state_10)
+    T_REAL => Shift(yy_state_11)
+    T_INTEGER => Shift(yy_state_12)
+    T_STRING => Shift(yy_state_13)
+    T_NAME => Shift(yy_state_14)
+    _ => Error
+  }
+}
+
+///|
+fn yy_state_5(_lookahead : YYSymbol) -> YYDecision {
+  ReduceNoLookahead(3, NT_PDF_Array, yy_action_11)
+}
+
+///|
+fn yy_state_6(_lookahead : YYSymbol) -> YYDecision {
+  ReduceNoLookahead(2, NT_NonEmptyElems, yy_action_10)
+}
+
+///|
+fn yy_state_7(_lookahead : YYSymbol) -> YYDecision {
+  ReduceNoLookahead(1, NT_Atom, yy_action_9)
+}
+
+///|
+fn yy_state_8(_lookahead : YYSymbol) -> YYDecision {
+  ReduceNoLookahead(1, NT_Atom, yy_action_8)
+}
+
+///|
+fn yy_state_9(_lookahead : YYSymbol) -> YYDecision {
+  ReduceNoLookahead(1, NT_Atom, yy_action_7)
+}
+
+///|
+fn yy_state_10(_lookahead : YYSymbol) -> YYDecision {
+  ReduceNoLookahead(1, NT_Atom, yy_action_6)
+}
+
+///|
+fn yy_state_11(_lookahead : YYSymbol) -> YYDecision {
+  ReduceNoLookahead(1, NT_Atom, yy_action_5)
+}
+
+///|
+fn yy_state_12(_lookahead : YYSymbol) -> YYDecision {
+  ReduceNoLookahead(1, NT_Atom, yy_action_4)
+}
+
+///|
+fn yy_state_13(_lookahead : YYSymbol) -> YYDecision {
+  ReduceNoLookahead(1, NT_Atom, yy_action_3)
+}
+
+///|
+fn yy_state_14(_lookahead : YYSymbol) -> YYDecision {
+  ReduceNoLookahead(1, NT_Atom, yy_action_2)
+}
+
+///|
+fn yy_state_15(_lookahead : YYSymbol) -> YYDecision {
+  ReduceNoLookahead(1, NT_NonEmptyElems, yy_action_1)
+}
+
+///|
+fn yy_state_16(_lookahead : YYSymbol) -> YYDecision {
+  match _lookahead {
+    T_EOF => Shift(yy_state_17)
+    _ => Error
+  }
+}
+
+///|
+fn yy_state_17(_lookahead : YYSymbol) -> YYDecision {
+  ReduceNoLookahead(2, NT_parse, yy_action_0)
 }
 
 ///|
@@ -271,12 +597,14 @@ fn error(
         (T_SOLIDUS, TK_SOLIDUS),
         (T_DICT_BEGIN, TK_DICT_BEGIN),
         (T_DICT_END, TK_DICT_END),
+        (T_NULL, TK_NULL),
         (T_TRUE, TK_TRUE),
         (T_FALSE, TK_FALSE),
         (T_INTEGER, TK_INTEGER),
         (T_REAL, TK_REAL),
         (T_STRING, TK_STRING),
         (T_NAME, TK_NAME),
+        (T_INDIRECT, TK_INDIRECT),
         (T_EOF, TK_EOF),
       ] : Array[(YYSymbol, TokenKind)]) {
     try_add(term.0, term.1)
@@ -291,12 +619,12 @@ fn error(
 pub fn parse(
   tokens : Array[(Token, Position, Position)],
   initial_pos? : Position,
-) -> Unit raise ParseError {
+) -> Object raise ParseError {
   yy_parse(
     tokens,
     yy_state_0,
     it => {
-      guard it is YYObj_Unit(result)
+      guard it is YYObj_Object(result)
       result
     },
     initial_pos?,

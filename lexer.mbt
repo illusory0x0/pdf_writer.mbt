@@ -78,6 +78,10 @@ pub fn tokenize(input : BytesView) -> Array[(Token, Position, Position)] {
         push(FALSE, 5)
         input = rest
       }
+      "null", rest => {
+        push(NULL, 4)
+        input = rest
+      }
 
       // Real numbers (must come before integers to catch decimals)
       // Matches: 123.456, .456, 123., 123.456E10, 123E-5, -123.456, +123.456
@@ -152,6 +156,11 @@ pub fn tokenize(input : BytesView) -> Array[(Token, Position, Position)] {
       }
       "/", rest => {
         push(SOLIDUS, 1)
+        input = rest
+      }
+      "\d+[ \t]+\d+[ \t]+R" as s, rest => {
+        let indirect = tokenize_pdf_indirect(s)
+        push(INDIRECT(indirect), s.length())
         input = rest
       }
 
@@ -395,4 +404,71 @@ fn hex_byte_to_value(c : Byte) -> Int? {
     b'a'..=b'f' => Some(c.to_int() - b'a'.to_int() + 10)
     _ => None
   }
+}
+
+///|
+/// Parse PDF indirect object reference of the form "obj_num gen_num R"
+/// Example: "123 0 R" -> INDIRECT { object_num: 123, generation_num: 0 }
+fn tokenize_pdf_indirect(input : BytesView) -> INDIRECT {
+  // Split the input by whitespace and extract the numbers
+  let mut object_num = 0
+  let mut generation_num = 0
+  let mut current_number = 0
+  let mut parsing_first = true
+  let mut parsing_number = false
+  loop input {
+    // Skip whitespace and find numbers
+    [b' ', .. rest] | [b'\t', .. rest] => {
+      if parsing_number {
+        // Finished parsing a number
+        if parsing_first {
+          object_num = current_number
+          parsing_first = false
+        } else {
+          generation_num = current_number
+          break // We have both numbers, ignore the rest (should be 'R')
+        }
+        current_number = 0
+        parsing_number = false
+      }
+      continue rest
+    }
+
+    // Parse digit characters
+    [b'0'..=b'9' as digit, .. rest] => {
+      parsing_number = true
+      current_number = current_number * 10 + (digit.to_int() - b'0'.to_int())
+      continue rest
+    }
+
+    // Skip 'R' character and any other characters
+    [_, .. rest] => {
+      if parsing_number {
+        // Finished parsing a number
+        if parsing_first {
+          object_num = current_number
+          parsing_first = false
+        } else {
+          generation_num = current_number
+          break // We have both numbers
+        }
+        current_number = 0
+        parsing_number = false
+      }
+      continue rest
+    }
+
+    // End of input
+    [] => {
+      if parsing_number {
+        if parsing_first {
+          object_num = current_number
+        } else {
+          generation_num = current_number
+        }
+      }
+      break
+    }
+  }
+  INDIRECT::{ object_num, generation_num }
 }

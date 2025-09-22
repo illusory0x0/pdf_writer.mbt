@@ -34,6 +34,14 @@ pub impl Show for Token with output(self, logger) {
       logger.write_string(value |> ascii_string_of_bytes)
       logger.write_string(")")
     }
+    INDIRECT(value) => {
+      logger.write_string("INDIRECT(")
+      logger.write_string(value.object_num.to_string())
+      logger.write_string(", ")
+      logger.write_string(value.generation_num.to_string())
+      logger.write_string(")")
+    }
     EOF => logger.write_string("EOF")
+    NULL => logger.write_string("NULL")
   }
 }

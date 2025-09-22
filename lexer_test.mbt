@@ -666,28 +666,7 @@ test "tokenize complex pdf document structure" {
   ]
 
   // Convert to string representation for easier comparison
-  let token_strings = tokens.map(fn(token) {
-    match token {
-      TRUE => "TRUE"
-      FALSE => "FALSE"
-      LEFT_PARENTHESIS => "LEFT_PARENTHESIS"
-      RIGHT_PARENTHESIS => "RIGHT_PARENTHESIS"
-      LEFT_CURLY_BRACE => "LEFT_CURLY_BRACE"
-      RIGHT_CURLY_BRACE => "RIGHT_CURLY_BRACE"
-      LEFT_SQUARE_BRACKET => "LEFT_SQUARE_BRACKET"
-      RIGHT_SQUARE_BRACKET => "RIGHT_SQUARE_BRACKET"
-      LESS_THAN_SIGN => "LESS_THAN_SIGN"
-      GREATER_THAN_SIGN => "GREATER_THAN_SIGN"
-      SOLIDUS => "SOLIDUS"
-      DICT_BEGIN => "DICT_BEGIN"
-      DICT_END => "DICT_END"
-      INTEGER(n) => "INTEGER(\{n})"
-      REAL(r) => "REAL(\{r})"
-      STRING(s) => "STRING(\{ascii_string_of_bytes(s)})"
-      NAME(n) => "NAME(\{ascii_string_of_bytes(n)})"
-      EOF => "EOF"
-    }
-  })
+  let token_strings = tokens.map(Token::to_string)
   inspect(
     token_strings,
     content=(
@@ -779,6 +758,40 @@ test "tokenize error resilience" {
   inspect(
     tokens,
     content="[TRUE, LEFT_PARENTHESIS, NAME(name), INTEGER(123), FALSE, EOF]",
+  )
+}
+
+///|
+test "tokenize pdf indirect object references" {
+  // Test basic indirect object reference
+  let input1 = b"123 0 R"
+  let tokens1 = tokenize(input1).map(triple => triple.0)
+  inspect(tokens1, content="[INDIRECT(123, 0), EOF]")
+
+  // Test indirect reference with different numbers
+  let input2 = b"456 17 R"
+  let tokens2 = tokenize(input2).map(triple => triple.0)
+  inspect(tokens2, content="[INDIRECT(456, 17), EOF]")
+
+  // Test multiple indirect references
+  let input3 = b"1 0 R 2 0 R 3 5 R"
+  let tokens3 = tokenize(input3).map(triple => triple.0)
+  inspect(
+    tokens3,
+    content="[INDIRECT(1, 0), INDIRECT(2, 0), INDIRECT(3, 5), EOF]",
+  )
+
+  // Test indirect reference with extra whitespace
+  let input4 = b"789  \t 42  \t R"
+  let tokens4 = tokenize(input4).map(triple => triple.0)
+  inspect(tokens4, content="[INDIRECT(789, 42), EOF]")
+
+  // Test mixed content with indirect references
+  let input5 = b"/Parent 3 0 R /Contents 5 0 R"
+  let tokens5 = tokenize(input5).map(triple => triple.0)
+  inspect(
+    tokens5,
+    content="[NAME(Parent), INDIRECT(3, 0), NAME(Contents), INDIRECT(5, 0), EOF]",
   )
 }
 

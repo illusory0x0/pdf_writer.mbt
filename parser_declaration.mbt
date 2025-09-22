@@ -39,6 +39,9 @@ test {
     #|
     #|// PDF Objects:
     #|
+    #|// Null object, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.9
+    #|%token NULL "null"
+    #|
     #|// Booleans objects, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.2
     #|%token TRUE "true"
     #|%token FALSE "false"
@@ -62,36 +65,64 @@ test {
     #|// this NAME token contains the leading solidus (/) character
     #|%token<Bytes> NAME
     #|
+    #|// Indirect Object, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.10
+    #|%token<INDIRECT> INDIRECT
+    #|
     #|// Array objects, Dictionary objects and Stream objects aren't terminal symbols.
     #|
     #|// here define an EOF token to mark the end of input
-    #|%token EOF 
-    #|
-    #|%left PLUS MINUS
+    #|%token EOF
     #|
     #|%% 
     #|// moonyacc entry point must be declared using `%start <symbol_name>` directive
     #|// here is the definition of the entry point symbol
-    #|parse  :  
-    #|  |  EOF { $1 }
+    #|parse -> Object :  
+    #|  |  PDF_Array EOF { $1 }
     #|;
     #|
     #|
-  // let expr = [
-  //   rule(fn(lhs : Expr, _ : PLUS, rhs : Expr) -> Expr { Expr::Add(lhs, rhs) }),
-  //   rule(fn(lhs : Expr, _ : MINUS, rhs : Expr) -> Expr { Expr::Minus(lhs, rhs) }),
-  //   rule(fn(value : INT) -> Expr { Expr::LInt(value) }),
-  // ]
   let path = current_source_location().path.replace(
     old="parser_declaration.mbt",
     new="parser.mbty",
   )
   let buffer = StringBuilder::new()
+  let atom = [
+    rule(fn(val : NAME) -> Atom { Name(val) }),
+    rule(fn(val : STRING) -> Atom { String(val) }),
+    rule(fn(val : INTEGER) -> Atom { Integer(val) }),
+    rule(fn(val : REAL) -> Atom { Real(val) }),
+    rule(fn(val : NULL) -> Atom { Null }),
+    rule(fn(val : TRUE) -> Atom { Boolean(true) }),
+    rule(fn(val : FALSE) -> Atom { Boolean(false) }),
+    rule(fn(val : INDIRECT) -> Atom { Indirect(val.object_num) }),
+  ]
+  let array_non_empty_elems = [
+    rule(fn(val : Atom) -> NonEmptyElems { [val] }),
+    rule(fn(acc : NonEmptyElems, val : Atom) -> NonEmptyElems {
+      acc.push(val)
+      acc
+    }),
+  ]
+  let pdf_array = [
+    // Array([]])
+    rule(fn(_ : LEFT_SQUARE_BRACKET, _ : RIGHT_SQUARE_BRACKET) -> PDF_Array {
+      Object::Array([])
+    }),
+    rule(fn(
+      _ : LEFT_SQUARE_BRACKET,
+      array : NonEmptyElems,
+      _ : RIGHT_SQUARE_BRACKET,
+    ) -> PDF_Array {
+      Array(array)
+    }),
+  ]
+  let non_terminal_symbols = [atom, array_non_empty_elems, pdf_array]
 
-  // // dump the non-terminal declaration to the buffer
+  // dump the non-terminal declaration to the buffer
   buffer.write_string(token_decl)
-  // buffer.write_string(NonTerminal::from(expr).emit())
-  // buffer.write_string("\n")
-
+  for non_terminal in non_terminal_symbols {
+    buffer.write_string(NonTerminal::from(non_terminal).emit())
+  }
+  buffer.write_string("\n\n%%\n")
   try! @fs.write_string_to_file(path, buffer.to_string())
 }
