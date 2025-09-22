@@ -104,3 +104,12 @@ typealias Array[Atom] as NonEmptyElems
 
 ///|
 typealias Object as PDF_Array
+
+///|
+typealias Object as PDF_Dict
+
+///|
+typealias Array[(NAME, Object)] as DictEntries
+
+///|
+typealias Object as PDF_Obj
