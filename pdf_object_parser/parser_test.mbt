@@ -1,5 +1,10 @@
 ///|
-fn string_of_pdf_object(obj : Object) -> String {
+fn bytes_of_memory(mem : @fmt.Memory, len : Int) -> Bytes {
+  Bytes::makei(len, i => mem[i])
+}
+
+///|
+fn string_of_pdf_object(obj : @pdf.Object) -> String {
   let buf = @fmt.Memory::make(@fmt.Format::count(obj), 0)
   let ofs = @fmt.Format::write(obj, buf, 0)
   let bytes = bytes_of_memory(buf, ofs)
@@ -408,6 +413,43 @@ test "dictionary with indirect references" {
       ["Contents", ["Indirect", 2]],
       ["Resources", ["Indirect", 3]],
     ],
+  ])
+}
+
+///|
+test "dictionary with image XObject structure" {
+  let s = b"<< /Type /XObject /Subtype /Image /Width 100 /Height 200 /BitsPerComponent 8 /ColorSpace /DeviceRGB >>"
+  let tokens = tokenize(s)
+  let obj = parse(tokens)
+  inspect(
+    string_of_pdf_object(obj),
+    content="<<\\n  Type XObject  \\n  Subtype Image  \\n  Width 100  \\n  Height 200  \\n  BitsPerComponent 8  \\n  ColorSpace DeviceRGB\\n>>",
+  )
+  @json.inspect(obj, content=[
+    "Dictionary",
+    [
+      ["Type", ["Name", "XObject"]],
+      ["Subtype", ["Name", "Image"]],
+      ["Width", ["Integer", 100]],
+      ["Height", ["Integer", 200]],
+      ["BitsPerComponent", ["Integer", 8]],
+      ["ColorSpace", ["Name", "DeviceRGB"]],
+    ],
+  ])
+}
+
+///|
+test "dictionary with empty strings" {
+  let s = b"<< /EmptyString <> /NonEmpty <48656C6C6F> >>"
+  let tokens = tokenize(s)
+  let obj = parse(tokens)
+  inspect(
+    string_of_pdf_object(obj),
+    content="<<\\n  EmptyString ()  \\n  NonEmpty (Hello)\\n>>",
+  )
+  @json.inspect(obj, content=[
+    "Dictionary",
+    [["EmptyString", ["String", ""]], ["NonEmpty", ["String", "Hello"]]],
   ])
 }
 

@@ -1,18 +1,18 @@
 ///|
 #callsite(autofill(loc))
-fn[Action] rule(action : Action, loc~ : SourceLoc) -> SourceLocation {
+pub fn[Action] rule(action : Action, loc~ : SourceLoc) -> SourceLocation {
   ignore(action)
   loc.to_string() |> SourceLocation::from_string
 }
 
 ///|
 #callsite(autofill(loc))
-fn current_source_location(loc~ : SourceLoc) -> SourceLocation {
+pub fn current_source_location(loc~ : SourceLoc) -> SourceLocation {
   loc.to_string() |> SourceLocation::from_string
 }
 
 ///|
-struct SourceLocation {
+pub struct SourceLocation {
   path : String
   start_row : Int
   start_col : Int
@@ -21,7 +21,7 @@ struct SourceLocation {
 }
 
 ///|
-fn SourceLocation::from_string(s : String) -> SourceLocation {
+pub fn SourceLocation::from_string(s : String) -> SourceLocation {
   // Parse strings like "/path/to/file.mbt:14:5-16:68" or "/path/to/file.mbt:14:5"
 
   // Helper function to find the colon that separates path from line:col
@@ -162,7 +162,7 @@ fn SourceLocation::from_string(s : String) -> SourceLocation {
 }
 
 ///|
-fn read_code_snippet(loc : SourceLocation) -> String raise {
+pub fn read_code_snippet(loc : SourceLocation) -> String raise {
   let file = @fs.read_file_to_string(loc.path)
 
   // Split file content into lines and convert to array
@@ -255,7 +255,7 @@ fn read_code_snippet(loc : SourceLocation) -> String raise {
 }
 
 ///|
-fn SourceLocation::split_file(
+pub fn SourceLocation::split_file(
   file : String,
   locs : Array[SourceLocation],
 ) -> Array[StringView] {
@@ -388,20 +388,20 @@ test "SourceLocation::split_file" {
 }
 
 ///|
-struct Parm {
+pub struct Parm {
   name : String
   typ : String
 } derive(ToJson, @json.FromJson)
 
 ///|
-struct Func {
+pub struct Func {
   parms : Array[Parm]
   rslt_typ : String
   body : String
 } derive(ToJson, @json.FromJson)
 
 ///|
-fn Func::parse(s : StringView) -> Func {
+pub fn Func::parse(s : StringView) -> Func {
   let parm_typ : Array[Parm] = []
   let mut rslt_typ = ""
   let mut body = ""
@@ -520,7 +520,7 @@ fn Func::parse(s : StringView) -> Func {
 /// result type is correspond to production rule's name which introduce non-terminal symbol.
 /// 
 /// 
-fn Func::to_production_rule(typ : Func) -> String {
+pub fn Func::to_production_rule(typ : Func) -> String {
   // Build the parameter types for the production rule
   let rule_parts : Array[String] = []
   for parm in typ.parms {
@@ -545,7 +545,7 @@ fn Func::to_production_rule(typ : Func) -> String {
 /// 
 /// Return the non-terminal symbol name which is correspond to production rule's name.
 ///
-fn Func::name(self : Func) -> String {
+pub fn Func::name(self : Func) -> String {
   self.rslt_typ
 }
 
@@ -555,12 +555,12 @@ fn Func::name(self : Func) -> String {
 /// 
 /// `Array[Func]` is production rules for every case of non-terminal symbol.
 ///
-struct NonTerminal(Array[Func]) derive(ToJson, @json.FromJson)
+pub struct NonTerminal(Array[Func]) derive(ToJson, @json.FromJson)
 
 ///|
 /// check all production rules have same result type which also means has the same non-terminal symbol name.
 /// 
-fn NonTerminal::emit(self : NonTerminal) -> String {
+pub fn NonTerminal::emit(self : NonTerminal) -> String {
   if self.0.is_empty() {
     return ""
   }
@@ -580,7 +580,7 @@ fn NonTerminal::emit(self : NonTerminal) -> String {
 }
 
 ///|
-fn NonTerminal::from(symbols : Array[SourceLocation]) -> NonTerminal raise {
+pub fn NonTerminal::from(symbols : Array[SourceLocation]) -> NonTerminal raise {
   // Guard: check that all symbols have the same path
   if symbols.length() > 0 {
     let first_path = symbols[0].path

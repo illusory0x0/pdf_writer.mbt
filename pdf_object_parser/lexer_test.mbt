@@ -1,4 +1,7 @@
 ///|
+fnalias @pdf.ascii_string_of_bytes
+
+///|
 test "PDF comment lexing with different end-of-line markers" {
   // Test PDF comments with \r\n (CRLF)
   let input1 = b"% This is a comment\r\ntrue"

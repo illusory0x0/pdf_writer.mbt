@@ -1,4 +1,10 @@
 ///|
+fnalias @edsl_parser.rule
+
+///|
+typealias @edsl_parser.NonTerminal
+
+///|
 test {
   let token_decl =
     #|%derive<Eq> TokenKind 
@@ -81,7 +87,7 @@ test {
     #|;
     #|
     #|
-  let path = current_source_location().path.replace(
+  let path = @edsl_parser.current_source_location().path.replace(
     old="parser_declaration.mbt",
     new="parser.mbty",
   )
