@@ -76,8 +76,8 @@ test {
     #|%% 
     #|// moonyacc entry point must be declared using `%start <symbol_name>` directive
     #|// here is the definition of the entry point symbol
-    #|parse -> Object :  
-    #|  |  PDF_Array EOF { $1 }
+    #|parse -> PDF_Obj :  
+    #|  |  PDF_Obj EOF { $1 }
     #|;
     #|
     #|
@@ -116,7 +116,29 @@ test {
       Array(array)
     }),
   ]
-  let non_terminal_symbols = [atom, array_non_empty_elems, pdf_array]
+  let pdf_dict_entries = [
+    rule(fn(key : NAME, value : Atom) -> DictEntries { [(key, value)] }),
+    rule(fn(acc : DictEntries, key : NAME, value : Atom) -> DictEntries {
+      acc.push((key, value))
+      acc
+    }),
+  ]
+  let pdf_dict = [
+    // Dictionary with no entries: << >>
+    rule(fn(_ : DICT_BEGIN, _ : DICT_END) -> PDF_Dict { Object::Dictionary([]) }),
+    // Dictionary with entries: << /Key1 Value1 /Key2 Value2 ... >>
+    rule(fn(_ : DICT_BEGIN, entries : DictEntries, _ : DICT_END) -> PDF_Dict {
+      Object::Dictionary(entries)
+    }),
+  ]
+  let pdf_obj = [
+    rule(fn(val : Atom) -> PDF_Obj { val }),
+    rule(fn(val : PDF_Array) -> PDF_Obj { val }),
+    rule(fn(val : PDF_Dict) -> PDF_Obj { val }),
+  ]
+  let non_terminal_symbols = [
+    pdf_obj, atom, array_non_empty_elems, pdf_array, pdf_dict_entries, pdf_dict,
+  ]
 
   // dump the non-terminal declaration to the buffer
   buffer.write_string(token_decl)
