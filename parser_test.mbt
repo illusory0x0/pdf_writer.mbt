@@ -434,43 +434,6 @@ test "dictionary with image XObject structure" {
 }
 
 ///|
-test "dictionary with empty strings" {
-  let s = b"<< /EmptyString <> /NonEmpty <48656C6C6F> >>"
-  let tokens = tokenize(s)
-  let obj = parse(tokens)
-  inspect(
-    string_of_pdf_object(obj),
-    content="<<\\n  EmptyString ()  \\n  NonEmpty (Hello)\\n>>",
-  )
-  @json.inspect(obj, content=[
-    "Dictionary",
-    [["EmptyString", ["String", ""]], ["NonEmpty", ["String", "Hello"]]],
-  ])
-}
-
-///|
-test "dictionary with image XObject structure" {
-  let s = b"<< /Type /XObject /Subtype /Image /Width 100 /Height 200 /BitsPerComponent 8 /ColorSpace /DeviceRGB >>"
-  let tokens = tokenize(s)
-  let obj = parse(tokens)
-  inspect(
-    string_of_pdf_object(obj),
-    content="<<\\n  Type XObject  \\n  Subtype Image  \\n  Width 100  \\n  Height 200  \\n  BitsPerComponent 8  \\n  ColorSpace DeviceRGB\\n>>",
-  )
-  @json.inspect(obj, content=[
-    "Dictionary",
-    [
-      ["Type", ["Name", "XObject"]],
-      ["Subtype", ["Name", "Image"]],
-      ["Width", ["Integer", 100]],
-      ["Height", ["Integer", 200]],
-      ["BitsPerComponent", ["Integer", 8]],
-      ["ColorSpace", ["Name", "DeviceRGB"]],
-    ],
-  ])
-}
-
-///|
 test "dictionary with negative numbers" {
   let s = b"<< /X -72 /Y -144 /Offset -3.5 >>"
   let tokens = tokenize(s)
