@@ -1,0 +1,10 @@
+{
+  "import": [
+    "illusory0x0/pdf",
+    "moonbitlang/x/fs",
+    "illusory0x0/lexer/lexer_bytes",
+    "illusory0x0/pdf/edsl_parser"
+  ],
+  "test-import": ["illusory0x0/fmt"],
+  "warn-list": "-1-2-3-4-6-7"
+}

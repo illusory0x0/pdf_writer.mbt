@@ -1,4 +1,7 @@
 ///|
+fnalias @pdf.ascii_string_of_bytes
+
+///|
 pub impl Show for Token with output(self, logger) {
   match self {
     LEFT_PARENTHESIS => logger.write_string("LEFT_PARENTHESIS")

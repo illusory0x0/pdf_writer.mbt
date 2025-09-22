@@ -1,5 +1,10 @@
 ///|
-fn string_of_pdf_object(obj : Object) -> String {
+fn bytes_of_memory(mem : @fmt.Memory, len : Int) -> Bytes {
+  Bytes::makei(len, i => mem[i])
+}
+
+///|
+fn string_of_pdf_object(obj : @pdf.Object) -> String {
   let buf = @fmt.Memory::make(@fmt.Format::count(obj), 0)
   let ofs = @fmt.Format::write(obj, buf, 0)
   let bytes = bytes_of_memory(buf, ofs)
