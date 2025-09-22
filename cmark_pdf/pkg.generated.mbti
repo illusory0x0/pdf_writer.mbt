@@ -56,9 +56,11 @@ fn Canvas::to_array(Self) -> Array[@pdf.GraphicOperator]
 fn Canvas::to_content(Self) -> Content
 
 pub(all) struct Content(Array[@pdf.GraphicOperator])
+#deprecated
 fn Content::inner(Self) -> Array[@pdf.GraphicOperator]
 
 pub(all) struct Doc(Array[Block])
+#deprecated
 fn Doc::inner(Self) -> Array[Block]
 impl ToJson for Doc
 impl @json.FromJson for Doc
