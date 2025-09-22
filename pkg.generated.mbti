@@ -26,6 +26,14 @@ pub suberror ParseError {
 }
 
 // Types and methods
+type DICT_BEGIN
+
+type DICT_END
+
+type EOF
+
+type FALSE
+
 pub(all) struct File {
   major : Int
   minor : Int
@@ -37,6 +45,8 @@ impl @fmt.Format for File
 type Func
 impl ToJson for Func
 impl @json.FromJson for Func
+
+type GREATER_THAN_SIGN
 
 pub(all) enum GraphicOperator {
   Op_w(Double)
@@ -117,6 +127,20 @@ pub(all) enum GraphicOperator {
 }
 impl @fmt.Format for GraphicOperator
 
+type INDIRECT
+impl Eq for INDIRECT
+impl Show for INDIRECT
+
+type LEFT_CURLY_BRACE
+
+type LEFT_PARENTHESIS
+
+type LEFT_SQUARE_BRACKET
+
+type LESS_THAN_SIGN
+
+type NULL
+
 type NonTerminal
 impl ToJson for NonTerminal
 impl @json.FromJson for NonTerminal
@@ -147,11 +171,21 @@ impl Show for Position
 impl ToJson for Position
 impl @json.FromJson for Position
 
+type RIGHT_CURLY_BRACE
+
+type RIGHT_PARENTHESIS
+
+type RIGHT_SQUARE_BRACKET
+
+type SOLIDUS
+
 type SourceLocation
 
 pub(all) struct Stream(Bytes)
 #deprecated
 fn Stream::inner(Self) -> Bytes
+
+type TRUE
 
 pub(all) enum Token {
   LEFT_PARENTHESIS
@@ -165,12 +199,14 @@ pub(all) enum Token {
   SOLIDUS
   DICT_BEGIN
   DICT_END
+  NULL
   TRUE
   FALSE
   INTEGER(Int)
   REAL(Double)
   STRING(Bytes)
   NAME(Bytes)
+  INDIRECT(INDIRECT)
   EOF
 }
 fn Token::kind(Self) -> TokenKind
@@ -188,12 +224,14 @@ pub(all) enum TokenKind {
   TK_SOLIDUS
   TK_DICT_BEGIN
   TK_DICT_END
+  TK_NULL
   TK_TRUE
   TK_FALSE
   TK_INTEGER
   TK_REAL
   TK_STRING
   TK_NAME
+  TK_INDIRECT
   TK_EOF
 }
 impl Eq for TokenKind

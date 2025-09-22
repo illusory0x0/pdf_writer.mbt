@@ -534,7 +534,7 @@ fn Func::to_production_rule(typ : Func) -> String {
     let parm_name = typ.parms[i].name
     let replacement = "$\{i + 1}"
     // Simple string replacement - replace parameter name with $N
-    body = body.replace(old=parm_name, new=replacement)
+    body = body.replace_all(old=parm_name, new=replacement)
   }
 
   // Format as production rule: "| rule_lhs { body }"
@@ -576,7 +576,7 @@ fn NonTerminal::emit(self : NonTerminal) -> String {
 
   // Format as: "NonTerminal -> NonTerminal :\n  rule1\n  rule2\n;"
   let rules_str = rules.join("\n  ")
-  "\{nonterminal_name} -> \{nonterminal_name} :\n  \{rules_str}\n;"
+  "\{nonterminal_name} -> \{nonterminal_name} :\n  \{rules_str}\n;\n"
 }
 
 ///|

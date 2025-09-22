@@ -11,12 +11,14 @@ pub(all) enum Token {
   SOLIDUS
   DICT_BEGIN
   DICT_END
+  NULL
   TRUE
   FALSE
   INTEGER(Int)
   REAL(Double)
   STRING(Bytes)
   NAME(Bytes)
+  INDIRECT(INDIRECT)
   EOF
 }
 
@@ -34,12 +36,14 @@ pub fn Token::kind(self : Token) -> TokenKind {
     SOLIDUS => TK_SOLIDUS
     DICT_BEGIN => TK_DICT_BEGIN
     DICT_END => TK_DICT_END
+    NULL => TK_NULL
     TRUE => TK_TRUE
     FALSE => TK_FALSE
     INTEGER(_) => TK_INTEGER
     REAL(_) => TK_REAL
     STRING(_) => TK_STRING
     NAME(_) => TK_NAME
+    INDIRECT(_) => TK_INDIRECT
     EOF => TK_EOF
   }
 }
@@ -57,12 +61,14 @@ pub(all) enum TokenKind {
   TK_SOLIDUS
   TK_DICT_BEGIN
   TK_DICT_END
+  TK_NULL
   TK_TRUE
   TK_FALSE
   TK_INTEGER
   TK_REAL
   TK_STRING
   TK_NAME
+  TK_INDIRECT
   TK_EOF
 } derive(Eq)
 
@@ -81,12 +87,14 @@ pub impl Show for TokenKind with output(self, logger) {
       TK_SOLIDUS => "\"/\""
       TK_DICT_BEGIN => "\"<<\""
       TK_DICT_END => "\">>\""
+      TK_NULL => "\"null\""
       TK_TRUE => "\"true\""
       TK_FALSE => "\"false\""
       TK_INTEGER => "INTEGER"
       TK_REAL => "REAL"
       TK_STRING => "STRING"
       TK_NAME => "NAME"
+      TK_INDIRECT => "INDIRECT"
       TK_EOF => "EOF"
     },
   )

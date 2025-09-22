@@ -1,5 +1,5 @@
 ///|
-pub(all) struct Stream(Bytes)
+pub(all) struct Stream(Bytes) derive(ToJson)
 
 ///|
 /// pdf object 
@@ -62,7 +62,7 @@ pub(all) enum Object {
   /// endobj
   /// `
   Indirect(Int)
-}
+} derive(ToJson)
 
 ///|
 /// 
