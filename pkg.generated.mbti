@@ -42,10 +42,6 @@ pub(all) struct File {
 }
 impl @fmt.Format for File
 
-type Func
-impl ToJson for Func
-impl @json.FromJson for Func
-
 type GREATER_THAN_SIGN
 
 pub(all) enum GraphicOperator {
@@ -141,10 +137,6 @@ type LESS_THAN_SIGN
 
 type NULL
 
-type NonTerminal
-impl ToJson for NonTerminal
-impl @json.FromJson for NonTerminal
-
 pub(all) enum Object {
   Null
   Boolean(Bool)
@@ -159,10 +151,6 @@ pub(all) enum Object {
 }
 impl @fmt.Format for Object
 impl ToJson for Object
-
-type Parm
-impl ToJson for Parm
-impl @json.FromJson for Parm
 
 pub struct Position {
   row : Int
@@ -179,8 +167,6 @@ type RIGHT_PARENTHESIS
 type RIGHT_SQUARE_BRACKET
 
 type SOLIDUS
-
-type SourceLocation
 
 pub(all) struct Stream(Bytes)
 #deprecated
