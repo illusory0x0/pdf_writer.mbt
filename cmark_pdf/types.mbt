@@ -4,7 +4,9 @@ pub(all) enum Block {
   Paragraph(Array[Inline])
   BlankLine
   CodeBlock(language~ : String, code~ : Array[Bytes])
-} derive(@json.FromJson, ToJson)
+  Blocks(Array[Block])
+  List(Array[Block])
+} derive(Show, ToJson)
 
 ///|
 pub(all) enum Inline {
@@ -12,16 +14,17 @@ pub(all) enum Inline {
   StrongEmphasis(String)
   Emphasis(String)
   StrongEmphasis_Emphasis(String)
-} derive(@json.FromJson, ToJson, Show)
+  CodeSpan(String)
+} derive(Show, ToJson)
 
 ///|
 pub(all) struct FlatHeading {
   num : Array[Int]
   text : String
-} derive(@json.FromJson, ToJson)
+} derive(Show, ToJson)
 
 ///|
-pub(all) struct Doc(Array[Block]) derive(@json.FromJson, ToJson)
+pub(all) struct Doc(Array[Block]) derive(Show, ToJson)
 
 ///|
 pub(all) struct Content(Array[@pdf.GraphicOperator])

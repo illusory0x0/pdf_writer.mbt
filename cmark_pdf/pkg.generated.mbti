@@ -3,7 +3,6 @@ package "illusory0x0/pdf/cmark_pdf"
 
 import(
   "illusory0x0/pdf"
-  "moonbitlang/core/json"
   "rami3l/cmark/cmark"
 )
 
@@ -17,9 +16,13 @@ pub(all) enum Block {
   Paragraph(Array[Inline])
   BlankLine
   CodeBlock(language~ : String, code~ : Array[Bytes])
+  Blocks(Array[Block])
+  List(Array[Block])
 }
+fn Block::from_cmark(@cmark.Block) -> Self
+fn Block::from_list_item(@cmark.ListItem) -> Self
+impl Show for Block
 impl ToJson for Block
-impl @json.FromJson for Block
 
 type Canvas
 fn Canvas::begin_text(Self) -> Unit
@@ -60,28 +63,29 @@ pub(all) struct Content(Array[@pdf.GraphicOperator])
 fn Content::inner(Self) -> Array[@pdf.GraphicOperator]
 
 pub(all) struct Doc(Array[Block])
+fn Doc::from_cmark(@cmark.Doc) -> Self
 #deprecated
 fn Doc::inner(Self) -> Array[Block]
+impl Show for Doc
 impl ToJson for Doc
-impl @json.FromJson for Doc
 
 pub(all) struct FlatHeading {
   num : Array[Int]
   text : String
 }
+impl Show for FlatHeading
 impl ToJson for FlatHeading
-impl @json.FromJson for FlatHeading
 
 pub(all) enum Inline {
   Plain(String)
   StrongEmphasis(String)
   Emphasis(String)
   StrongEmphasis_Emphasis(String)
+  CodeSpan(String)
 }
 fn Inline::from_cmark(@cmark.Inline) -> Array[Self]
 impl Show for Inline
 impl ToJson for Inline
-impl @json.FromJson for Inline
 
 pub(all) enum StandardFont {
   TimesRoman

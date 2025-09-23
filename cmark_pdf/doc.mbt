@@ -17,7 +17,7 @@ fn Doc::remove_contiguous_blanklines(self : Doc) -> Doc {
 }
 
 ///|
-fn Doc::from_cmark(doc : @cmark.Doc) -> Doc {
+pub fn Doc::from_cmark(doc : @cmark.Doc) -> Doc {
   match doc.block {
     Blocks(node) => {
       let seq = node.v
@@ -52,7 +52,11 @@ fn Doc::to_flatheadings(self : Doc) -> Array[FlatHeading] {
           h3 += 1
           result.push(FlatHeading::{ num: [h1, h2, h3], text })
         }
-        _ => abort("TODO")
+        _ => {
+          // For levels > 3, treat them as level 3 headings
+          h3 += 1
+          result.push(FlatHeading::{ num: [h1, h2, h3], text })
+        }
       }
     }
   }
@@ -63,110 +67,176 @@ fn Doc::to_flatheadings(self : Doc) -> Array[FlatHeading] {
 fn Doc::to_graphic_operators(self : Doc) -> Content {
   let canvas = Canvas::new()
   for block in self.inner() {
-    match block {
-      Heading(level~, text~) => {
-        let font_size = match level {
-          1 => font_size_h1
-          2 => font_size_h2
-          3 => font_size_h3
-          _ => font_size_body
-        }
-        canvas.set_font(b"/F0", font_size)
-        canvas.show_text(bytes_of_string(text))
-        canvas.set_leading(font_size)
-        canvas.next_line()
-      }
-      Paragraph(para) => {
-        canvas.set_leading(font_size_body)
-        canvas.set_font(b"/F0", font_size_body)
-        let max_cols = 80
-        let mut cur_cols = 0
-        for text in para {
-          let (s, f) = match text {
-            Plain(s) => (s, b"/F0")
-            StrongEmphasis(s) => (s, b"/F1")
-            Emphasis(s) => (s, b"/F2")
-            StrongEmphasis_Emphasis(s) => (s, b"/F3")
-          }
-          let s = utf16_string_to_ascii_bytes(s)
-          let len = s.length()
-          // set font and font size 
-          canvas.set_font(f, font_size_body)
-          if cur_cols + len > max_cols {
-            // split text not exceeding max_cols
-            let split_parts = split_bytes(s, init_cols=cur_cols, max_cols~)
-            // Handle split parts with pattern matching
-            match split_parts {
-              [] => () // Should not happen, but handle gracefully
-              [first, .. rest] => {
-                canvas.show_text(first)
-                for part in rest {
-                  canvas.next_line()
-                  canvas.show_text(part)
-                }
-              }
-            }
-            // Calculate remaining columns on the last line
-            let last_part = split_parts[split_parts.length() - 1]
-            cur_cols = last_part.length()
-          } else {
-            // directly show text 
-            canvas.show_text(s)
-            cur_cols += len
-          }
-        }
-        canvas.next_line()
-      }
-      BlankLine => {
-        canvas.set_leading(font_size_body)
-        canvas.next_line()
-      }
-      CodeBlock(code~, ..) => {
-        canvas.set_font(b"/F4", font_size_body)
-        for col, line in code {
-          let lineno = (col + 1).to_string().pad_end(4, ' ') |> bytes_of_string
-          canvas.show_text_next_line(lineno + line)
-        }
-        canvas.next_line()
-      }
-    }
+    Block::write_to_canvas(block, canvas)
   }
   canvas.to_content()
 }
 
 ///|
-fn Doc::split(self : Doc, max_height~ : Double) -> Array[Doc] {
+fn Block::write_to_canvas(block : Block, canvas : Canvas) -> Unit {
+  match block {
+    Heading(level~, text~) => {
+      let font_size = match level {
+        1 => font_size_h1
+        2 => font_size_h2
+        3 => font_size_h3
+        _ => font_size_body
+      }
+      canvas.set_font(b"/F0", font_size)
+      canvas.show_text(pdf_bytes_of_string(text))
+      canvas.set_leading(font_size)
+      canvas.next_line()
+    }
+    Paragraph(para) => {
+      canvas.set_leading(font_size_body)
+      canvas.set_font(b"/F0", font_size_body)
+      let max_cols = 80
+      let mut cur_cols = 0
+      for text in para {
+        let (s, f) = match text {
+          Plain(s) => (s, b"/F0")
+          StrongEmphasis(s) => (s, b"/F1")
+          Emphasis(s) => (s, b"/F2")
+          StrongEmphasis_Emphasis(s) => (s, b"/F3")
+          CodeSpan(s) => (s, b"/F4")
+        }
+        let s = utf16_string_to_pdf_escaped_ascii_bytes(s)
+        let len = s.length()
+        // set font and font size 
+        canvas.set_font(f, font_size_body)
+        if cur_cols + len > max_cols {
+          // split text not exceeding max_cols
+          let split_parts = split_bytes(s, init_cols=cur_cols, max_cols~)
+          // Handle split parts with pattern matching
+          match split_parts {
+            [] => () // Should not happen, but handle gracefully
+            [first, .. rest] => {
+              canvas.show_text(first)
+              for part in rest {
+                canvas.next_line()
+                canvas.show_text(part)
+              }
+            }
+          }
+          // Calculate remaining columns on the last line
+          let last_part = split_parts[split_parts.length() - 1]
+          cur_cols = last_part.length()
+        } else {
+          // directly show text 
+          canvas.show_text(s)
+          cur_cols += len
+        }
+      }
+      canvas.next_line()
+    }
+    BlankLine => {
+      canvas.set_leading(font_size_body)
+      canvas.next_line()
+    }
+    CodeBlock(code~, ..) => {
+      canvas.set_font(b"/F4", font_size_body)
+      for col, line in code {
+        canvas.set_leading(font_size_body)
+        let lineno = (col + 1).to_string().pad_end(4, ' ')
+          |> pdf_bytes_of_string
+        canvas.show_text_next_line(lineno + line)
+      }
+      canvas.next_line()
+    }
+    Blocks(blocks) =>
+      // Handle blocks container by recursively rendering each block
+      for sub_block in blocks {
+        Block::write_to_canvas(sub_block, canvas)
+      }
+    List(items) =>
+      for item in items {
+        canvas.set_font(b"/F1", font_size_body)
+        canvas.set_leading(0)
+        canvas.move_text(10, 0)
+        canvas.show_text("- ")
+        Block::write_to_canvas(item, canvas)
+        canvas.move_text(-10, 0)
+      }
+  }
+}
+
+///|
+
+///|
+/// Helper function to calculate block height considering indentation context
+fn calculate_block_height(block : Block, indent_level : Int) -> Double {
+  match block {
+    Heading(level~, ..) => {
+      let font_size = match level {
+        1 => font_size_h1
+        2 => font_size_h2
+        3 => font_size_h3
+        _ => font_size_body
+      }
+      font_size // Op_TL sets leading to font_size, Op_T_star consumes it
+    }
+    Paragraph(para) => {
+      let para = para.map(x => match x {
+        Plain(x) => x
+        StrongEmphasis(x) => x
+        Emphasis(x) => x
+        StrongEmphasis_Emphasis(x) => x
+        CodeSpan(x) => x
+      })
+      let ascii_count = para.fold(init=0, (acc, s) => acc + s.length())
+      // Apply indentation context just like Block::write_to_canvas
+      let max_cols = 80 - indent_level * 4
+      let lines = (ascii_count + max_cols - 1) / max_cols // Ceiling division
+      lines.to_double() * font_size_body
+      // Op_TL sets leading to font_size_body, Op_T_star consumes it
+    }
+    CodeBlock(code~, ..) => code.length().to_double() * font_size_body
+    BlankLine => font_size_body // Op_TL sets leading to font_size_body, Op_T_star consumes it
+    Blocks(blocks) =>
+      // Calculate height by summing heights of all contained blocks
+      blocks.fold(init=0.0, fn(acc, sub_block) {
+        acc + calculate_block_height(sub_block, indent_level)
+      })
+    List(items) => {
+      let list_height = items.fold(init=0.0, fn(acc, item) {
+        let item_height = match item {
+          Paragraph(para) => {
+            let para = para.map(x => match x {
+              Plain(x) => x
+              StrongEmphasis(x) => x
+              Emphasis(x) => x
+              StrongEmphasis_Emphasis(x) => x
+              CodeSpan(x) => x
+            })
+            let ascii_count = para.fold(init=0, (acc, s) => acc + s.length())
+            // Apply indentation and bullet context just like Block::write_to_canvas
+            let max_cols = 80 - indent_level * 4 - 2 // Account for bullet and indentation
+            let lines = (ascii_count + max_cols - 1) / max_cols
+            lines.to_double() * font_size_body
+          }
+          _ =>
+            // Handle other block types in lists using recursion with increased indent level
+            calculate_block_height(item, indent_level + 1)
+        }
+        acc + item_height
+      })
+      list_height + font_size_body // Add extra line spacing for list
+    }
+  }
+}
+
+///|
+fn Doc::split(
+  self : Doc,
+  max_height~ : Double,
+  indent_level? : Int = 0,
+) -> Array[Doc] {
   let result = []
   let mut current_height = 0.0
   let mut current_blocks = []
   for block in self.inner() {
-    // Calculate the height that this block would add
-    let block_height = match block {
-      Heading(level~, ..) => {
-        let font_size = match level {
-          1 => font_size_h1
-          2 => font_size_h2
-          3 => font_size_h3
-          _ => font_size_body
-        }
-        font_size // Op_TL sets leading to font_size, Op_T_star consumes it
-      }
-      Paragraph(para) => {
-        let para = para.map(x => match x {
-          Plain(x) => x
-          StrongEmphasis(x) => x
-          Emphasis(x) => x
-          StrongEmphasis_Emphasis(x) => x
-        })
-        let ascii_count = para.fold(init=0, (acc, s) => acc + s.length())
-        let max_cols = 80
-        let lines = (ascii_count + max_cols - 1) / max_cols // Ceiling division
-        lines.to_double() * font_size_body
-        // Op_TL sets leading to font_size_body, Op_T_star consumes it
-      }
-      CodeBlock(code~, ..) => code.length().to_double() * font_size_body
-      BlankLine => font_size_body // Op_TL sets leading to font_size_body, Op_T_star consumes it
-    }
+    // Calculate the height that this block would add using the helper function
+    let block_height = calculate_block_height(block, indent_level)
 
     // Check if adding this block would exceed max_height
     if current_height + block_height > max_height && current_blocks.length() > 0 {
