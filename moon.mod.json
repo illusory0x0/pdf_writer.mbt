@@ -5,7 +5,8 @@
     "illusory0x0/fmt": "0.3.4",
     "moonbitlang/x": "0.4.34",
     "rami3l/cmark": "0.4.0",
-    "illusory0x0/lexer": "0.1.0"
+    "illusory0x0/lexer": "0.1.0",
+    "moonbitlang/parser": "0.1.7"
   },
   "bin-deps": {
     "moonbitlang/yacc": "0.6.14"

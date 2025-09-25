@@ -16,6 +16,7 @@ pub(all) enum Block {
   Paragraph(Array[Inline])
   BlankLine
   CodeBlock(language~ : String, code~ : Array[Bytes])
+  MoonBitCodeBlock(Array[Array[ColorSpaned]])
   Blocks(Array[Block])
   List(Array[Block])
 }
@@ -57,6 +58,10 @@ fn Canvas::show_text_next_line(Self, Bytes) -> Unit
 fn Canvas::stroke(Self) -> Unit
 fn Canvas::to_array(Self) -> Array[@pdf.GraphicOperator]
 fn Canvas::to_content(Self) -> Content
+
+type ColorSpaned
+impl Show for ColorSpaned
+impl ToJson for ColorSpaned
 
 pub(all) struct Content(Array[@pdf.GraphicOperator])
 #deprecated
@@ -103,6 +108,15 @@ pub(all) enum StandardFont {
   Symbol
   ZapfDingbats
 }
+
+pub(all) enum TokenStyle {
+  Keyword
+  Num
+  Str
+  Other
+}
+impl Show for TokenStyle
+impl ToJson for TokenStyle
 
 // Type aliases
 
