@@ -20,10 +20,10 @@ fn FlatHeading::to_graphic_operators(xs : Array[FlatHeading]) -> Content {
   result.push(@pdf.Op_TL(font_size_body))
   result.push(@pdf.Op_T_star)
   for s in FlatHeading::to_strings(xs) {
-    result.push(@pdf.Op_single_quote(s.0 |> bytes_of_string))
+    result.push(@pdf.Op_single_quote(s.0 |> pdf_bytes_of_string))
     result.push(@pdf.Op_TL(0))
     result.push(@pdf.Op_Td(offset, 0))
-    result.push(@pdf.Op_Tj(bytes_of_string(s.1)))
+    result.push(@pdf.Op_Tj(pdf_bytes_of_string(s.1)))
     result.push(@pdf.Op_Td(-offset, 0))
     result.push(@pdf.Op_TL(font_size_body))
   }
