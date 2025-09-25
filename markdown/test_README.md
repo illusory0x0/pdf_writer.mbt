@@ -1,12 +1,5 @@
 # Test Package Documentation
 
-
-- hello
-  - moonbit
-  - test
-
-- world
-
 This package provides testing utilities and assertion functions for MoonBit programs. It includes functions for comparing values, checking object identity, and creating structured test outputs with snapshot testing capabilities.
 
 ## Basic Test Structure
