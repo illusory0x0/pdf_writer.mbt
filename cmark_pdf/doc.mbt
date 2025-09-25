@@ -157,6 +157,22 @@ fn Block::write_to_canvas(block : Block, canvas : Canvas) -> Unit {
         Block::write_to_canvas(item, canvas)
         canvas.move_text(-10, 0)
       }
+    MoonBitCodeBlock(code) => {
+      canvas.set_font(b"/F4", font_size_body)
+      for col, line in code {
+        canvas.set_leading(font_size_body)
+        let lineno = (col + 1).to_string().pad_end(4, ' ')
+          |> pdf_bytes_of_string
+        canvas.show_text(lineno)
+        for cs in line {
+          let (r, g, b) = color_style_to_rgb(cs.style)
+          canvas.set_rgb_fill_color(r, g, b)
+          canvas.show_text(cs.text)
+        }
+        canvas.next_line()
+      }
+      canvas.next_line()
+    }
   }
 }
 
@@ -222,6 +238,7 @@ fn calculate_block_height(block : Block, indent_level : Int) -> Double {
       })
       list_height + font_size_body // Add extra line spacing for list
     }
+    MoonBitCodeBlock(code) => code.length().to_double() * font_size_body
   }
 }
 

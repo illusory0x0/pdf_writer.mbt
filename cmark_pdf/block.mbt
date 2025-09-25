@@ -19,14 +19,26 @@ pub fn Block::from_cmark(block : @cmark.Block) -> Block {
       let para = Inline::from_cmark(block_paragraph.inline)
       Paragraph(para)
     }
-    CodeBlock({ v: code_block, .. }) => {
-      let code = code_block.code.to_array().map(x => x.v |> pdf_bytes_of_string)
-      let language = match code_block.info_string {
-        None => ""
-        Some({ v: text, .. }) => text
+    CodeBlock({ v: code_block, .. }) =>
+      match code_block.info_string {
+        Some({ v: "moonbit", .. }) => {
+          let cs_lines = from_cmark_code_block(code_block)
+          MoonBitCodeBlock(cs_lines)
+        }
+        Some({ v: text, .. }) => {
+          let code = code_block.code
+            .to_array()
+            .map(x => x.v |> pdf_bytes_of_string)
+          let language = text
+          CodeBlock(language~, code~)
+        }
+        None => {
+          let code = code_block.code
+            .to_array()
+            .map(x => x.v |> pdf_bytes_of_string)
+          CodeBlock(language="", code~)
+        }
       }
-      CodeBlock(language~, code~)
-    }
     BlankLine(_) => BlankLine
     // Handle all other block types by converting them to Paragraph with Plain inline text
     BlockQuote(node) => {
