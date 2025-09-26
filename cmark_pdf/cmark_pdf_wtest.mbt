@@ -8,7 +8,7 @@ test (t : @test.T) {
 }
 
 ///|
-test {
+test (t : @test.T) {
   let files = @fs.read_dir("./markdown")
   let buffer = StringBuilder::new(
     size_hint=files.fold(init=0, (acc, s) => acc + s.length()),
@@ -33,4 +33,6 @@ test {
   let _ = doc.inner().length()
   let path = "./output/all_md.pdf"
   @fs.write_bytes_to_file(path, bytes)
+  t.writeln(bytes)
+  t.snapshot(filename="all_md.pdf.bytes")
 }
