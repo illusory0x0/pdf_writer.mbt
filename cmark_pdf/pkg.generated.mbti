@@ -57,15 +57,11 @@ fn Canvas::show_text(Self, Bytes) -> Unit
 fn Canvas::show_text_next_line(Self, Bytes) -> Unit
 fn Canvas::stroke(Self) -> Unit
 fn Canvas::to_array(Self) -> Array[@types.GraphicOperator]
-fn Canvas::to_content(Self) -> Content
+fn Canvas::to_content(Self) -> @types.ContentStream
 
 type ColorSpaned
 impl Show for ColorSpaned
 impl ToJson for ColorSpaned
-
-pub(all) struct Content(Array[@types.GraphicOperator])
-#deprecated
-fn Content::inner(Self) -> Array[@types.GraphicOperator]
 
 pub(all) struct Doc(Array[Block])
 fn Doc::from_cmark(@cmark.Doc) -> Self
@@ -102,6 +98,7 @@ impl Show for TokenStyle
 impl ToJson for TokenStyle
 
 // Type aliases
+pub typealias @types.ContentStream as ContentStream
 
 // Traits
 

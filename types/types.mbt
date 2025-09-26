@@ -296,3 +296,6 @@ pub(all) struct TransformMatrix {
   e : Double
   f : Double
 }
+
+///|
+pub(all) struct ContentStream(Array[GraphicOperator])

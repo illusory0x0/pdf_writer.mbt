@@ -6,8 +6,8 @@ pub fn Canvas::new() -> Canvas {
 
 ///|
 /// Convert Canvas to Content for PDF generation
-pub fn Canvas::to_content(self : Canvas) -> Content {
-  Content(self.0)
+pub fn Canvas::to_content(self : Canvas) -> ContentStream {
+  ContentStream(self.0)
 }
 
 ///|

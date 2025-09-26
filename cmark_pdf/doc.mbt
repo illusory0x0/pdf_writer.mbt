@@ -64,7 +64,7 @@ fn Doc::to_flatheadings(self : Doc) -> Array[FlatHeading] {
 }
 
 ///|
-fn Doc::to_graphic_operators(self : Doc) -> Content {
+fn Doc::to_graphic_operators(self : Doc) -> ContentStream {
   let canvas = Canvas::new()
   for block in self.inner() {
     Block::write_to_canvas(block, canvas)
