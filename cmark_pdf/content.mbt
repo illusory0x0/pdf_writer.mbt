@@ -1,4 +1,9 @@
 ///|
+fn Content::iter(xs : Content) -> Iter[@pdf.GraphicOperator] {
+  xs.0.iter()
+}
+
+///|
 impl @fmt.Format for Content with write(self, buf, start) {
   let xs = self.0
   let mut offset = start
