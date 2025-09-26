@@ -3,10 +3,11 @@
     "moonbitlang/x/fs",
     "rami3l/cmark/cmark",
     "illusory0x0/fmt",
-    "illusory0x0/pdf",
     "moonbitlang/parser/lexer",
     "moonbitlang/parser/tokens",
-    "moonbitlang/parser/basic"
-  ],
-  "warn-list": ""
+    "moonbitlang/parser/basic",
+    "illusory0x0/pdf/pdf_helper",
+    "illusory0x0/pdf/mem_helper",
+    { "path": "illusory0x0/pdf/types", "alias": "pdf" }
+  ]
 }

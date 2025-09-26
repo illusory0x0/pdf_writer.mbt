@@ -123,27 +123,6 @@ fn count_pdf_obj(obj : Object, n : Int) -> Int {
 }
 
 ///|
-fn memcpy(
-  dst : @fmt.Memory,
-  dst_ofs : Int,
-  src : @fmt.Memory,
-  src_ofs : Int,
-  len : Int,
-) -> Int {
-  for i in 0..<len {
-    dst[dst_ofs + i] = src[src_ofs + i]
-  }
-  len
-}
-
-///|
-fn fill(mem : @fmt.Memory, ofs : Int, len : Int, value : Byte) -> Unit {
-  for i in 0..<len {
-    mem[ofs + i] = value
-  }
-}
-
-///|
 /// 
 /// `nnnnnnnnnn ggggg n <eol>`
 /// 
@@ -169,7 +148,7 @@ fn write_pdf_xref(xref_offset : Int, buf : @fmt.Memory, start : Int) -> Int {
 }
 
 ///|
-fn count_pdf_xref(xref_offset : Int) -> Int {
+fn count_pdf_xref(_xref_offset : Int) -> Int {
   10 + // 10-digit zero-padded offset
   10 // " 00000 n \r\n"
 }
