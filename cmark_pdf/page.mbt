@@ -11,18 +11,24 @@ fn multiple_pages(contents : Array[Content]) -> @pdf.File {
   // Font resources
   let font_f0 = define_font_item(
     name="/F0",
-    font=TimesRoman.to_pdf_dictionary(),
+    font=@pdf.TimesRoman.to_pdf_dictionary(),
   )
-  let font_f1 = define_font_item(name="/F1", font=TimesBold.to_pdf_dictionary())
+  let font_f1 = define_font_item(
+    name="/F1",
+    font=@pdf.TimesBold.to_pdf_dictionary(),
+  )
   let font_f2 = define_font_item(
     name="/F2",
-    font=TimesItalic.to_pdf_dictionary(),
+    font=@pdf.TimesItalic.to_pdf_dictionary(),
   )
   let font_f3 = define_font_item(
     name="/F3",
-    font=TimesBoldItalic.to_pdf_dictionary(),
+    font=@pdf.TimesBoldItalic.to_pdf_dictionary(),
   )
-  let font_f4 = define_font_item(name="/F4", font=Courier.to_pdf_dictionary())
+  let font_f4 = define_font_item(
+    name="/F4",
+    font=@pdf.Courier.to_pdf_dictionary(),
+  )
   let font_resources = define_fonts(fonts=[
     font_f0, font_f1, font_f2, font_f3, font_f4,
   ])

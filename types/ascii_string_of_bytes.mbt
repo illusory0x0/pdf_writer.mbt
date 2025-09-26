@@ -26,3 +26,32 @@ pub fn ascii_string_of_bytes(bytes : Bytes) -> String {
   }
   buffer.to_string()
 }
+
+///|
+/// 
+/// The PostScript language names of 14 Type 1 fonts, known as the 
+/// standard 14 fonts.
+/// 
+/// in PDF 1.0 to PDF 1.7, some PDF dictionary object fields is optional.
+/// 
+/// - `FirstChar` 
+/// - `LastChar`
+/// - `Widths`
+/// - `FontDescriptor`
+/// 
+pub(all) enum StandardFont {
+  TimesRoman
+  TimesBold
+  TimesItalic
+  TimesBoldItalic
+  Helvetica
+  HelveticaBold
+  HelveticaOblique
+  HelveticaBoldOblique
+  Courier
+  CourierBold
+  CourierOblique
+  CourierBoldOblique
+  Symbol
+  ZapfDingbats
+}

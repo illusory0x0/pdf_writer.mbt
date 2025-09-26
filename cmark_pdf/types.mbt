@@ -42,30 +42,14 @@ pub(all) struct Content(Array[@pdf.GraphicOperator])
 struct Canvas(Array[@pdf.GraphicOperator])
 
 ///|
-/// 
-/// The PostScript language names of 14 Type 1 fonts, known as the 
-/// standard 14 fonts.
-/// 
-/// in PDF 1.0 to PDF 1.7, some PDF dictionary object fields is optional.
-/// 
-/// - `FirstChar` 
-/// - `LastChar`
-/// - `Widths`
-/// - `FontDescriptor`
-/// 
-pub(all) enum StandardFont {
-  TimesRoman
-  TimesBold
-  TimesItalic
-  TimesBoldItalic
-  Helvetica
-  HelveticaBold
-  HelveticaOblique
-  HelveticaBoldOblique
-  Courier
-  CourierBold
-  CourierOblique
-  CourierBoldOblique
-  Symbol
-  ZapfDingbats
-}
+fnalias @mem_helper.bytes_of_memory
+
+///|
+fnalias @pdf_helper.(
+  make_pdf,
+  define_font_item,
+  define_fonts,
+  define_pages,
+  define_page,
+  define_catalog
+)

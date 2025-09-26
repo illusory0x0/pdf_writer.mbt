@@ -2,7 +2,7 @@
 package "illusory0x0/pdf/cmark_pdf"
 
 import(
-  "illusory0x0/pdf"
+  "illusory0x0/pdf/types"
   "rami3l/cmark/cmark"
 )
 
@@ -56,16 +56,16 @@ fn Canvas::set_word_spacing(Self, Double) -> Unit
 fn Canvas::show_text(Self, Bytes) -> Unit
 fn Canvas::show_text_next_line(Self, Bytes) -> Unit
 fn Canvas::stroke(Self) -> Unit
-fn Canvas::to_array(Self) -> Array[@pdf.GraphicOperator]
+fn Canvas::to_array(Self) -> Array[@types.GraphicOperator]
 fn Canvas::to_content(Self) -> Content
 
 type ColorSpaned
 impl Show for ColorSpaned
 impl ToJson for ColorSpaned
 
-pub(all) struct Content(Array[@pdf.GraphicOperator])
+pub(all) struct Content(Array[@types.GraphicOperator])
 #deprecated
-fn Content::inner(Self) -> Array[@pdf.GraphicOperator]
+fn Content::inner(Self) -> Array[@types.GraphicOperator]
 
 pub(all) struct Doc(Array[Block])
 fn Doc::from_cmark(@cmark.Doc) -> Self
@@ -91,23 +91,6 @@ pub(all) enum Inline {
 fn Inline::from_cmark(@cmark.Inline) -> Array[Self]
 impl Show for Inline
 impl ToJson for Inline
-
-pub(all) enum StandardFont {
-  TimesRoman
-  TimesBold
-  TimesItalic
-  TimesBoldItalic
-  Helvetica
-  HelveticaBold
-  HelveticaOblique
-  HelveticaBoldOblique
-  Courier
-  CourierBold
-  CourierOblique
-  CourierBoldOblique
-  Symbol
-  ZapfDingbats
-}
 
 pub(all) enum TokenStyle {
   Keyword

@@ -2,12 +2,12 @@
 package "illusory0x0/pdf/pdf_object_parser"
 
 import(
-  "illusory0x0/pdf"
+  "illusory0x0/pdf/types"
   "moonbitlang/core/json"
 )
 
 // Values
-fn parse(Array[(Token, Position, Position)], initial_pos? : Position) -> @pdf.Object raise ParseError
+fn parse(Array[(Token, Position, Position)], initial_pos? : Position) -> @types.Object raise ParseError
 
 fn tokenize(BytesView) -> Array[(Token, Position, Position)]
 

@@ -1,5 +1,5 @@
 ///|
-impl Show for StandardFont with to_string(self) {
+pub impl Show for StandardFont with to_string(self) {
   match self {
     TimesRoman => "Times-Roman"
     TimesBold => "Times-Bold"
@@ -19,12 +19,12 @@ impl Show for StandardFont with to_string(self) {
 }
 
 ///|
-impl Show for StandardFont with output(self, logger) {
+pub impl Show for StandardFont with output(self, logger) {
   logger.write_string(self.to_string())
 }
 
 ///|
-fn StandardFont::to_pdf_name(self : StandardFont) -> @pdf.Object {
+pub fn StandardFont::to_pdf_name(self : StandardFont) -> Object {
   let text : Bytes = match self {
     TimesRoman => "/Times-Roman"
     TimesBold => "/Times-Bold"
@@ -45,8 +45,8 @@ fn StandardFont::to_pdf_name(self : StandardFont) -> @pdf.Object {
 }
 
 ///|
-fn StandardFont::to_pdf_dictionary(self : StandardFont) -> @pdf.Object {
-  @pdf.Dictionary([
+pub fn StandardFont::to_pdf_dictionary(self : StandardFont) -> Object {
+  Dictionary([
     (b"/Type", Name(b"/Font")),
     (b"/Subtype", Name(b"/Type1")),
     (b"/BaseFont", self.to_pdf_name()),

@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "illusory0x0/pdf/mem_helper"
+
+import(
+  "illusory0x0/fmt"
+)
+
+// Values
+fn bytes_of_memory(@fmt.Memory, Int) -> Bytes
+
+fn string_of_memory(@fmt.Memory, Int) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
