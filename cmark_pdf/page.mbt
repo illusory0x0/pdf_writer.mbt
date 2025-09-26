@@ -1,5 +1,5 @@
 ///|
-fn multiple_page_to_bytes(contents : Array[Content]) -> Bytes {
+fn multiple_page_to_bytes(contents : Array[ContentStream]) -> Bytes {
   let pdf = multiple_pages(contents)
   let buf = @fmt.Memory::make(@fmt.Format::count(pdf), 0)
   let offset = @fmt.Format::write(pdf, buf, 0)
@@ -7,7 +7,7 @@ fn multiple_page_to_bytes(contents : Array[Content]) -> Bytes {
 }
 
 ///|
-fn multiple_pages(contents : Array[Content]) -> @pdf.File {
+fn multiple_pages(contents : Array[ContentStream]) -> @pdf.File {
   // Font resources
   let font_f0 = define_font_item(
     name="/F0",
@@ -56,7 +56,7 @@ fn multiple_pages(contents : Array[Content]) -> @pdf.File {
 
 ///|
 fn make_content_and_page(
-  content : Content,
+  content : ContentStream,
   parent~ : @pdf.Object,
   start_id~ : Int,
   resources~ : Array[(Bytes, @pdf.Object)],

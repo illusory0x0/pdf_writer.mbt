@@ -36,7 +36,7 @@ pub(all) struct FlatHeading {
 pub(all) struct Doc(Array[Block]) derive(Show, ToJson)
 
 ///|
-pub(all) struct Content(Array[@pdf.GraphicOperator])
+pub typealias @pdf.ContentStream
 
 ///|
 struct Canvas(Array[@pdf.GraphicOperator])

@@ -42,7 +42,7 @@ fn markdown_to_bytes(md_str : String) -> Bytes {
   let cmark_doc = @cmark.Doc::from_string(md_str)
   let doc = Doc::from_cmark(cmark_doc)
   let flat_headings = doc.to_flatheadings()
-  let table_of_contents : Content = [
+  let table_of_contents : ContentStream = [
       Op_cm(tm),
       Op_BT,
       ..FlatHeading::to_graphic_operators(flat_headings),
@@ -55,7 +55,7 @@ fn markdown_to_bytes(md_str : String) -> Bytes {
   //   for doc in split_doc {
   // println    (doc)
   //   }
-  let contents : Array[Content] = split_doc.map(doc => [
+  let contents : Array[ContentStream] = split_doc.map(doc => [
       Op_cm(tm),
       Op_BT,
       ..doc.to_graphic_operators(),

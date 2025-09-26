@@ -10,7 +10,7 @@ fn FlatHeading::to_strings(fhs : Array[FlatHeading]) -> Array[(String, String)] 
 }
 
 ///|
-fn FlatHeading::to_graphic_operators(xs : Array[FlatHeading]) -> Content {
+fn FlatHeading::to_graphic_operators(xs : Array[FlatHeading]) -> ContentStream {
   let result = []
   result.push(@pdf.Op_Tf("/F0", font_size_h1))
   result.push(@pdf.Op_TL(font_size_h1))

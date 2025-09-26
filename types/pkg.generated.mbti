@@ -11,6 +11,14 @@ fn ascii_string_of_bytes(Bytes) -> String
 // Errors
 
 // Types and methods
+pub(all) struct ContentStream(Array[GraphicOperator])
+#deprecated
+fn ContentStream::inner(Self) -> Array[GraphicOperator]
+fn ContentStream::iter(Self) -> Iter[GraphicOperator]
+fn ContentStream::to_stream(Self) -> Stream
+fn ContentStream::to_stream_object(Self) -> Object
+impl @fmt.Format for ContentStream
+
 pub(all) struct File {
   major : Int
   minor : Int
