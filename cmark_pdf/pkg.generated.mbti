@@ -21,7 +21,6 @@ pub(all) enum Block {
   List(Array[Block])
 }
 fn Block::from_cmark(@cmark.Block) -> Self
-fn Block::from_list_item(@cmark.ListItem) -> Self
 impl Show for Block
 impl ToJson for Block
 
