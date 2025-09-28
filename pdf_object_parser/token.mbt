@@ -1,5 +1,5 @@
 ///|
-fnalias @pdf.ascii_string_of_bytes
+fnalias @helper.ascii_string_of_bytes
 
 ///|
 pub impl Show for Token with output(self, logger) {

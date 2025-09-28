@@ -1,5 +1,5 @@
 ///|
-fnalias @pdf.ascii_string_of_bytes
+fnalias @helper.ascii_string_of_bytes
 
 ///|
 test "PDF comment lexing with different end-of-line markers" {
