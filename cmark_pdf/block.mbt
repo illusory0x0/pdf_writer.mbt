@@ -77,7 +77,10 @@ pub fn Block::from_cmark(block : @cmark.Block) -> Block {
       // Convert each list item to a Block and collect into List(Array[Block])
       let list = node.v
       let items = list.items.to_array()
-      let list_items = items.map(fn(item) { Block::from_list_item(item.v) })
+      let list_items = items.map(fn(item) {
+        let block = item.v.block
+        Block::from_list_block(block)
+      })
       List(list_items)
     }
     ThematicBreak(_) =>
@@ -198,12 +201,6 @@ fn extract_texts_from_block(block : @cmark.Block) -> Array[String] {
 }
 
 ///|
-pub fn Block::from_list_item(list_item : @cmark.ListItem) -> Block {
-  let block = list_item.block
-  Block::from_list_block(block)
-}
-
-///|
 /// Helper function to convert a @cmark.Block to Block for list items
 fn Block::from_list_block(block : @cmark.Block) -> Block {
   match block {
@@ -223,7 +220,10 @@ fn Block::from_list_block(block : @cmark.Block) -> Block {
       // Handle nested lists - convert each list item
       let list = node.v
       let items = list.items.to_array()
-      let list_items = items.map(fn(item) { Block::from_list_item(item.v) })
+      let list_items = items.map(fn(item) {
+        let block = item.v.block
+        Block::from_list_block(block)
+      })
       List(list_items)
     }
     // For other block types, convert them to paragraphs with plain text
