@@ -40,16 +40,3 @@ pub typealias @pdf.ContentStream
 
 ///|
 struct Canvas(Array[@pdf.GraphicOperator])
-
-///|
-fnalias @mem_helper.bytes_of_memory
-
-///|
-fnalias @pdf_helper.(
-  make_pdf,
-  define_font_item,
-  define_fonts,
-  define_pages,
-  define_page,
-  define_catalog
-)

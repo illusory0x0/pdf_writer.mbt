@@ -5,9 +5,9 @@
 ///
 /// This function is intended to be used in debugging, logging, etc.
 ///
-pub fn ascii_string_of_bytes(bytes : Bytes) -> String {
-  let buffer = StringBuilder::new(size_hint=bytes.length() * 2)
-  for b in bytes {
+pub fn ascii_string_of_bytes(non_escape : Bytes) -> String {
+  let buffer = StringBuilder::new(size_hint=non_escape.length() * 2)
+  for b in non_escape {
     // if b is non printable, please escape it
     match b {
       '\\' => buffer.write_string("\\\\")

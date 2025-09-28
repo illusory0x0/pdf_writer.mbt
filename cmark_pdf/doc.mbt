@@ -67,13 +67,13 @@ fn Doc::to_flatheadings(self : Doc) -> Array[FlatHeading] {
 fn Doc::to_graphic_operators(self : Doc) -> ContentStream {
   let canvas = Canvas::new()
   for block in self.inner() {
-    Block::write_to_canvas(block, canvas)
+    Block::render_to_canvas(block, canvas)
   }
   canvas.to_content()
 }
 
 ///|
-fn Block::write_to_canvas(block : Block, canvas : Canvas) -> Unit {
+fn Block::render_to_canvas(block : Block, canvas : Canvas) -> Unit {
   match block {
     Heading(level~, text~) => {
       let font_size = match level {
@@ -100,7 +100,10 @@ fn Block::write_to_canvas(block : Block, canvas : Canvas) -> Unit {
           StrongEmphasis_Emphasis(s) => (s, b"/F3")
           CodeSpan(s) => (s, b"/F4")
         }
-        let s = utf16_string_to_pdf_escaped_ascii_bytes(s)
+        // FIXME: 
+        // current behavior: if non-ASCII then use '?' replacement
+        // expected behavior: correctly set the enoding in the PDF
+        let s = pdf_bytes_of_string(s)
         let len = s.length()
         // set font and font size 
         canvas.set_font(f, font_size_body)
@@ -146,7 +149,7 @@ fn Block::write_to_canvas(block : Block, canvas : Canvas) -> Unit {
     Blocks(blocks) =>
       // Handle blocks container by recursively rendering each block
       for sub_block in blocks {
-        Block::write_to_canvas(sub_block, canvas)
+        Block::render_to_canvas(sub_block, canvas)
       }
     List(items) =>
       for item in items {
@@ -154,7 +157,7 @@ fn Block::write_to_canvas(block : Block, canvas : Canvas) -> Unit {
         canvas.set_leading(0)
         canvas.move_text(10, 0)
         canvas.show_text("- ")
-        Block::write_to_canvas(item, canvas)
+        Block::render_to_canvas(item, canvas)
         canvas.move_text(-10, 0)
       }
     MoonBitCodeBlock(code) => {
@@ -243,6 +246,7 @@ fn calculate_block_height(block : Block, indent_level : Int) -> Double {
 }
 
 ///|
+/// This function is intended to split a Doc into multiple PDF pages based on max_height.
 fn Doc::split(
   self : Doc,
   max_height~ : Double,
