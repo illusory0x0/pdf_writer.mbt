@@ -145,16 +145,3 @@ pub fn define_icc(icc~ : Bytes) -> @pdf.Object {
     icc,
   )
 }
-
-///|
-pub fn write_graphics_operator_sequence(
-  xs : Array[@pdf.GraphicOperator],
-  buf : @fmt.Memory,
-  start : Int,
-) -> Int {
-  let mut offset = start
-  for x in xs {
-    offset += @fmt.Format::write(x, buf, offset)
-  }
-  offset - start
-}

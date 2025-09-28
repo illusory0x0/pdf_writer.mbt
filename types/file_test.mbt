@@ -29,8 +29,8 @@ test "test write to file" {
   let op3 = @pdf.Op_Tf(b"/F0", 36)
   let op4 = @pdf.Op_Tj(b"Hello, World!")
   let op5 = @pdf.Op_ET
-  let ops = [op1, op2, op3, op4, op5]
-  let offset = @pdf_helper.write_graphics_operator_sequence(ops, buf, 0)
+  let content : @pdf.ContentStream = [op1, op2, op3, op4, op5]
+  let offset = @fmt.Format::write(content, buf, 0)
   let bytes = @mem_helper.bytes_of_memory(buf, offset)
   let len = bytes.length()
   let stm = @pdf.Object::Stream(
@@ -75,8 +75,8 @@ test (t : @test.T) {
   let op3 = @pdf.Op_Tf(b"/F0", 36)
   let op4 = @pdf.Op_Tj(b"Hello, World!")
   let op5 = @pdf.Op_ET
-  let ops = [op1, op2, op3, op4, op5]
-  let offset = @pdf_helper.write_graphics_operator_sequence(ops, buf, 0)
+  let content : @pdf.ContentStream = [op1, op2, op3, op4, op5]
+  let offset = @fmt.Format::write(content, buf, 0)
   inspect(
     @mem_helper.string_of_memory(buf, offset),
     content=" 1 0 0 1 50 770 cm BT /F0 36 Tf (Hello, World!) Tj ET",
@@ -186,8 +186,8 @@ test "image" (t : @test.T) {
     e: 50,
     f: 770,
   }
-  let ops : Array[@pdf.GraphicOperator] = [@pdf.Op_cm(tm), @pdf.Op_Do(b"/Im0")]
-  let offset = @pdf_helper.write_graphics_operator_sequence(ops, buf, 0)
+  let content : @pdf.ContentStream = [@pdf.Op_cm(tm), @pdf.Op_Do(b"/Im0")]
+  let offset = @fmt.Format::write(content, buf, 0)
   let bytes = @mem_helper.bytes_of_memory(buf, offset)
   let len = bytes.length()
 
