@@ -2,7 +2,6 @@
 package "illusory0x0/pdf/pdf_helper"
 
 import(
-  "illusory0x0/fmt"
   "illusory0x0/pdf/types"
 )
 
@@ -24,8 +23,6 @@ fn define_pages(pages~ : Array[@types.Object]) -> @types.Object
 fn define_xobject(xobjs~ : Array[(Bytes, @types.Object)]) -> (Bytes, @types.Object)
 
 fn make_pdf(@types.Object, Array[@types.Object]) -> @types.File
-
-fn write_graphics_operator_sequence(Array[@types.GraphicOperator], @fmt.Memory, Int) -> Int
 
 // Errors
 
