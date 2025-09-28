@@ -17,6 +17,20 @@ pub(all) enum Object {
   /// those reprentations are for parsing.
   /// here all encoded as bytes sequence.
   ///
+  /// Escape sequences in literal strings: ref to `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.4.2
+  /// 
+  /// | Sequence | Measing                   |
+  /// |----------|---------------------------|
+  /// | `\n`     | LINE FEED                 |
+  /// | `\r`     | CARRIAGE RETURN           |
+  /// | `\t`     | HORIZONTAL TAB            |
+  /// | `\b`     | BACKSPACE                 |
+  /// | `\f`     | FORM FEED                 |
+  /// | `\(`     | LEFT PARENTHESIS          |
+  /// | `\)`     | RIGHT PARENTHESIS         |
+  /// | `\\`     | REVERSE SOLIDUS           |
+  /// | `\ddd`   | Character code ddd(octal) |
+  ///
   String(Bytes)
   /// although SOLIDUS `/` is not considered as part of the name in PDF spec,
   /// But here we include it as part of the name.
@@ -299,3 +313,32 @@ pub(all) struct TransformMatrix {
 
 ///|
 pub(all) struct ContentStream(Array[GraphicOperator])
+
+///|
+/// 
+/// The PostScript language names of 14 Type 1 fonts, known as the 
+/// standard 14 fonts.
+/// 
+/// in PDF 1.0 to PDF 1.7, some PDF dictionary object fields is optional.
+/// 
+/// - `FirstChar` 
+/// - `LastChar`
+/// - `Widths`
+/// - `FontDescriptor`
+/// 
+pub(all) enum StandardFont {
+  TimesRoman
+  TimesBold
+  TimesItalic
+  TimesBoldItalic
+  Helvetica
+  HelveticaBold
+  HelveticaOblique
+  HelveticaBoldOblique
+  Courier
+  CourierBold
+  CourierOblique
+  CourierBoldOblique
+  Symbol
+  ZapfDingbats
+}

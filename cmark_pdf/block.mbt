@@ -382,31 +382,34 @@ fn Block::from_list_block(block : @cmark.Block) -> Block {
 test "utf16_string_to_pdf_escaped_ascii_bytes basic" {
   // Test basic ASCII text
   let result1 = utf16_string_to_pdf_escaped_ascii_bytes("Hello World")
-  inspect(@pdf.ascii_string_of_bytes(result1), content="Hello World")
+  inspect(@helper.ascii_string_of_bytes(result1), content="Hello World")
 
   // Test empty string
   let result2 = utf16_string_to_pdf_escaped_ascii_bytes("")
-  inspect(@pdf.ascii_string_of_bytes(result2), content="")
+  inspect(@helper.ascii_string_of_bytes(result2), content="")
 
   // Test single character
   let result3 = utf16_string_to_pdf_escaped_ascii_bytes("A")
-  inspect(@pdf.ascii_string_of_bytes(result3), content="A")
+  inspect(@helper.ascii_string_of_bytes(result3), content="A")
 }
 
 ///|
 test "utf16_string_to_pdf_escaped_ascii_bytes special_chars" {
   // Test special characters that need escaping
   let result1 = utf16_string_to_pdf_escaped_ascii_bytes("Hello\\World")
-  inspect(@pdf.ascii_string_of_bytes(result1), content="Hello\\\\\\\\World")
+  inspect(@helper.ascii_string_of_bytes(result1), content="Hello\\\\\\\\World")
 
   // Test parentheses
   let result2 = utf16_string_to_pdf_escaped_ascii_bytes("Hello(World)")
-  inspect(@pdf.ascii_string_of_bytes(result2), content="Hello\\\\(World\\\\)")
+  inspect(
+    @helper.ascii_string_of_bytes(result2),
+    content="Hello\\\\(World\\\\)",
+  )
 
   // Test newlines and tabs
   let result3 = utf16_string_to_pdf_escaped_ascii_bytes("Hello\nWorld\tTest")
   inspect(
-    @pdf.ascii_string_of_bytes(result3),
+    @helper.ascii_string_of_bytes(result3),
     content="Hello\\\\nWorld\\\\tTest",
   )
 }
@@ -415,13 +418,13 @@ test "utf16_string_to_pdf_escaped_ascii_bytes special_chars" {
 test "utf16_string_to_pdf_escaped_ascii_bytes control_chars" {
   // Test various control characters
   let result1 = utf16_string_to_pdf_escaped_ascii_bytes("Hello\rWorld")
-  inspect(@pdf.ascii_string_of_bytes(result1), content="Hello\\\\rWorld")
+  inspect(@helper.ascii_string_of_bytes(result1), content="Hello\\\\rWorld")
   let result2 = utf16_string_to_pdf_escaped_ascii_bytes("Test\bBackspace")
-  inspect(@pdf.ascii_string_of_bytes(result2), content="Test\\\\bBackspace")
+  inspect(@helper.ascii_string_of_bytes(result2), content="Test\\\\bBackspace")
 
   // Test form feed
   let result3 = utf16_string_to_pdf_escaped_ascii_bytes("Page1\u000cPage2")
-  inspect(@pdf.ascii_string_of_bytes(result3), content="Page1\\\\fPage2")
+  inspect(@helper.ascii_string_of_bytes(result3), content="Page1\\\\fPage2")
 }
 
 ///|
@@ -429,13 +432,13 @@ test "utf16_string_to_pdf_escaped_ascii_bytes non_ascii" {
   // Test simple non-ASCII characters
   let result1 = utf16_string_to_pdf_escaped_ascii_bytes("Café")
   // é is Unicode U+00E9 (233 in decimal), should be octal escaped
-  inspect(@pdf.ascii_string_of_bytes(result1), content="Caf\\\\351")
+  inspect(@helper.ascii_string_of_bytes(result1), content="Caf\\\\351")
 
   // Test character above 255 (should be encoded as UTF-8 bytes)
   let result2 = utf16_string_to_pdf_escaped_ascii_bytes("Hello 世界")
   // 世 and 界 should be encoded as UTF-8 bytes and each byte escaped
   // This will produce a more complex escaped sequence
-  let ascii_result = @pdf.ascii_string_of_bytes(result2)
+  let ascii_result = @helper.ascii_string_of_bytes(result2)
   // Just verify it starts with "Hello "
   inspect(ascii_result.has_prefix("Hello "), content="true")
 }

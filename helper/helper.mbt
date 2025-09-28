@@ -1,7 +1,10 @@
 ///|
-/// This escape scheme is used PDF spec for literal strings.
-/// Non-printable characters (outside the range 32-126) are represented
-/// using octal escape sequences (e.g., \123 for the character with octal
+/// C language style escaped sequence spec.
+/// 
+/// Warning: this escaped function not equal to PDF literal string escaped sequence.
+///
+/// This function is intended to be used in debugging, logging, etc.
+///
 pub fn ascii_string_of_bytes(bytes : Bytes) -> String {
   let buffer = StringBuilder::new(size_hint=bytes.length() * 2)
   for b in bytes {
@@ -25,33 +28,4 @@ pub fn ascii_string_of_bytes(bytes : Bytes) -> String {
     }
   }
   buffer.to_string()
-}
-
-///|
-/// 
-/// The PostScript language names of 14 Type 1 fonts, known as the 
-/// standard 14 fonts.
-/// 
-/// in PDF 1.0 to PDF 1.7, some PDF dictionary object fields is optional.
-/// 
-/// - `FirstChar` 
-/// - `LastChar`
-/// - `Widths`
-/// - `FontDescriptor`
-/// 
-pub(all) enum StandardFont {
-  TimesRoman
-  TimesBold
-  TimesItalic
-  TimesBoldItalic
-  Helvetica
-  HelveticaBold
-  HelveticaOblique
-  HelveticaBoldOblique
-  Courier
-  CourierBold
-  CourierOblique
-  CourierBoldOblique
-  Symbol
-  ZapfDingbats
 }
