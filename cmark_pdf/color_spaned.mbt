@@ -97,6 +97,8 @@ fn from_cmark_code_block(block : @cmark.CodeBlock) -> Array[Array[ColorSpaned]] 
       let start = start.cnum
       let end = end.cnum
       let s = try! line.v[start:end]
+      // DOT_* token ignore the leading `.`, here we use a workaround
+      // https://github.com/moonbitlang/parser/issues/77
       let dot = match token {
         DOT_INT(_) | DOT_LIDENT(_) | DOT_UIDENT(_) => b"."
         _ => b""
