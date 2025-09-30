@@ -1,5 +1,5 @@
 ///|
-fnalias @helper.ascii_string_of_bytes
+fnalias @helper.ascii_string_of_bytesview
 
 ///|
 pub impl Show for Token with output(self, logger) {
@@ -29,12 +29,12 @@ pub impl Show for Token with output(self, logger) {
     }
     STRING(value) => {
       logger.write_string("STRING(")
-      logger.write_string(value |> ascii_string_of_bytes)
+      logger.write_string(value |> ascii_string_of_bytesview)
       logger.write_string(")")
     }
     NAME(value) => {
       logger.write_string("NAME(")
-      logger.write_string(value |> ascii_string_of_bytes)
+      logger.write_string(value |> ascii_string_of_bytesview)
       logger.write_string(")")
     }
     INDIRECT(value) => {

@@ -1,0 +1,98 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "illusory0x0/pdf/pdf_file_lexer"
+
+// Values
+fn skip_comment(BytesView) -> Int
+
+fn tokenize_body(BytesView, Int) -> LexResult[Body]
+
+fn tokenize_file(BytesView) -> LexResult[File] raise LexError
+
+fn tokenize_header(BytesView) -> LexResult[Header] raise LexError
+
+fn tokenize_startxref(BytesView, Int) -> LexResult[Int] raise LexError
+
+fn tokenize_trailer(BytesView, Int) -> LexResult[BytesView] raise LexError
+
+fn tokenize_xref_entry(BytesView, Int) -> LexResult[XRefEntry] raise LexError
+
+fn tokenize_xref_table(BytesView, Int) -> LexResult[XRefTable] raise LexError
+
+// Errors
+type LexError
+impl Show for LexError
+
+// Types and methods
+pub(all) struct Body(Array[Obj])
+#deprecated
+fn Body::inner(Self) -> Array[Obj]
+impl Eq for Body
+impl Show for Body
+impl ToJson for Body
+
+pub(all) enum EntryState {
+  InUse
+  Free
+}
+impl Eq for EntryState
+impl Show for EntryState
+impl ToJson for EntryState
+
+pub(all) struct File {
+  header : Header
+  body : Body
+  xref_table : XRefTable
+  trailer : BytesView
+  start_xref_pos : Int
+}
+impl Eq for File
+impl Show for File
+impl ToJson for File
+
+pub(all) struct Header {
+  major : Int
+  minor : Int
+}
+impl Eq for Header
+impl Show for Header
+impl ToJson for Header
+
+pub(all) struct LexResult[T] {
+  value : T
+  bytes_offset : Int
+  rest : BytesView
+}
+impl[T : Show] Show for LexResult[T]
+impl[T : ToJson] ToJson for LexResult[T]
+
+pub(all) struct Obj {
+  bytes_offset : Int
+  object_num : Int
+  generation_num : Int
+  obj_bytes : BytesView
+}
+impl Eq for Obj
+impl Show for Obj
+impl ToJson for Obj
+
+pub(all) struct XRefEntry {
+  bytes_offset : Int
+  generation_num : Int
+  state : EntryState
+}
+impl Eq for XRefEntry
+impl Show for XRefEntry
+impl ToJson for XRefEntry
+
+pub(all) struct XRefTable {
+  entries : Array[XRefEntry]
+  start_num : Int
+}
+impl Eq for XRefTable
+impl Show for XRefTable
+impl ToJson for XRefTable
+
+// Type aliases
+
+// Traits
+

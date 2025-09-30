@@ -1,5 +1,5 @@
 ///|
-fnalias @helper.ascii_string_of_bytes
+fnalias @helper.ascii_string_of_bytesview
 
 ///|
 test "PDF comment lexing with different end-of-line markers" {
@@ -69,28 +69,28 @@ test "PDF comment position tracking" {
 test "ascii_string_of_bytes escaping" {
   // Test normal printable characters
   let normal = b"Hello World"
-  inspect(ascii_string_of_bytes(normal), content="Hello World")
+  inspect(ascii_string_of_bytesview(normal), content="Hello World")
 
   // Test escape sequences
   let with_newline = b"Hello\nWorld"
-  inspect(ascii_string_of_bytes(with_newline), content="Hello\\nWorld")
+  inspect(ascii_string_of_bytesview(with_newline), content="Hello\\nWorld")
   let with_tab = b"Hello\tWorld"
-  inspect(ascii_string_of_bytes(with_tab), content="Hello\\tWorld")
+  inspect(ascii_string_of_bytesview(with_tab), content="Hello\\tWorld")
   let with_backslash = b"Hello\\World"
-  inspect(ascii_string_of_bytes(with_backslash), content="Hello\\\\World")
+  inspect(ascii_string_of_bytesview(with_backslash), content="Hello\\\\World")
 
   // Test non-printable characters (control characters)
   let with_bell : Array[Byte] = [
     72, 101, 108, 108, 111, 7, 87, 111, 114, 108, 100,
   ] // "Hello\x07World"
   inspect(
-    ascii_string_of_bytes(Bytes::from_array(with_bell)),
+    ascii_string_of_bytesview(Bytes::from_array(with_bell)),
     content="Hello\\007World",
   )
 
   // Test form feed
   let with_form_feed = b"Hello\x0cWorld"
-  inspect(ascii_string_of_bytes(with_form_feed), content="Hello\\fWorld")
+  inspect(ascii_string_of_bytesview(with_form_feed), content="Hello\\fWorld")
 }
 
 ///|
@@ -98,16 +98,16 @@ test "tokenize_pdf_literal basic escape sequences" {
   // Test basic escape sequences
   let input1 = b"Hello\\nWorld"
   let result1 = tokenize_pdf_literal_string(input1)
-  inspect(ascii_string_of_bytes(result1), content="Hello\\nWorld")
+  inspect(ascii_string_of_bytesview(result1), content="Hello\\nWorld")
   let input2 = b"Tab\\tSeparated"
   let result2 = tokenize_pdf_literal_string(input2)
-  inspect(ascii_string_of_bytes(result2), content="Tab\\tSeparated")
+  inspect(ascii_string_of_bytesview(result2), content="Tab\\tSeparated")
   let input3 = b"Backslash\\\\Test"
   let result3 = tokenize_pdf_literal_string(input3)
-  inspect(ascii_string_of_bytes(result3), content="Backslash\\\\Test")
+  inspect(ascii_string_of_bytesview(result3), content="Backslash\\\\Test")
   let input4 = b"Parens\\(\\)Test"
   let result4 = tokenize_pdf_literal_string(input4)
-  inspect(ascii_string_of_bytes(result4), content="Parens()Test")
+  inspect(ascii_string_of_bytesview(result4), content="Parens()Test")
 }
 
 ///|
@@ -115,17 +115,17 @@ test "tokenize_pdf_literal octal escape sequences" {
   // Test 3-digit octal escape sequences
   let input1 = b"Hello\\101World" // \101 is 'A' (65)
   let result1 = tokenize_pdf_literal_string(input1)
-  inspect(ascii_string_of_bytes(result1), content="HelloAWorld")
+  inspect(ascii_string_of_bytesview(result1), content="HelloAWorld")
 
   // Test 2-digit octal escape sequences
   let input2 = b"Bell\\07Sound" // \07 is bell character
   let result2 = tokenize_pdf_literal_string(input2)
-  inspect(ascii_string_of_bytes(result2), content="Bell\\007Sound")
+  inspect(ascii_string_of_bytesview(result2), content="Bell\\007Sound")
 
   // Test 1-digit octal escape sequences
   let input3 = b"Null\\0Char" // \0 is null character
   let result3 = tokenize_pdf_literal_string(input3)
-  inspect(ascii_string_of_bytes(result3), content="Null\\000Char")
+  inspect(ascii_string_of_bytesview(result3), content="Null\\000Char")
 }
 
 ///|
@@ -133,17 +133,17 @@ test "tokenize_pdf_literal end-of-line handling" {
   // Test CRLF conversion to LF
   let input1 = b"Line1\r\nLine2"
   let result1 = tokenize_pdf_literal_string(input1)
-  inspect(ascii_string_of_bytes(result1), content="Line1\\nLine2")
+  inspect(ascii_string_of_bytesview(result1), content="Line1\\nLine2")
 
   // Test CR conversion to LF
   let input2 = b"Line1\rLine2"
   let result2 = tokenize_pdf_literal_string(input2)
-  inspect(ascii_string_of_bytes(result2), content="Line1\\nLine2")
+  inspect(ascii_string_of_bytesview(result2), content="Line1\\nLine2")
 
   // Test LF remains LF
   let input3 = b"Line1\nLine2"
   let result3 = tokenize_pdf_literal_string(input3)
-  inspect(ascii_string_of_bytes(result3), content="Line1\\nLine2")
+  inspect(ascii_string_of_bytesview(result3), content="Line1\\nLine2")
 }
 
 ///|
@@ -151,17 +151,17 @@ test "tokenize_pdf_literal multi-line continuation" {
   // Test backslash followed by CRLF (should be ignored)
   let input1 = b"Line1\\\r\nLine2"
   let result1 = tokenize_pdf_literal_string(input1)
-  inspect(ascii_string_of_bytes(result1), content="Line1Line2")
+  inspect(ascii_string_of_bytesview(result1), content="Line1Line2")
 
   // Test backslash followed by CR (should be ignored)
   let input2 = b"Line1\\\rLine2"
   let result2 = tokenize_pdf_literal_string(input2)
-  inspect(ascii_string_of_bytes(result2), content="Line1Line2")
+  inspect(ascii_string_of_bytesview(result2), content="Line1Line2")
 
   // Test backslash followed by LF (should be ignored)
   let input3 = b"Line1\\\nLine2"
   let result3 = tokenize_pdf_literal_string(input3)
-  inspect(ascii_string_of_bytes(result3), content="Line1Line2")
+  inspect(ascii_string_of_bytesview(result3), content="Line1Line2")
 }
 
 ///|
@@ -170,7 +170,7 @@ test "tokenize_pdf_literal complex mixed content" {
   let input = b"Start\\n\\tIndented\\\\Path\\(param\\)\\101nd\\12Bell\\0Null"
   let result = tokenize_pdf_literal_string(input)
   inspect(
-    ascii_string_of_bytes(result),
+    ascii_string_of_bytesview(result),
     content="Start\\n\\tIndented\\\\Path(param)And\\nBell\\000Null",
   )
 }
@@ -180,27 +180,27 @@ test "tokenize_pdf_literal edge cases" {
   // Test empty string
   let input1 = b""
   let result1 = tokenize_pdf_literal_string(input1)
-  inspect(ascii_string_of_bytes(result1), content="")
+  inspect(ascii_string_of_bytesview(result1), content="")
 
   // Test unrecognized escape sequence (backslash should be ignored)
   let input2 = b"Test\\zInvalid"
   let result2 = tokenize_pdf_literal_string(input2)
-  inspect(ascii_string_of_bytes(result2), content="TestInvalid")
+  inspect(ascii_string_of_bytesview(result2), content="TestInvalid")
 
   // Test form feed escape
   let input3 = b"Page1\\fPage2"
   let result3 = tokenize_pdf_literal_string(input3)
-  inspect(ascii_string_of_bytes(result3), content="Page1\\fPage2")
+  inspect(ascii_string_of_bytesview(result3), content="Page1\\fPage2")
 
   // Test backspace escape
   let input4 = b"Back\\bSpace"
   let result4 = tokenize_pdf_literal_string(input4)
-  inspect(ascii_string_of_bytes(result4), content="Back\\bSpace")
+  inspect(ascii_string_of_bytesview(result4), content="Back\\bSpace")
 
   // Test carriage return escape
   let input5 = b"Car\\rReturn"
   let result5 = tokenize_pdf_literal_string(input5)
-  inspect(ascii_string_of_bytes(result5), content="Car\\rReturn")
+  inspect(ascii_string_of_bytesview(result5), content="Car\\rReturn")
 }
 
 ///|
@@ -208,17 +208,17 @@ test "tokenize_pdf_name basic characters" {
   // Test normal ASCII printable characters
   let input1 = b"SimpleNameTest"
   let result1 = tokenize_pdf_name(input1)
-  inspect(ascii_string_of_bytes(result1), content="SimpleNameTest")
+  inspect(ascii_string_of_bytesview(result1), content="SimpleNameTest")
 
   // Test with numbers and underscores
   let input2 = b"Name123_Test"
   let result2 = tokenize_pdf_name(input2)
-  inspect(ascii_string_of_bytes(result2), content="Name123_Test")
+  inspect(ascii_string_of_bytesview(result2), content="Name123_Test")
 
   // Test empty input
   let input3 = b""
   let result3 = tokenize_pdf_name(input3)
-  inspect(ascii_string_of_bytes(result3), content="")
+  inspect(ascii_string_of_bytesview(result3), content="")
 }
 
 ///|
@@ -226,22 +226,22 @@ test "tokenize_pdf_name hex escape sequences" {
   // Test basic hex escape sequences
   let input1 = b"Name#41Test" // #41 is 'A' (65)
   let result1 = tokenize_pdf_name(input1)
-  inspect(ascii_string_of_bytes(result1), content="NameATest")
+  inspect(ascii_string_of_bytesview(result1), content="NameATest")
 
   // Test lowercase hex
   let input2 = b"Name#61Test" // #61 is 'a' (97)
   let result2 = tokenize_pdf_name(input2)
-  inspect(ascii_string_of_bytes(result2), content="NameaTest")
+  inspect(ascii_string_of_bytesview(result2), content="NameaTest")
 
   // Test uppercase hex
   let input3 = b"Name#4FTest" // #4F is 'O' (79)
   let result3 = tokenize_pdf_name(input3)
-  inspect(ascii_string_of_bytes(result3), content="NameOTest")
+  inspect(ascii_string_of_bytesview(result3), content="NameOTest")
 
   // Test mixed case hex
   let input4 = b"Name#4fTest" // #4f is 'O' (79)
   let result4 = tokenize_pdf_name(input4)
-  inspect(ascii_string_of_bytes(result4), content="NameOTest")
+  inspect(ascii_string_of_bytesview(result4), content="NameOTest")
 }
 
 ///|
@@ -249,17 +249,17 @@ test "tokenize_pdf_name special characters" {
   // Test space escape
   let input1 = b"Name#20Test" // #20 is space (32)
   let result1 = tokenize_pdf_name(input1)
-  inspect(ascii_string_of_bytes(result1), content="Name Test")
+  inspect(ascii_string_of_bytesview(result1), content="Name Test")
 
   // Test null character
   let input2 = b"Name#00Test" // #00 is null (0)
   let result2 = tokenize_pdf_name(input2)
-  inspect(ascii_string_of_bytes(result2), content="Name\\000Test")
+  inspect(ascii_string_of_bytesview(result2), content="Name\\000Test")
 
   // Test control character
   let input3 = b"Name#07Test" // #07 is bell (7)
   let result3 = tokenize_pdf_name(input3)
-  inspect(ascii_string_of_bytes(result3), content="Name\\007Test")
+  inspect(ascii_string_of_bytesview(result3), content="Name\\007Test")
 }
 
 ///|
@@ -267,22 +267,22 @@ test "tokenize_pdf_name edge cases" {
   // Test invalid hex sequences (should treat # as literal)
   let input1 = b"Name#GGTest" // Invalid hex characters
   let result1 = tokenize_pdf_name(input1)
-  inspect(ascii_string_of_bytes(result1), content="Name#GGTest")
+  inspect(ascii_string_of_bytesview(result1), content="Name#GGTest")
 
   // Test incomplete hex sequence at end
   let input2 = b"Name#4" // Incomplete, should be treated as #40
   let result2 = tokenize_pdf_name(input2)
-  inspect(ascii_string_of_bytes(result2), content="Name@") // #40 is '@' (64)
+  inspect(ascii_string_of_bytesview(result2), content="Name@") // #40 is '@' (64)
 
   // Test lone # at end
   let input3 = b"Name#"
   let result3 = tokenize_pdf_name(input3)
-  inspect(ascii_string_of_bytes(result3), content="Name#")
+  inspect(ascii_string_of_bytesview(result3), content="Name#")
 
   // Test invalid single hex character
   let input4 = b"Name#XY" // X is invalid
   let result4 = tokenize_pdf_name(input4)
-  inspect(ascii_string_of_bytes(result4), content="Name#XY")
+  inspect(ascii_string_of_bytesview(result4), content="Name#XY")
 }
 
 ///|
@@ -290,22 +290,22 @@ test "tokenize_pdf_hexadecimal_string basic hex pairs" {
   // Test basic hex pairs
   let input1 = b"48656C6C6F" // "Hello" in hex
   let result1 = tokenize_pdf_hexadecimal_string(input1[:])
-  inspect(ascii_string_of_bytes(result1), content="Hello")
+  inspect(ascii_string_of_bytesview(result1), content="Hello")
 
   // Test with lowercase hex
   let input2 = b"48656c6c6f" // "Hello" in hex (lowercase)
   let result2 = tokenize_pdf_hexadecimal_string(input2[:])
-  inspect(ascii_string_of_bytes(result2), content="Hello")
+  inspect(ascii_string_of_bytesview(result2), content="Hello")
 
   // Test mixed case hex
   let input3 = b"48656C6c6F" // "Hello" in hex (mixed case)
   let result3 = tokenize_pdf_hexadecimal_string(input3[:])
-  inspect(ascii_string_of_bytes(result3), content="Hello")
+  inspect(ascii_string_of_bytesview(result3), content="Hello")
 
   // Test empty input
   let input4 = b""
   let result4 = tokenize_pdf_hexadecimal_string(input4[:])
-  inspect(ascii_string_of_bytes(result4), content="")
+  inspect(ascii_string_of_bytesview(result4), content="")
 }
 
 ///|
@@ -313,27 +313,27 @@ test "tokenize_pdf_hexadecimal_string whitespace handling" {
   // Test with spaces between hex pairs
   let input1 = b"48 65 6C 6C 6F" // "Hello" with spaces
   let result1 = tokenize_pdf_hexadecimal_string(input1[:])
-  inspect(ascii_string_of_bytes(result1), content="Hello")
+  inspect(ascii_string_of_bytesview(result1), content="Hello")
 
   // Test with tabs between hex pairs
   let input2 = b"48\t65\t6C\t6C\t6F" // "Hello" with tabs
   let result2 = tokenize_pdf_hexadecimal_string(input2[:])
-  inspect(ascii_string_of_bytes(result2), content="Hello")
+  inspect(ascii_string_of_bytesview(result2), content="Hello")
 
   // Test with CR and LF
   let input3 = b"48\r65\n6C\r\n6C\n6F" // "Hello" with CR/LF
   let result3 = tokenize_pdf_hexadecimal_string(input3[:])
-  inspect(ascii_string_of_bytes(result3), content="Hello")
+  inspect(ascii_string_of_bytesview(result3), content="Hello")
 
   // Test with mixed whitespace
   let input4 = b"48 \t\r\n65 6C\t6C 6F" // "Hello" with mixed whitespace
   let result4 = tokenize_pdf_hexadecimal_string(input4[:])
-  inspect(ascii_string_of_bytes(result4), content="Hello")
+  inspect(ascii_string_of_bytesview(result4), content="Hello")
 
   // Test whitespace at beginning and end
   let input5 = b" \t48656C6C6F \r\n" // "Hello" with surrounding whitespace
   let result5 = tokenize_pdf_hexadecimal_string(input5[:])
-  inspect(ascii_string_of_bytes(result5), content="Hello")
+  inspect(ascii_string_of_bytesview(result5), content="Hello")
 }
 
 ///|
@@ -341,17 +341,17 @@ test "tokenize_pdf_hexadecimal_string odd number of digits" {
   // Test single odd digit - should be treated as followed by 0
   let input1 = b"4" // Should become 0x40 = 64 = '@'
   let result1 = tokenize_pdf_hexadecimal_string(input1[:])
-  inspect(ascii_string_of_bytes(result1), content="@")
+  inspect(ascii_string_of_bytesview(result1), content="@")
 
   // Test multiple pairs plus one odd digit
   let input2 = b"48656C6C6F4" // "Hello" + 0x40 = "Hello@"
   let result2 = tokenize_pdf_hexadecimal_string(input2[:])
-  inspect(ascii_string_of_bytes(result2), content="Hello@")
+  inspect(ascii_string_of_bytesview(result2), content="Hello@")
 
   // Test odd digit with whitespace
   let input3 = b"48 65 6C 6C 6F 4" // "Hello" + 0x40 with spaces
   let result3 = tokenize_pdf_hexadecimal_string(input3[:])
-  inspect(ascii_string_of_bytes(result3), content="Hello@")
+  inspect(ascii_string_of_bytesview(result3), content="Hello@")
 
   // Test various odd digits
   let input4 = b"A" // Should become 0xA0 = 160
@@ -367,22 +367,22 @@ test "tokenize_pdf_hexadecimal_string non-hex characters" {
   // Test with non-hex characters that should be ignored
   let input1 = b"48G65H6CI6CJ6F" // "Hello" with G,H,I,J that should be ignored
   let result1 = tokenize_pdf_hexadecimal_string(input1[:])
-  inspect(ascii_string_of_bytes(result1), content="Hello")
+  inspect(ascii_string_of_bytesview(result1), content="Hello")
 
   // Test with punctuation mixed in
   let input2 = b"48!65@6C#6C$6F" // "Hello" with punctuation
   let result2 = tokenize_pdf_hexadecimal_string(input2[:])
-  inspect(ascii_string_of_bytes(result2), content="Hello")
+  inspect(ascii_string_of_bytesview(result2), content="Hello")
 
   // Test with only non-hex characters
   let input3 = b"GHIJKLMNOP"
   let result3 = tokenize_pdf_hexadecimal_string(input3[:])
-  inspect(ascii_string_of_bytes(result3), content="")
+  inspect(ascii_string_of_bytesview(result3), content="")
 
   // Test mix of hex and non-hex with odd count
   let input4 = b"4G8H6I5J" // Should parse as 48,65 = "He"
   let result4 = tokenize_pdf_hexadecimal_string(input4[:])
-  inspect(ascii_string_of_bytes(result4), content="He")
+  inspect(ascii_string_of_bytesview(result4), content="He")
 }
 
 ///|
@@ -390,7 +390,7 @@ test "tokenize_pdf_hexadecimal_string special byte values" {
   // Test null byte
   let input1 = b"00" // null byte
   let result1 = tokenize_pdf_hexadecimal_string(input1[:])
-  inspect(ascii_string_of_bytes(result1), content="\\000")
+  inspect(ascii_string_of_bytesview(result1), content="\\000")
 
   // Test high values
   let input2 = b"FF" // 255
@@ -400,12 +400,12 @@ test "tokenize_pdf_hexadecimal_string special byte values" {
   // Test control characters
   let input3 = b"070809" // Bell, backspace, tab
   let result3 = tokenize_pdf_hexadecimal_string(input3[:])
-  inspect(ascii_string_of_bytes(result3), content="\\007\\b\\t")
+  inspect(ascii_string_of_bytesview(result3), content="\\007\\b\\t")
 
   // Test newline and carriage return
   let input4 = b"0A0D" // LF, CR
   let result4 = tokenize_pdf_hexadecimal_string(input4[:])
-  inspect(ascii_string_of_bytes(result4), content="\\n\\r")
+  inspect(ascii_string_of_bytesview(result4), content="\\n\\r")
 }
 
 ///|
@@ -413,18 +413,18 @@ test "tokenize_pdf_hexadecimal_string edge cases" {
   // Test only whitespace
   let input1 = b" \t\r\n"
   let result1 = tokenize_pdf_hexadecimal_string(input1[:])
-  inspect(ascii_string_of_bytes(result1), content="")
+  inspect(ascii_string_of_bytesview(result1), content="")
 
   // Test alternating hex and non-hex
   let input2 = b"4X8Y6Z5" // Should parse as 4,8,6,5 with odd digit at end
   let result2 = tokenize_pdf_hexadecimal_string(input2[:])
   // 0x48 = 'H', 0x65 = 'e', 0x50 = 'P' (5 followed by 0)
-  inspect(ascii_string_of_bytes(result2), content="He")
+  inspect(ascii_string_of_bytesview(result2), content="He")
 
   // Test long string with various cases
   let input3 = b"48 65 6C 6C 6F 20 57 6F 72 6C 64 21" // "Hello World!"
   let result3 = tokenize_pdf_hexadecimal_string(input3[:])
-  inspect(ascii_string_of_bytes(result3), content="Hello World!")
+  inspect(ascii_string_of_bytesview(result3), content="Hello World!")
 
   // Test very long hex string
   let input4 = b"546869732069732061206C6F6E67206865786164656369"
@@ -434,7 +434,7 @@ test "tokenize_pdf_hexadecimal_string edge cases" {
   )
   let result4 = tokenize_pdf_hexadecimal_string(combined_input[:])
   inspect(
-    ascii_string_of_bytes(result4),
+    ascii_string_of_bytesview(result4),
     content="This is a long hexadecimal string to test",
   )
 }

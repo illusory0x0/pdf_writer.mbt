@@ -1,0 +1,4 @@
+{
+  "import": ["illusory0x0/lexer/lexer_bytes", "illusory0x0/pdf/helper"],
+  "test-import": ["moonbitlang/x/fs"]
+}

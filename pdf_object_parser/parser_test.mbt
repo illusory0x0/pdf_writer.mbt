@@ -8,7 +8,7 @@ fn string_of_pdf_object(obj : @pdf.Object) -> String {
   let buf = @fmt.Memory::make(@fmt.Format::count(obj), 0)
   let ofs = @fmt.Format::write(obj, buf, 0)
   let bytes = bytes_of_memory(buf, ofs)
-  ascii_string_of_bytes(bytes)
+  ascii_string_of_bytesview(bytes)
 }
 
 ///|
