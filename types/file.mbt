@@ -133,9 +133,9 @@ fn count_pdf_obj(obj : Object, n : Int) -> Int {
 /// `n` is a keyword identifying this as an in-use entry
 /// `f` is for free entry
 ///
-/// <eol> shall be two end-of-line characters.
+///  two character end-of-line sequences 
+///  SP CR, SP LF, or CR LF
 /// 
-///  SP CR, SP LF, LF, or CR
 /// 
 /// In this implementation, we use CR LF (`\r\n`)
 fn write_pdf_xref(xref_offset : Int, buf : @fmt.Memory, start : Int) -> Int {

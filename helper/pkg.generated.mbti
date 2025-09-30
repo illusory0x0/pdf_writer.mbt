@@ -2,7 +2,7 @@
 package "illusory0x0/pdf/helper"
 
 // Values
-fn ascii_string_of_bytes(Bytes) -> String
+fn ascii_string_of_bytesview(BytesView) -> String
 
 // Errors
 

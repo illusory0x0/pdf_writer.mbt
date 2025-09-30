@@ -5,7 +5,7 @@
 ///
 /// This function is intended to be used in debugging, logging, etc.
 ///
-pub fn ascii_string_of_bytes(non_escape : Bytes) -> String {
+pub fn ascii_string_of_bytesview(non_escape : BytesView) -> String {
   let buffer = StringBuilder::new(size_hint=non_escape.length() * 2)
   for b in non_escape {
     // if b is non printable, please escape it
