@@ -2,7 +2,8 @@
   "import": [
     "illusory0x0/fmt",
     "illusory0x0/fmt/padding",
-    "illusory0x0/pdf/mem_helper"
+    "illusory0x0/pdf/mem_helper",
+    "illusory0x0/pdf/helper"
   ],
   "test-import": [
     "moonbitlang/x/fs",

@@ -1,0 +1,11 @@
+{
+  "import": [
+    "illusory0x0/pdf/pdf_object_parser",
+    "illusory0x0/pdf/pdf_file_lexer",
+    {
+      "path": "illusory0x0/pdf/types",
+      "alias": "pdf"
+    }
+  ],
+  "test-import": ["illusory0x0/pdf/helper"]
+}

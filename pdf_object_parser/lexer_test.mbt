@@ -844,3 +844,16 @@ test "tokenize comprehensive integration" {
     ),
   )
 }
+
+///|
+test {
+  let input = b"true\n"
+  let tokens = tokenize(input)
+  inspect(tokens.length(), content="2")
+  inspect(tokens[0], content="(TRUE, {row: 0, col: 0}, {row: 0, col: 4})")
+  inspect(tokens[1], content="(EOF, {row: 1, col: 0}, {row: 1, col: 0})")
+  inspect(
+    tokens,
+    content="[(TRUE, {row: 0, col: 0}, {row: 0, col: 4}), (EOF, {row: 1, col: 0}, {row: 1, col: 0})]",
+  )
+}
