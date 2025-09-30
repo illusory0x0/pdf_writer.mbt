@@ -17,6 +17,7 @@ fn ContentStream::iter(Self) -> Iter[GraphicOperator]
 fn ContentStream::to_stream(Self) -> Stream
 fn ContentStream::to_stream_object(Self) -> Object
 impl @fmt.Format for ContentStream
+impl ToJson for ContentStream
 
 pub(all) struct File {
   major : Int
@@ -25,6 +26,7 @@ pub(all) struct File {
   trailer : Object
 }
 impl @fmt.Format for File
+impl ToJson for File
 
 pub(all) enum GraphicOperator {
   Op_w(Double)
@@ -104,6 +106,7 @@ pub(all) enum GraphicOperator {
   Op_Comment(Bytes)
 }
 impl @fmt.Format for GraphicOperator
+impl ToJson for GraphicOperator
 
 pub(all) enum Object {
   Null
@@ -139,6 +142,7 @@ pub(all) enum StandardFont {
 fn StandardFont::to_pdf_dictionary(Self) -> Object
 fn StandardFont::to_pdf_name(Self) -> Object
 impl Show for StandardFont
+impl ToJson for StandardFont
 
 pub(all) struct Stream(Bytes)
 #deprecated
@@ -153,6 +157,7 @@ pub(all) struct TransformMatrix {
   e : Double
   f : Double
 }
+impl ToJson for TransformMatrix
 
 // Type aliases
 
