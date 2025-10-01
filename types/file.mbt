@@ -30,7 +30,7 @@ pub impl @fmt.Format for File with write(
     }
     offset += write_pdf_xrefs(xref_offsets, buffer, offset)
     offset += write_pdf_trailer(value.trailer, buffer, offset)
-    offset += @fmt.Format::write(b"startxref\n", buffer, offset)
+    offset += @fmt.write(b"startxref\n", buffer, offset)
     let startxref_offset = offset
     offset += @fmt.format_write(
       b"{}\n%%EOF\n",
@@ -58,7 +58,7 @@ pub impl @fmt.Format for File with count(value : File) -> Int {
   total += count_pdf_trailer(value.trailer)
   total += 11 // "startxref\n"
   let startxref_offset = total
-  total += @fmt.Format::count(startxref_offset)
+  total += @fmt.count(startxref_offset)
   total += 7 // "\n%%EOF\n"
   total
 }
@@ -79,7 +79,7 @@ fn write_pdf_header(pdf : File, buf : @fmt.Memory, start : Int) -> Int {
     //
     offset += @fmt.format_write(
       "%{}\n",
-      [@fmt.BigEndian(0x80818283)],
+      [@fmt.big_endian(0x80818283)],
       buf,
       offset,
     )
@@ -92,9 +92,9 @@ fn write_pdf_header(pdf : File, buf : @fmt.Memory, start : Int) -> Int {
 ///|
 fn count_pdf_header(pdf : File) -> Int {
   5 + // "%PDF-"
-  @fmt.Format::count(pdf.major) +
+  @fmt.count(pdf.major) +
   1 + // "."
-  @fmt.Format::count(pdf.minor) +
+  @fmt.count(pdf.minor) +
   1 + // "\n"
   1 + // "%"
   4 + // BigEndian(0x80818283)
@@ -106,8 +106,8 @@ fn write_pdf_obj(obj : Object, n : Int, buf : @fmt.Memory, start : Int) -> Int {
   try {
     let mut offset = start
     offset += @fmt.format_write("{} 0 obj\n", [n], buf, offset)
-    offset += @fmt.Format::write(obj, buf, offset)
-    offset += @fmt.Format::write(b"\nendobj\n", buf, offset)
+    offset += @fmt.write(obj, buf, offset)
+    offset += @fmt.write(b"\nendobj\n", buf, offset)
     offset - start
   } catch {
     _ => panic()
@@ -116,9 +116,9 @@ fn write_pdf_obj(obj : Object, n : Int, buf : @fmt.Memory, start : Int) -> Int {
 
 ///|
 fn count_pdf_obj(obj : Object, n : Int) -> Int {
-  @fmt.Format::count(n) +
+  @fmt.count(n) +
   7 + // " 0 obj\n"
-  @fmt.Format::count(obj) +
+  @fmt.count(obj) +
   8 // "\nendobj\n"
 }
 
@@ -161,14 +161,14 @@ fn write_pdf_xrefs(
 ) -> Int {
   try {
     let mut offset = start
-    offset += @fmt.Format::write(b"xref\n", buf, offset)
+    offset += @fmt.write(b"xref\n", buf, offset)
     offset += @fmt.format_write(
       b"0 {}\n",
       [xref_offsets.length() + 1],
       buf,
       offset,
     )
-    offset += @fmt.Format::write(b"0000000000 65535 f \n", buf, offset)
+    offset += @fmt.write(b"0000000000 65535 f \n", buf, offset)
     for xref_offset in xref_offsets {
       offset += write_pdf_xref(xref_offset, buf, offset)
     }
@@ -183,7 +183,7 @@ fn count_pdf_xrefs(xref_offsets : Array[Int]) -> Int {
   let mut total = 0
   total += 5 // "xref\n"
   total += 2 // "0 "
-  total += @fmt.Format::count(xref_offsets.length() + 1)
+  total += @fmt.count(xref_offsets.length() + 1)
   total += 1 // "\n"
   total += 18 // "0000000000 65535 f \n"
   for xref_offset in xref_offsets {
@@ -199,15 +199,15 @@ fn write_pdf_trailer(
   start : Int,
 ) -> Int {
   let mut offset = start
-  offset += @fmt.Format::write(b"trailer\n", buf, offset)
-  offset += @fmt.Format::write(trailer_dict, buf, offset)
-  offset += @fmt.Format::write(b"\n", buf, offset)
+  offset += @fmt.write(b"trailer\n", buf, offset)
+  offset += @fmt.write(trailer_dict, buf, offset)
+  offset += @fmt.write(b"\n", buf, offset)
   offset - start
 }
 
 ///|
 fn count_pdf_trailer(trailer_dict : Object) -> Int {
   8 + // "trailer\n"
-  @fmt.Format::count(trailer_dict) +
+  @fmt.count(trailer_dict) +
   1 // "\n"
 }

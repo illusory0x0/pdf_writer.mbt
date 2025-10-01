@@ -11,6 +11,7 @@
   ],
   "test-import": [
     "illusory0x0/fmt",
+    "illusory0x0/fmt/types",
     { "path": "illusory0x0/pdf/types", "alias": "pdf" }
   ],
   "warn-list": "-1-2-3-4-6-7"
