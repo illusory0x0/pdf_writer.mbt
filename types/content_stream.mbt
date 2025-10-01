@@ -8,20 +8,20 @@ pub impl @fmt.Format for ContentStream with write(self, buf, start) {
   let xs = self.0
   let mut offset = start
   for x in xs {
-    offset += @fmt.Format::write(x, buf, offset)
+    offset += @fmt.write(x, buf, offset)
   }
   offset - start
 }
 
 ///|
 pub impl @fmt.Format for ContentStream with count(xs) {
-  xs.0.fold(init=0, (acc, x) => @fmt.Format::count(x) + acc)
+  xs.0.fold(init=0, (acc, x) => @fmt.count(x) + acc)
 }
 
 ///|
 pub fn ContentStream::to_stream(self : Self) -> Stream {
-  let buffer = @fmt.Memory::make(@fmt.Format::count(self), 0)
-  let offset = @fmt.Format::write(self, buffer, 0)
+  let buffer = @fmt.Memory::make(@fmt.count(self), 0)
+  let offset = @fmt.write(self, buffer, 0)
   let bytes = @mem_helper.bytes_of_memory(buffer, offset)
   bytes
 }

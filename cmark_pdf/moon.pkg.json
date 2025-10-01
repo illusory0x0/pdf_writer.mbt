@@ -3,6 +3,7 @@
     "moonbitlang/x/fs",
     "rami3l/cmark/cmark",
     "illusory0x0/fmt",
+    "illusory0x0/fmt/types",
     "moonbitlang/parser/lexer",
     "moonbitlang/parser/tokens",
     "moonbitlang/parser/basic",

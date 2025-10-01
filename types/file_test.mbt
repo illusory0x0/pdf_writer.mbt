@@ -5,7 +5,7 @@ test "test write to file" {
 
   // Use define_pages helper function
   let pages = @pdf_helper.define_pages(pages=[@pdf.Indirect(4)])
-  let offset = @fmt.Format::write(pages, buf, 0)
+  let offset = @fmt.write(pages, buf, 0)
   inspect(
     @mem_helper.string_of_memory(buffer, offset),
     content=(
@@ -30,14 +30,14 @@ test "test write to file" {
   let op4 = @pdf.Op_Tj(b"Hello, World!")
   let op5 = @pdf.Op_ET
   let content : @pdf.ContentStream = [op1, op2, op3, op4, op5]
-  let offset = @fmt.Format::write(content, buf, 0)
+  let offset = @fmt.write(content, buf, 0)
   let bytes = @mem_helper.bytes_of_memory(buf, offset)
   let len = bytes.length()
   let stm = @pdf.Object::Stream(
     @pdf.Dictionary([("/Length", @pdf.Integer(len))]),
     bytes,
   )
-  let offset = @fmt.Format::write(stm, buf, 0)
+  let offset = @fmt.write(stm, buf, 0)
   inspect(
     @mem_helper.string_of_memory(buffer, offset),
     content=(
@@ -76,7 +76,7 @@ test (t : @test.T) {
   let op4 = @pdf.Op_Tj(b"Hello, World!")
   let op5 = @pdf.Op_ET
   let content : @pdf.ContentStream = [op1, op2, op3, op4, op5]
-  let offset = @fmt.Format::write(content, buf, 0)
+  let offset = @fmt.write(content, buf, 0)
   inspect(
     @mem_helper.string_of_memory(buf, offset),
     content=" 1 0 0 1 50 770 cm BT /F0 36 Tf (Hello, World!) Tj ET",
@@ -111,7 +111,7 @@ test (t : @test.T) {
     parent=@pdf.Indirect(2),
     resources=[font_resources],
   )
-  let offset = @fmt.Format::write(stm, buf, 0)
+  let offset = @fmt.write(stm, buf, 0)
   inspect(
     @mem_helper.string_of_memory(buf, offset),
     content=(
@@ -123,7 +123,7 @@ test (t : @test.T) {
       #|endstream
     ),
   )
-  let offset = @fmt.Format::write(pages, buf, 0)
+  let offset = @fmt.write(pages, buf, 0)
   inspect(
     @mem_helper.string_of_memory(buf, offset),
     content=(
@@ -134,7 +134,7 @@ test (t : @test.T) {
       #|>>
     ),
   )
-  let offset = @fmt.Format::write(catalog, buf, 0)
+  let offset = @fmt.write(catalog, buf, 0)
   inspect(
     @mem_helper.string_of_memory(buf, offset),
     content=(
@@ -144,7 +144,7 @@ test (t : @test.T) {
       #|>>
     ),
   )
-  let offset = @fmt.Format::write(page, buf, 0)
+  let offset = @fmt.write(page, buf, 0)
   inspect(
     @mem_helper.string_of_memory(buf, offset),
     content=(
@@ -166,7 +166,7 @@ test (t : @test.T) {
     ),
   )
   let pdf = @pdf_helper.make_pdf(@pdf.Indirect(3), [stm, pages, catalog, page])
-  let offset = @fmt.Format::write(pdf, buf, 0)
+  let offset = @fmt.write(pdf, buf, 0)
   let pdf_file = @mem_helper.bytes_of_memory(buf, offset)
   @fs.write_bytes_to_file("./output/hello.pdf", pdf_file)
   t.writeln(pdf_file)
@@ -187,7 +187,7 @@ test "image" (t : @test.T) {
     f: 770,
   }
   let content : @pdf.ContentStream = [@pdf.Op_cm(tm), @pdf.Op_Do(b"/Im0")]
-  let offset = @fmt.Format::write(content, buf, 0)
+  let offset = @fmt.write(content, buf, 0)
   let bytes = @mem_helper.bytes_of_memory(buf, offset)
   let len = bytes.length()
 
@@ -235,7 +235,7 @@ test "image" (t : @test.T) {
   let pdf = @pdf_helper.make_pdf(@pdf.Indirect(3), [
     stm, pages, catalog, page, image, icc,
   ])
-  let offset = @fmt.Format::write(pdf, buf, 0)
+  let offset = @fmt.write(pdf, buf, 0)
   let bytes = @mem_helper.bytes_of_memory(buf, offset)
   @fs.write_bytes_to_file("./output/ocaml.pdf", bytes)
   t.writeln(bytes)

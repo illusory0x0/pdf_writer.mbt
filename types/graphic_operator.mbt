@@ -173,105 +173,105 @@ pub impl @fmt.Format for GraphicOperator with write(
 pub impl @fmt.Format for GraphicOperator with count(value : GraphicOperator) -> Int {
   match value {
     // " {} w" = 1 + count(w) + 2 = count(w) + 3
-    Op_w(w) => @fmt.Format::count(w) + 3
+    Op_w(w) => @fmt.count(w) + 3
     // " {} J" = 1 + count(j) + 2 = count(j) + 3  
-    Op_J(j) => @fmt.Format::count(j) + 3
+    Op_J(j) => @fmt.count(j) + 3
     // " {} j" = 1 + count(j) + 2 = count(j) + 3
-    Op_j(j) => @fmt.Format::count(j) + 3
+    Op_j(j) => @fmt.count(j) + 3
     // " {} M" = 1 + count(m) + 2 = count(m) + 3
-    Op_M(m) => @fmt.Format::count(m) + 3
+    Op_M(m) => @fmt.count(m) + 3
     // " {} {} {} {} {} {} cm" = 1 + count(a) + 1 + count(b) + 1 + count(c) + 1 + count(d) + 1 + count(e) + 1 + count(f) + 3
     Op_cm(t) =>
       1 +
-      @fmt.Format::count(t.a) +
+      @fmt.count(t.a) +
       1 +
-      @fmt.Format::count(t.b) +
+      @fmt.count(t.b) +
       1 +
-      @fmt.Format::count(t.c) +
+      @fmt.count(t.c) +
       1 +
-      @fmt.Format::count(t.d) +
+      @fmt.count(t.d) +
       1 +
-      @fmt.Format::count(t.e) +
+      @fmt.count(t.e) +
       1 +
-      @fmt.Format::count(t.f) +
+      @fmt.count(t.f) +
       3
     // " BT" = 3
     Op_BT => 3
     // " ET" = 3  
     Op_ET => 3
     // " {} {} Tf" = 1 + count(k) + 1 + count(s) + 3
-    Op_Tf(k, s) => 1 + @fmt.Format::count(k) + 1 + @fmt.Format::count(s) + 3
+    Op_Tf(k, s) => 1 + @fmt.count(k) + 1 + @fmt.count(s) + 3
     // " ({}) Tj" = 2 + count(s) + 4
-    Op_Tj(s) => 2 + @fmt.Format::count(s) + 4
+    Op_Tj(s) => 2 + @fmt.count(s) + 4
     // " {} ... {} d" = sum of (" {}" for each f) + " {} d"
     Op_d(fl, y) =>
-      fl.fold(init=0, fn(acc, f) { acc + 1 + @fmt.Format::count(f) }) +
+      fl.fold(init=0, fn(acc, f) { acc + 1 + @fmt.count(f) }) +
       1 +
-      @fmt.Format::count(y) +
+      @fmt.count(y) +
       2
     // " {} ri" = 1 + count(s) + 3
-    Op_ri(s) => 1 + @fmt.Format::count(s) + 3
+    Op_ri(s) => 1 + @fmt.count(s) + 3
     // " {} i" = 1 + count(i) + 2
-    Op_i(i) => 1 + @fmt.Format::count(i) + 2
+    Op_i(i) => 1 + @fmt.count(i) + 2
     // " {} gs" = 1 + count(s) + 3
-    Op_gs(s) => 1 + @fmt.Format::count(s) + 3
+    Op_gs(s) => 1 + @fmt.count(s) + 3
     // " q" = 2
     Op_q => 2
     // " Q" = 2
     Op_Q => 2
     // " {} {} m" = 1 + count(a) + 1 + count(b) + 2
-    Op_m(a, b) => 1 + @fmt.Format::count(a) + 1 + @fmt.Format::count(b) + 2
+    Op_m(a, b) => 1 + @fmt.count(a) + 1 + @fmt.count(b) + 2
     // " {} {} l" = 1 + count(a) + 1 + count(b) + 2
-    Op_l(a, b) => 1 + @fmt.Format::count(a) + 1 + @fmt.Format::count(b) + 2
+    Op_l(a, b) => 1 + @fmt.count(a) + 1 + @fmt.count(b) + 2
     // " {} {} {} {} {} {} c" = 1 + count(a) + 1 + count(b) + 1 + count(c) + 1 + count(d) + 1 + count(e) + 1 + count(k) + 2
     Op_c(a, b, c, d, e, k) =>
       1 +
-      @fmt.Format::count(a) +
+      @fmt.count(a) +
       1 +
-      @fmt.Format::count(b) +
+      @fmt.count(b) +
       1 +
-      @fmt.Format::count(c) +
+      @fmt.count(c) +
       1 +
-      @fmt.Format::count(d) +
+      @fmt.count(d) +
       1 +
-      @fmt.Format::count(e) +
+      @fmt.count(e) +
       1 +
-      @fmt.Format::count(k) +
+      @fmt.count(k) +
       2
     // " {} {} {} {} v" = 1 + count(a) + 1 + count(b) + 1 + count(c) + 1 + count(d) + 2
     Op_v(a, b, c, d) =>
       1 +
-      @fmt.Format::count(a) +
+      @fmt.count(a) +
       1 +
-      @fmt.Format::count(b) +
+      @fmt.count(b) +
       1 +
-      @fmt.Format::count(c) +
+      @fmt.count(c) +
       1 +
-      @fmt.Format::count(d) +
+      @fmt.count(d) +
       2
     // " {} {} {} {} y" = 1 + count(a) + 1 + count(b) + 1 + count(c) + 1 + count(d) + 2
     Op_y(a, b, c, d) =>
       1 +
-      @fmt.Format::count(a) +
+      @fmt.count(a) +
       1 +
-      @fmt.Format::count(b) +
+      @fmt.count(b) +
       1 +
-      @fmt.Format::count(c) +
+      @fmt.count(c) +
       1 +
-      @fmt.Format::count(d) +
+      @fmt.count(d) +
       2
     // " h" = 2
     Op_h => 2
     // " {} {} {} {} re" = 1 + count(a) + 1 + count(b) + 1 + count(c) + 1 + count(d) + 3
     Op_re(a, b, c, d) =>
       1 +
-      @fmt.Format::count(a) +
+      @fmt.count(a) +
       1 +
-      @fmt.Format::count(b) +
+      @fmt.count(b) +
       1 +
-      @fmt.Format::count(c) +
+      @fmt.count(c) +
       1 +
-      @fmt.Format::count(d) +
+      @fmt.count(d) +
       3
     // " S" = 2
     Op_S => 2
@@ -298,153 +298,130 @@ pub impl @fmt.Format for GraphicOperator with count(value : GraphicOperator) -> 
     // " W*" = 3
     Op_W_star => 3
     // " {} Tc" = 1 + count(c) + 3
-    Op_Tc(c) => 1 + @fmt.Format::count(c) + 3
+    Op_Tc(c) => 1 + @fmt.count(c) + 3
     // " {} Tw" = 1 + count(w) + 3
-    Op_Tw(w) => 1 + @fmt.Format::count(w) + 3
+    Op_Tw(w) => 1 + @fmt.count(w) + 3
     // " {} Tz" = 1 + count(z) + 3
-    Op_Tz(z) => 1 + @fmt.Format::count(z) + 3
+    Op_Tz(z) => 1 + @fmt.count(z) + 3
     // " {} TL" = 1 + count(l) + 3
-    Op_TL(l) => 1 + @fmt.Format::count(l) + 3
+    Op_TL(l) => 1 + @fmt.count(l) + 3
     // " {} Tr" = 1 + count(i) + 3
-    Op_Tr(i) => 1 + @fmt.Format::count(i) + 3
+    Op_Tr(i) => 1 + @fmt.count(i) + 3
     // " {} Ts" = 1 + count(r) + 3
-    Op_Ts(r) => 1 + @fmt.Format::count(r) + 3
+    Op_Ts(r) => 1 + @fmt.count(r) + 3
     // " {} {} Td" = 1 + count(k) + 1 + count(k_) + 3
-    Op_Td(k, k_) => 1 + @fmt.Format::count(k) + 1 + @fmt.Format::count(k_) + 3
+    Op_Td(k, k_) => 1 + @fmt.count(k) + 1 + @fmt.count(k_) + 3
     // " {} {} TD" = 1 + count(k) + 1 + count(k_) + 3
-    Op_TD(k, k_) => 1 + @fmt.Format::count(k) + 1 + @fmt.Format::count(k_) + 3
+    Op_TD(k, k_) => 1 + @fmt.count(k) + 1 + @fmt.count(k_) + 3
     // " {} {} {} {} {} {} Tm" = 1 + count(a) + 1 + count(b) + 1 + count(c) + 1 + count(d) + 1 + count(e) + 1 + count(f) + 3
     Op_Tm(t) =>
       1 +
-      @fmt.Format::count(t.a) +
+      @fmt.count(t.a) +
       1 +
-      @fmt.Format::count(t.b) +
+      @fmt.count(t.b) +
       1 +
-      @fmt.Format::count(t.c) +
+      @fmt.count(t.c) +
       1 +
-      @fmt.Format::count(t.d) +
+      @fmt.count(t.d) +
       1 +
-      @fmt.Format::count(t.e) +
+      @fmt.count(t.e) +
       1 +
-      @fmt.Format::count(t.f) +
+      @fmt.count(t.f) +
       3
     // " T*" = 3
     Op_T_star => 3
     // " " + count(obj) + " TJ" = 1 + count(obj) + 3
-    Op_TJ(obj) => 1 + @fmt.Format::count(obj) + 3
+    Op_TJ(obj) => 1 + @fmt.count(obj) + 3
     // " {}'" = 1 + count(s) + 1
-    Op_single_quote(s) => 1 + @fmt.Format::count(s) + 1 + 2
+    Op_single_quote(s) => 1 + @fmt.count(s) + 1 + 2
     // " {} {} {} \"" = 1 + count(k) + 1 + count(k_) + 1 + count(s) + 2
     Op_double_quote(k, k_, s) =>
-      1 +
-      @fmt.Format::count(k) +
-      1 +
-      @fmt.Format::count(k_) +
-      1 +
-      @fmt.Format::count(s) +
-      2
+      1 + @fmt.count(k) + 1 + @fmt.count(k_) + 1 + @fmt.count(s) + 2
     // " {} {} d0" = 1 + count(k) + 1 + count(k_) + 3
-    Op_d0(k, k_) => 1 + @fmt.Format::count(k) + 1 + @fmt.Format::count(k_) + 3
+    Op_d0(k, k_) => 1 + @fmt.count(k) + 1 + @fmt.count(k_) + 3
     // " {} {} {} {} {} {} d1" = 1 + count(a) + 1 + count(b) + 1 + count(c) + 1 + count(d) + 1 + count(e) + 1 + count(k) + 3
     Op_d1(a, b, c, d, e, k) =>
       1 +
-      @fmt.Format::count(a) +
+      @fmt.count(a) +
       1 +
-      @fmt.Format::count(b) +
+      @fmt.count(b) +
       1 +
-      @fmt.Format::count(c) +
+      @fmt.count(c) +
       1 +
-      @fmt.Format::count(d) +
+      @fmt.count(d) +
       1 +
-      @fmt.Format::count(e) +
+      @fmt.count(e) +
       1 +
-      @fmt.Format::count(k) +
+      @fmt.count(k) +
       3
     // " {} CS" = 1 + count(s) + 3
-    Op_CS(s) => 1 + @fmt.Format::count(s) + 3
+    Op_CS(s) => 1 + @fmt.count(s) + 3
     // " {} cs" = 1 + count(s) + 3
-    Op_cs(s) => 1 + @fmt.Format::count(s) + 3
+    Op_cs(s) => 1 + @fmt.count(s) + 3
     // sum of (" {}" for each f) + " SC"
-    Op_SC(fs) =>
-      fs.fold(init=0, fn(acc, f) { acc + 1 + @fmt.Format::count(f) }) + 3
+    Op_SC(fs) => fs.fold(init=0, fn(acc, f) { acc + 1 + @fmt.count(f) }) + 3
     // sum of (" {}" for each f) + " SCN"
-    Op_SCN(fs) =>
-      fs.fold(init=0, fn(acc, f) { acc + 1 + @fmt.Format::count(f) }) + 4
+    Op_SCN(fs) => fs.fold(init=0, fn(acc, f) { acc + 1 + @fmt.count(f) }) + 4
     // sum of (" {}" for each f) + " scn"
-    Op_scn(fs) =>
-      fs.fold(init=0, fn(acc, f) { acc + 1 + @fmt.Format::count(f) }) + 4
+    Op_scn(fs) => fs.fold(init=0, fn(acc, f) { acc + 1 + @fmt.count(f) }) + 4
     // sum of (" {}" for each f) + " {} scn"
     Op_scnName(s, fs) =>
-      fs.fold(init=0, fn(acc, f) { acc + 1 + @fmt.Format::count(f) }) +
+      fs.fold(init=0, fn(acc, f) { acc + 1 + @fmt.count(f) }) +
       1 +
-      @fmt.Format::count(s) +
+      @fmt.count(s) +
       4
     // sum of (" {}" for each f) + " {} SCN"
     Op_SCNName(s, fs) =>
-      fs.fold(init=0, fn(acc, f) { acc + 1 + @fmt.Format::count(f) }) +
+      fs.fold(init=0, fn(acc, f) { acc + 1 + @fmt.count(f) }) +
       1 +
-      @fmt.Format::count(s) +
+      @fmt.count(s) +
       4
     // " {} G" = 1 + count(k) + 2
-    Op_G(k) => 1 + @fmt.Format::count(k) + 2
+    Op_G(k) => 1 + @fmt.count(k) + 2
     // " {} g" = 1 + count(k) + 2
-    Op_g(k) => 1 + @fmt.Format::count(k) + 2
+    Op_g(k) => 1 + @fmt.count(k) + 2
     // " {} {} {} Rg" = 1 + count(r) + 1 + count(g) + 1 + count(b) + 3
     Op_RG(r, g, b) =>
-      1 +
-      @fmt.Format::count(r) +
-      1 +
-      @fmt.Format::count(g) +
-      1 +
-      @fmt.Format::count(b) +
-      3
+      1 + @fmt.count(r) + 1 + @fmt.count(g) + 1 + @fmt.count(b) + 3
     // " {} {} {} rg" = 1 + count(r) + 1 + count(g) + 1 + count(b) + 3
     Op_rg(r, g, b) =>
-      1 +
-      @fmt.Format::count(r) +
-      1 +
-      @fmt.Format::count(g) +
-      1 +
-      @fmt.Format::count(b) +
-      3
+      1 + @fmt.count(r) + 1 + @fmt.count(g) + 1 + @fmt.count(b) + 3
     // " {} {} {} {} K" = 1 + count(c) + 1 + count(m) + 1 + count(y) + 1 + count(k) + 2
     Op_K(c, m, y, k) =>
       1 +
-      @fmt.Format::count(c) +
+      @fmt.count(c) +
       1 +
-      @fmt.Format::count(m) +
+      @fmt.count(m) +
       1 +
-      @fmt.Format::count(y) +
+      @fmt.count(y) +
       1 +
-      @fmt.Format::count(k) +
+      @fmt.count(k) +
       2
     // " {} {} {} {} k" = 1 + count(c) + 1 + count(m) + 1 + count(y) + 1 + count(k) + 2
     Op_k(c, m, y, k) =>
       1 +
-      @fmt.Format::count(c) +
+      @fmt.count(c) +
       1 +
-      @fmt.Format::count(m) +
+      @fmt.count(m) +
       1 +
-      @fmt.Format::count(y) +
+      @fmt.count(y) +
       1 +
-      @fmt.Format::count(k) +
+      @fmt.count(k) +
       2
     // " {} sh" = 1 + count(s) + 3
-    Op_sh(s) => 1 + @fmt.Format::count(s) + 3
+    Op_sh(s) => 1 + @fmt.count(s) + 3
     // " BI {} ID {} EI" = 4 + count(dict) + 4 + count(data) + 3
-    InlineImage(dict, data) =>
-      4 + @fmt.Format::count(dict) + 4 + @fmt.Format::count(data) + 3
+    InlineImage(dict, data) => 4 + @fmt.count(dict) + 4 + @fmt.count(data) + 3
     // " {} Do" = 1 + count(s) + 3
-    Op_Do(s) => 1 + @fmt.Format::count(s) + 3
+    Op_Do(s) => 1 + @fmt.count(s) + 3
     // " {} MP" = 1 + count(s) + 3
-    Op_MP(s) => 1 + @fmt.Format::count(s) + 3
+    Op_MP(s) => 1 + @fmt.count(s) + 3
     // " {} " + count(o) + " DP" = 1 + count(s) + 1 + count(o) + 3
-    Op_DP(s, o) => 1 + @fmt.Format::count(s) + 1 + @fmt.Format::count(o) + 3
+    Op_DP(s, o) => 1 + @fmt.count(s) + 1 + @fmt.count(o) + 3
     // " {} BMC" = 1 + count(s) + 4
-    Op_BMC(s) => 1 + @fmt.Format::count(s) + 4
+    Op_BMC(s) => 1 + @fmt.count(s) + 4
     // " {} " + count(obj) + " BDC" = 1 + count(s) + 1 + count(obj) + 4
-    Op_BDC(s, obj) =>
-      1 + @fmt.Format::count(s) + 1 + @fmt.Format::count(obj) + 4
+    Op_BDC(s, obj) => 1 + @fmt.count(s) + 1 + @fmt.count(obj) + 4
     // " EMC" = 4
     Op_EMC => 4
     // " Bx" = 3
@@ -452,11 +429,10 @@ pub impl @fmt.Format for GraphicOperator with count(value : GraphicOperator) -> 
     // returns 0
     Op_Unknown(_) => 0
     // " % {}\n" = 3 + count(s) + 1
-    Op_Comment(s) => 3 + @fmt.Format::count(s) + 1
+    Op_Comment(s) => 3 + @fmt.count(s) + 1
     // " EX" = 3
     OP_EX => 3
     // sum of (" {}" for each f) + " sc"
-    Op_sc(fs) =>
-      fs.fold(init=0, fn(acc, f) { acc + 1 + @fmt.Format::count(f) }) + 3
+    Op_sc(fs) => fs.fold(init=0, fn(acc, f) { acc + 1 + @fmt.count(f) }) + 3
   }
 }
