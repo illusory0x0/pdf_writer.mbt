@@ -31,6 +31,8 @@ test {
     #|%token DICT_END ">>"
     #|
     #|
+    #|
+    #|
     #|// PDF end-of-line markers
     #|// `\r`, `\r\n`, `\n`, this can appear in  reverse solidus `\`
     #|// reverse solidus after an end-of-line marker is used for multi-line literal strings, in this case, end-of-line marker is ignored.
@@ -75,6 +77,11 @@ test {
     #|%token<INDIRECT> INDIRECT
     #|
     #|// Array objects, Dictionary objects and Stream objects aren't terminal symbols.
+    #|
+    #|%token<Bytes> STREAM_BYTES 
+    #|
+    #|%nonassoc STREAM_BYTES
+    #|
     #|
     #|// here define an EOF token to mark the end of input
     #|%token EOF
@@ -123,8 +130,8 @@ test {
     }),
   ]
   let pdf_dict_entries = [
-    rule(fn(key : NAME, value : Atom) -> DictEntries { [(key, value)] }),
-    rule(fn(acc : DictEntries, key : NAME, value : Atom) -> DictEntries {
+    rule(fn(key : NAME, value : PDF_Obj) -> DictEntries { [(key, value)] }),
+    rule(fn(acc : DictEntries, key : NAME, value : PDF_Obj) -> DictEntries {
       acc.push((key, value))
       acc
     }),
@@ -137,13 +144,20 @@ test {
       Object::Dictionary(entries)
     }),
   ]
+  let pdf_stream = [
+    rule(fn(dict : PDF_Dict, bytes : STREAM_BYTES) -> PDF_Stream {
+      Object::Stream(dict, bytes)
+    }),
+  ]
   let pdf_obj = [
     rule(fn(val : Atom) -> PDF_Obj { val }),
     rule(fn(val : PDF_Array) -> PDF_Obj { val }),
     rule(fn(val : PDF_Dict) -> PDF_Obj { val }),
+    rule(fn(val : PDF_Stream) -> PDF_Obj { val }),
   ]
   let non_terminal_symbols = [
     pdf_obj, atom, array_non_empty_elems, pdf_array, pdf_dict_entries, pdf_dict,
+    pdf_stream,
   ]
 
   // dump the non-terminal declaration to the buffer
@@ -154,3 +168,6 @@ test {
   buffer.write_string("\n\n%%\n")
   try! @fs.write_string_to_file(path, buffer.to_string())
 }
+
+///|
+typealias PDF_Obj as PDF_Stream

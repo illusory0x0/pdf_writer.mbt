@@ -34,23 +34,52 @@ pub fn tokenize_body(
   let body = []
   for {
     lexmatch rest {
-      (
-        ("\d+" as obj_num)
-        "[ ]+"
-        ("\d+" as gen_num)
-        "[ ]+"
-        "obj"
-        "(\r\n)|\r|\n"
-        (".*" as obj_bytes)
-        "endobj"
-        "(\r\n)|\r|\n"
-      ) as all, r => {
-        let object_num = try! @lexer_bytes.tokenize_int(obj_num)
-        let generation_num = try! @lexer_bytes.tokenize_int(gen_num)
-        bytes_offset += all.length()
-        let obj = Obj::{ bytes_offset, object_num, generation_num, obj_bytes }
-        rest = r
-        body.push(obj)
+      // Parse object header first, then handwrite non-greedy content parsing
+      (("\d+" as obj_num) "[ ]+" ("\d+" as gen_num) "[ ]+" "obj" "(\r\n)|\r|\n") as header, rest_after_header => {
+        // Handwritten non-greedy search for first "endobj"
+        let endobj_pattern = b"endobj"
+        let mut obj_content_end = 0
+        let mut found_endobj = false
+
+        // Search for first occurrence of "endobj"
+        while obj_content_end + endobj_pattern.length() <=
+              rest_after_header.length() {
+          let slice = rest_after_header[obj_content_end:obj_content_end +
+            endobj_pattern.length()]
+          if slice == endobj_pattern[:] {
+            found_endobj = true
+            break
+          }
+          obj_content_end += 1
+        }
+        if not(found_endobj) {
+          break // No "endobj" found, stop parsing
+        }
+        let obj_bytes = rest_after_header[:obj_content_end]
+        let rest_after_endobj = rest_after_header[obj_content_end +
+          endobj_pattern.length():]
+
+        // Now match the newline after "endobj"
+        lexmatch rest_after_endobj {
+          "(\r\n)|\r|\n" as newline, r => {
+            let all_length = header.length() +
+              obj_content_end +
+              endobj_pattern.length() +
+              newline.length()
+            let object_num = try! @lexer_bytes.tokenize_int(obj_num)
+            let generation_num = try! @lexer_bytes.tokenize_int(gen_num)
+            bytes_offset += all_length
+            let obj = Obj::{
+              bytes_offset,
+              object_num,
+              generation_num,
+              obj_bytes,
+            }
+            rest = r
+            body.push(obj)
+          }
+          _ => break // No valid newline after "endobj", stop parsing
+        }
       }
       "(\r\n)|\r|\n" as all, r => {
         bytes_offset += all.length()
@@ -157,12 +186,74 @@ pub fn tokenize_trailer(
   start_bytes_offset : Int,
 ) -> LexResult[BytesView] raise LexError {
   lexmatch input {
-    ("trailer" "(\r\n)|\r|\n" ("[^s]*" as trailer_dict) "(\r\n)|\r|\n") as all, rest =>
-      LexResult::{
-        value: trailer_dict,
-        bytes_offset: start_bytes_offset + all.length(),
-        rest,
+    // Parse trailer header first, then handwrite non-greedy content parsing
+    ("trailer" "(\r\n)|\r|\n") as header, rest_after_header => {
+      // Handwritten non-greedy search for first "startxref" (preceded by newline)
+      let startxref_pattern = b"startxref"
+      let mut trailer_content_end = 0
+      let mut found_startxref = false
+
+      // Search for first occurrence of "\nstartxref" or "\r\nstartxref" or "\rstartxref"
+      while trailer_content_end + startxref_pattern.length() <=
+            rest_after_header.length() {
+        // Check if we're at a potential startxref location
+        if trailer_content_end + startxref_pattern.length() <=
+          rest_after_header.length() {
+          let slice = rest_after_header[trailer_content_end:trailer_content_end +
+            startxref_pattern.length()]
+          if slice == startxref_pattern[:] {
+            // Found "startxref", but need to check if it's preceded by newline
+            if trailer_content_end == 0 {
+              // At the very beginning, this shouldn't happen in valid PDF
+              found_startxref = true
+              break
+            } else {
+              // Check if preceded by newline
+              let prev_char = rest_after_header[trailer_content_end - 1]
+              if prev_char == '\n' || prev_char == '\r' {
+                found_startxref = true
+                break
+              }
+            }
+          }
+        }
+        trailer_content_end += 1
       }
+      if not(found_startxref) {
+        raise LexError("No 'startxref' found after trailer")
+      }
+
+      // Extract trailer dictionary content (excluding the final newline before startxref)
+      let mut dict_end = trailer_content_end
+      // Remove trailing newline if present
+      if dict_end > 0 {
+        let last_char = rest_after_header[dict_end - 1]
+        if last_char == '\n' || last_char == '\r' {
+          dict_end -= 1
+          // Also remove \r if we have \r\n
+          if dict_end > 0 &&
+            last_char == '\n' &&
+            rest_after_header[dict_end - 1] == '\r' {
+            dict_end -= 1
+          }
+        }
+      }
+      let trailer_dict = rest_after_header[:dict_end]
+      let rest_at_newline = rest_after_header[dict_end:]
+
+      // Now match the newline before "startxref"
+      lexmatch rest_at_newline {
+        "(\r\n)|\r|\n" as newline, rest => {
+          let all_length = header.length() + dict_end + newline.length()
+          LexResult::{
+            value: trailer_dict,
+            bytes_offset: start_bytes_offset + all_length,
+            rest,
+          }
+        }
+        _ => raise LexError("Expected newline before 'startxref'")
+      }
+    }
     _ => raise LexError("Invalid trailer format")
   }
 }
@@ -189,14 +280,47 @@ pub fn tokenize_startxref(
 /// return advance offset
 pub fn skip_comment(input : BytesView) -> Int {
   lexmatch input {
-    // PDF Comments (% until end of line, including the end-of-line marker)  
-    // Handles all three PDF end-of-line markers: \r\n, \r, \n
-    "%[^\r\n]*(\r\n|\r|\n)" as comment, _rest => comment.length()
+    // Parse comment start marker first, then handwrite length-limited content parsing
+    "%" as _percent, rest_after_percent => {
+      // Handwritten comment parsing with DoS protection (max 1024 chars)
+      let max_comment_length = 1024
+      let mut comment_content_end = 0
+      let mut found_newline = false
+      let mut is_eof_comment = false
 
-    // PDF Comments at end of file (% until end of input without end-of-line)
-    // This pattern handles comments at EOF WITHOUT trailing newlines
-    // Example: "1 0 obj % comment" (comment at end with no newline)
-    "%[^\r\n]*$" as comment, _rest => comment.length()
+      // Search for newline or end of input, with length limit
+      while comment_content_end < rest_after_percent.length() &&
+            comment_content_end < max_comment_length {
+        let char = rest_after_percent[comment_content_end]
+        if char == '\r' || char == '\n' {
+          found_newline = true
+          break
+        }
+        comment_content_end += 1
+      }
+
+      // If we reached end of input without newline, it's an EOF comment
+      if not(found_newline) &&
+        comment_content_end == rest_after_percent.length() {
+        is_eof_comment = true
+      }
+      if is_eof_comment {
+        // Comment at EOF without trailing newline - safe to consume all remaining
+        1 + comment_content_end // 1 for the '%' character
+      } else if found_newline {
+        // Comment with newline - match the newline using lexmatch
+        let rest_at_newline = rest_after_percent[comment_content_end:]
+        lexmatch rest_at_newline {
+          "(\r\n)|\r|\n" as newline, _rest =>
+            1 + comment_content_end + newline.length()
+          _ => // 1 for the '%' character
+            0 // Shouldn't happen since we found newline, but safety fallback
+        }
+      } else {
+        // Hit length limit without finding newline - truncate comment for DoS protection
+        1 + comment_content_end // 1 for the '%' character
+      }
+    }
 
     // If input doesn't start with a comment, return 0 (no bytes skipped)
     _ => 0

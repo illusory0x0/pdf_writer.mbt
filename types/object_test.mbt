@@ -2,37 +2,37 @@
 test "@fmt.Format for Object" {
   let buffer = @fmt.Memory::make(4096, Byte::default())
   let value = @pdf.Object::Integer(42)
-  let offset = @fmt.Format::write(value, buffer, 0)
+  let offset = @fmt.write(value, buffer, 0)
   inspect(@mem_helper.string_of_memory(buffer, offset), content="42")
   let value = @pdf.Null
-  let offset = @fmt.Format::write(value, buffer, 0)
+  let offset = @fmt.write(value, buffer, 0)
   inspect(@mem_helper.string_of_memory(buffer, offset), content="null")
   let value = @pdf.Boolean(true)
-  let offset = @fmt.Format::write(value, buffer, 0)
+  let offset = @fmt.write(value, buffer, 0)
   inspect(@mem_helper.string_of_memory(buffer, offset), content="true")
   let value = @pdf.Boolean(false)
-  let offset = @fmt.Format::write(value, buffer, 0)
+  let offset = @fmt.write(value, buffer, 0)
   inspect(@mem_helper.string_of_memory(buffer, offset), content="false")
   let value = @pdf.Real(3.14)
-  let offset = @fmt.Format::write(value, buffer, 0)
+  let offset = @fmt.write(value, buffer, 0)
   inspect(@mem_helper.string_of_memory(buffer, offset), content="3.14")
   let value = @pdf.String(b"Hello, World!")
-  let offset = @fmt.Format::write(value, buffer, 0)
+  let offset = @fmt.write(value, buffer, 0)
   inspect(
     @mem_helper.string_of_memory(buffer, offset),
     content="(Hello, World!)",
   )
   let value = @pdf.Name(b"/Name")
-  let offset = @fmt.Format::write(value, buffer, 0)
+  let offset = @fmt.write(value, buffer, 0)
   inspect(@mem_helper.string_of_memory(buffer, offset), content="/Name")
   let value = @pdf.Array([@pdf.Integer(1), @pdf.Integer(2), @pdf.Integer(3)])
-  let offset = @fmt.Format::write(value, buffer, 0)
+  let offset = @fmt.write(value, buffer, 0)
   inspect(@mem_helper.string_of_memory(buffer, offset), content="[1 2 3]")
   let value = @pdf.Dictionary([
     ("/Type", @pdf.Name(b"/Example")),
     ("/Count", @pdf.Integer(3)),
   ])
-  let offset = @fmt.Format::write(value, buffer, 0)
+  let offset = @fmt.write(value, buffer, 0)
   inspect(
     @mem_helper.string_of_memory(buffer, offset),
     content=(
@@ -46,7 +46,7 @@ test "@fmt.Format for Object" {
     @pdf.Dictionary([("/Length", @pdf.Integer(11))]),
     b"Hello World",
   )
-  let offset = @fmt.Format::write(value, buffer, 0)
+  let offset = @fmt.write(value, buffer, 0)
   inspect(
     @mem_helper.string_of_memory(buffer, offset),
     content=(
@@ -59,14 +59,14 @@ test "@fmt.Format for Object" {
     ),
   )
   let value = @pdf.Indirect(1)
-  let offset = @fmt.Format::write(value, buffer, 0)
+  let offset = @fmt.write(value, buffer, 0)
   inspect(@mem_helper.string_of_memory(buffer, offset), content="1 0 R")
   let value = @pdf.Dictionary([
     ("/Type", @pdf.Name(b"/Pages")),
     ("/Kids", @pdf.Integer(1)),
     ("/Count", @pdf.Integer(1)),
   ])
-  let offset = @fmt.Format::write(value, buffer, 0)
+  let offset = @fmt.write(value, buffer, 0)
   inspect(
     @mem_helper.string_of_memory(buffer, offset),
     content=(
@@ -78,7 +78,7 @@ test "@fmt.Format for Object" {
     ),
   )
   let value = @pdf.Array([@pdf.Indirect(1)])
-  let offset = @fmt.Format::write(value, buffer, 0)
+  let offset = @fmt.write(value, buffer, 0)
   inspect(@mem_helper.string_of_memory(buffer, offset), content="[1 0 R]")
 }
 

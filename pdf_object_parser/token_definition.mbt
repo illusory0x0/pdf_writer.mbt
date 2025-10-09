@@ -19,6 +19,7 @@ pub(all) enum Token {
   STRING(Bytes)
   NAME(Bytes)
   INDIRECT(INDIRECT)
+  STREAM_BYTES(Bytes)
   EOF
 }
 
@@ -44,6 +45,7 @@ pub fn Token::kind(self : Token) -> TokenKind {
     STRING(_) => TK_STRING
     NAME(_) => TK_NAME
     INDIRECT(_) => TK_INDIRECT
+    STREAM_BYTES(_) => TK_STREAM_BYTES
     EOF => TK_EOF
   }
 }
@@ -69,6 +71,7 @@ pub(all) enum TokenKind {
   TK_STRING
   TK_NAME
   TK_INDIRECT
+  TK_STREAM_BYTES
   TK_EOF
 } derive(Eq)
 
@@ -95,6 +98,7 @@ pub impl Show for TokenKind with output(self, logger) {
       TK_STRING => "STRING"
       TK_NAME => "NAME"
       TK_INDIRECT => "INDIRECT"
+      TK_STREAM_BYTES => "STREAM_BYTES"
       TK_EOF => "EOF"
     },
   )

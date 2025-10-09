@@ -1,8 +1,8 @@
 ///|
 fn multiple_page_to_bytes(contents : Array[ContentStream]) -> Bytes {
   let pdf = multiple_pages(contents)
-  let buf = @fmt.Memory::make(@fmt.Format::count(pdf), 0)
-  let offset = @fmt.Format::write(pdf, buf, 0)
+  let buf = @fmt.Memory::make(@fmt.count(pdf), 0)
+  let offset = @fmt.write(pdf, buf, 0)
   @mem_helper.bytes_of_memory(buf, offset)
 }
 

@@ -113,3 +113,6 @@ typealias Array[(NAME, Object)] as DictEntries
 
 ///|
 typealias Object as PDF_Obj
+
+///|
+typealias Bytes as STREAM_BYTES
