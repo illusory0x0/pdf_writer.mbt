@@ -1,11 +1,4 @@
 ///|
-// TODO: SECURITY REVIEW NEEDED - This lexer has several patterns that could match too much:
-// 1. "\d+" patterns without length limits - could cause integer overflow
-// 2. "[ ]+" and "[ ]*" patterns without limits - potential DoS via excessive whitespace
-// 3. See individual TODO comments below for critical issues requiring immediate attention
-// Consider adding global limits: "\d{1,10}", "[ ]{0,100}", etc.
-
-///|
 suberror LexError String derive(Show)
 
 ///|
