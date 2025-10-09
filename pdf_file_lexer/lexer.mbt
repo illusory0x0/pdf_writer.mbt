@@ -34,9 +34,7 @@ pub fn tokenize_body(
   let body = []
   for {
     lexmatch rest {
-      // TODO: CRITICAL - Replace ".*" pattern! This will match EVERYTHING until "endobj"
-      // including binary data, other PDF structures, or entire file if "endobj" missing.
-      // Security risk: memory exhaustion, parser confusion. Use proper PDF object parsing.
+      // Parse object header first, then handwrite non-greedy content parsing
       (
         ("\d+" as obj_num)
         "[ ]+"
@@ -44,16 +42,42 @@ pub fn tokenize_body(
         "[ ]+"
         "obj"
         "(\r\n)|\r|\n"
-        (".*" as obj_bytes)
-        "endobj"
-        "(\r\n)|\r|\n"
-      ) as all, r => {
-        let object_num = try! @lexer_bytes.tokenize_int(obj_num)
-        let generation_num = try! @lexer_bytes.tokenize_int(gen_num)
-        bytes_offset += all.length()
-        let obj = Obj::{ bytes_offset, object_num, generation_num, obj_bytes }
-        rest = r
-        body.push(obj)
+      ) as header, rest_after_header => {
+        // Handwritten non-greedy search for first "endobj"
+        let endobj_pattern = b"endobj"
+        let mut obj_content_end = 0
+        let mut found_endobj = false
+        
+        // Search for first occurrence of "endobj"
+        while obj_content_end + endobj_pattern.length() <= rest_after_header.length() {
+          let slice = rest_after_header[obj_content_end:obj_content_end + endobj_pattern.length()]
+          if slice == endobj_pattern[:] {
+            found_endobj = true
+            break
+          }
+          obj_content_end += 1
+        }
+        
+        if not(found_endobj) {
+          break // No "endobj" found, stop parsing
+        }
+        
+        let obj_bytes = rest_after_header[:obj_content_end]
+        let rest_after_endobj = rest_after_header[obj_content_end + endobj_pattern.length():]
+        
+        // Now match the newline after "endobj"
+        lexmatch rest_after_endobj {
+          "(\r\n)|\r|\n" as newline, r => {
+            let all_length = header.length() + obj_content_end + endobj_pattern.length() + newline.length()
+            let object_num = try! @lexer_bytes.tokenize_int(obj_num)
+            let generation_num = try! @lexer_bytes.tokenize_int(gen_num)
+            bytes_offset += all_length
+            let obj = Obj::{ bytes_offset, object_num, generation_num, obj_bytes }
+            rest = r
+            body.push(obj)
+          }
+          _ => break // No valid newline after "endobj", stop parsing
+        }
       }
       "(\r\n)|\r|\n" as all, r => {
         bytes_offset += all.length()
