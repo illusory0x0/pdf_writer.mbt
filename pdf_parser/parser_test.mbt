@@ -66,19 +66,19 @@ test "parse simple PDF" {
   @json.inspect(result, content=["Boolean", true])
 }
 
-// test {
-//   let input = try! @fs.read_file_to_bytes("./output/hello.pdf")
-//   // let tokens = @ pdf_file_lexer.tokenize_file(input)
-//   let result = try parse(input) catch {
-//     @pdf_object_parser.ParseError::UnexpectedToken(tok,range,kinds) => {
-//       println(tok)
-//       println(range)
-//       println(kinds)
-//       panic()
-//     }
-//     @pdf_object_parser.ParseError::UnexpectedEndOfInput(_,_) => {
-//       panic()
-//     }
-//     _ => panic()
-//   }
-// }
+test {
+  let input = try! @fs.read_file_to_bytes("./output/hello.pdf")
+  // let tokens = @ pdf_file_lexer.tokenize_file(input)
+  let result = try parse(input) catch {
+    @pdf_object_parser.ParseError::UnexpectedToken(tok,range,kinds) => {
+      println(tok)
+      println(range)
+      println(kinds)
+      panic()
+    }
+    @pdf_object_parser.ParseError::UnexpectedEndOfInput(_,_) => {
+      panic()
+    }
+    _ => panic()
+  }
+}
