@@ -27,24 +27,28 @@ test "demonstrate_tokenize_pdf_name_fix" {
   )
 }
 
+///|
 test {
   let stm = b"<</hello null>>\nstream  hello world \nendstream"
   let tokens = tokenize(stm)
-  inspect(tokens.map(triple => triple.0), content="[DICT_BEGIN, NAME(/hello), NULL, DICT_END, STREAM_BYTES(  hello world \\n), EOF]")
-
-  let result = try parse(tokens) catch {
-    UnexpectedToken(tok,range,kinds) => {
+  inspect(
+    tokens.map(triple => triple.0),
+    content="[DICT_BEGIN, NAME(/hello), NULL, DICT_END, STREAM_BYTES(  hello world \\n), EOF]",
+  )
+  let result = parse(tokens) catch {
+    UnexpectedToken(tok, range, kinds) => {
       println(tok)
       println(range)
       println(kinds)
       panic()
     }
-   UnexpectedEndOfInput(_,_) => {
-      panic()
-    }
+    UnexpectedEndOfInput(_, _) => panic()
     _ => panic()
   }
- 
- @json.inspect(result, content=(["Stream",["Dictionary",[["/hello","Null"]]],["Stream","  hello world \\x0a"]]))
+  @json.inspect(result, content=[
+    "Stream",
+    ["Dictionary", [["/hello", "Null"]]],
+    ["Stream", "  hello world \\x0a"],
+  ])
   // let result = parse(tokens)
 }

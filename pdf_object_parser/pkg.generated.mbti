@@ -13,9 +13,9 @@ fn tokenize(BytesView) -> Array[(Token, Position, Position)]
 
 fn tokenize_pdf_hexadecimal_string(BytesView) -> Bytes
 
-fn tokenize_pdf_literal_string(BytesView) -> Bytes
+fn tokenize_pdf_literal_string(BytesView) -> (Bytes, Int)
 
-fn tokenize_pdf_name(BytesView) -> Bytes
+fn tokenize_pdf_name(BytesView) -> (Bytes, Int)
 
 // Errors
 pub suberror ParseError {
@@ -86,6 +86,7 @@ pub(all) enum Token {
   STRING(Bytes)
   NAME(Bytes)
   INDIRECT(INDIRECT)
+  STREAM_BYTES(Bytes)
   EOF
 }
 fn Token::kind(Self) -> TokenKind
@@ -111,6 +112,7 @@ pub(all) enum TokenKind {
   TK_STRING
   TK_NAME
   TK_INDIRECT
+  TK_STREAM_BYTES
   TK_EOF
 }
 impl Eq for TokenKind
