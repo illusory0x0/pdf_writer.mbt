@@ -1,4 +1,11 @@
 ///|
+// TODO: SECURITY REVIEW NEEDED - This lexer has several patterns that could match too much:
+// 1. "\d+" patterns without length limits - could cause integer overflow
+// 2. "[ ]+" and "[ ]*" patterns without limits - potential DoS via excessive whitespace
+// 3. See individual TODO comments below for critical issues requiring immediate attention
+// Consider adding global limits: "\d{1,10}", "[ ]{0,100}", etc.
+
+///|
 suberror LexError String derive(Show)
 
 ///|
@@ -34,6 +41,9 @@ pub fn tokenize_body(
   let body = []
   for {
     lexmatch rest {
+      // TODO: CRITICAL - Replace ".*" pattern! This will match EVERYTHING until "endobj"
+      // including binary data, other PDF structures, or entire file if "endobj" missing.
+      // Security risk: memory exhaustion, parser confusion. Use proper PDF object parsing.
       (
         ("\d+" as obj_num)
         "[ ]+"
@@ -157,6 +167,9 @@ pub fn tokenize_trailer(
   start_bytes_offset : Int,
 ) -> LexResult[BytesView] raise LexError {
   lexmatch input {
+    // TODO: CRITICAL - "[^s]*" pattern is problematic! Matches any chars except 's',
+    // stops at first 's' rather than proper "startxref". Could match across PDF structures.
+    // Use proper PDF dictionary syntax: "<<[^>]*>>" or implement full dictionary parser.
     ("trailer" "(\r\n)|\r|\n" ("[^s]*" as trailer_dict) "(\r\n)|\r|\n") as all, rest =>
       LexResult::{
         value: trailer_dict,
@@ -191,11 +204,14 @@ pub fn skip_comment(input : BytesView) -> Int {
   lexmatch input {
     // PDF Comments (% until end of line, including the end-of-line marker)  
     // Handles all three PDF end-of-line markers: \r\n, \r, \n
+    // TODO: Add length limit to prevent DoS - use "%[^\r\n]{0,1024}(\r\n|\r|\n)"
     "%[^\r\n]*(\r\n|\r|\n)" as comment, _rest => comment.length()
 
     // PDF Comments at end of file (% until end of input without end-of-line)
     // This pattern handles comments at EOF WITHOUT trailing newlines
     // Example: "1 0 obj % comment" (comment at end with no newline)
+    // TODO: CRITICAL - This pattern matches to END OF FILE! Could consume entire input.
+    // Add length limit: "%[^\r\n]{0,1024}$" to prevent DoS attacks.
     "%[^\r\n]*$" as comment, _rest => comment.length()
 
     // If input doesn't start with a comment, return 0 (no bytes skipped)
