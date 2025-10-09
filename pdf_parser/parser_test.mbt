@@ -65,3 +65,17 @@ test "parse simple PDF" {
   let result = @pdf_object_parser.parse(tokens)
   @json.inspect(result, content=["Boolean", true])
 }
+
+test {
+  let input = try! @fs.read_file_to_bytes("./output/hello.pdf")
+  // let tokens = @ pdf_file_lexer.tokenize_file(input)
+  let result = try parse(input) catch {
+    @pdf_object_parser.ParseError::UnexpectedToken(_,_,_) => {
+      ...
+    }
+    @pdf_object_parser.ParseError::UnexpectedEndOfInput(_,_) => {
+      ...
+    }
+    _ => panic()
+  }
+}
