@@ -80,9 +80,11 @@ jobs:
 
       - name: moon test
         run: |
-          moon test --target all,native
           moon test --target all,native --release
-
+        
+        # disable for debug mode, to workaround for tcc bug.
+        # moon test --target all,native
+        
   moon-json-format-check:
     runs-on: ubuntu-latest
     steps:
