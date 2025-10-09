@@ -22,6 +22,8 @@
 %token DICT_END ">>"
 
 
+
+
 // PDF end-of-line markers
 // `\r`, `\r\n`, `\n`, this can appear in  reverse solidus `\`
 // reverse solidus after an end-of-line marker is used for multi-line literal strings, in this case, end-of-line marker is ignored.
@@ -67,6 +69,11 @@
 
 // Array objects, Dictionary objects and Stream objects aren't terminal symbols.
 
+%token<Bytes> STREAM_BYTES 
+
+%nonassoc STREAM_BYTES
+
+
 // here define an EOF token to mark the end of input
 %token EOF
 
@@ -81,6 +88,7 @@ PDF_Obj -> PDF_Obj :
   | Atom { $1 }
   | PDF_Array { $1 }
   | PDF_Dict { $1 }
+  | PDF_Stream { $1 }
 ;
 Atom -> Atom :
   | NAME { Name($1) }
@@ -102,13 +110,16 @@ PDF_Array -> PDF_Array :
   | LEFT_SQUARE_BRACKET NonEmptyElems RIGHT_SQUARE_BRACKET { Array($2) }
 ;
 DictEntries -> DictEntries :
-  | NAME Atom { [($1, $2)] }
-  | DictEntries NAME Atom { $1.push(($2, $3))
+  | NAME PDF_Obj { [($1, $2)] }
+  | DictEntries NAME PDF_Obj { $1.push(($2, $3))
       $1 }
 ;
 PDF_Dict -> PDF_Dict :
   | DICT_BEGIN DICT_END { Object::Dictionary([]) }
   | DICT_BEGIN DictEntries DICT_END { Object::Dictionary($2) }
+;
+PDF_Stream -> PDF_Stream :
+  | PDF_Dict STREAM_BYTES { Object::Stream($1, $2) }
 ;
 
 

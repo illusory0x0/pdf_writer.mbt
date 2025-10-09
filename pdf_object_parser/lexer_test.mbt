@@ -94,195 +94,99 @@ test "ascii_string_of_bytes escaping" {
 }
 
 ///|
-test "tokenize_pdf_literal basic escape sequences" {
-  // Test basic escape sequences
-  let input1 = b"Hello\\nWorld"
-  let result1 = tokenize_pdf_literal_string(input1)
-  inspect(ascii_string_of_bytesview(result1), content="Hello\\nWorld")
-  let input2 = b"Tab\\tSeparated"
-  let result2 = tokenize_pdf_literal_string(input2)
-  inspect(ascii_string_of_bytesview(result2), content="Tab\\tSeparated")
-  let input3 = b"Backslash\\\\Test"
-  let result3 = tokenize_pdf_literal_string(input3)
-  inspect(ascii_string_of_bytesview(result3), content="Backslash\\\\Test")
-  let input4 = b"Parens\\(\\)Test"
-  let result4 = tokenize_pdf_literal_string(input4)
-  inspect(ascii_string_of_bytesview(result4), content="Parens()Test")
-}
-
-///|
-test "tokenize_pdf_literal octal escape sequences" {
-  // Test 3-digit octal escape sequences
-  let input1 = b"Hello\\101World" // \101 is 'A' (65)
-  let result1 = tokenize_pdf_literal_string(input1)
-  inspect(ascii_string_of_bytesview(result1), content="HelloAWorld")
-
-  // Test 2-digit octal escape sequences
-  let input2 = b"Bell\\07Sound" // \07 is bell character
-  let result2 = tokenize_pdf_literal_string(input2)
-  inspect(ascii_string_of_bytesview(result2), content="Bell\\007Sound")
-
-  // Test 1-digit octal escape sequences
-  let input3 = b"Null\\0Char" // \0 is null character
-  let result3 = tokenize_pdf_literal_string(input3)
-  inspect(ascii_string_of_bytesview(result3), content="Null\\000Char")
-}
-
-///|
-test "tokenize_pdf_literal end-of-line handling" {
-  // Test CRLF conversion to LF
-  let input1 = b"Line1\r\nLine2"
-  let result1 = tokenize_pdf_literal_string(input1)
-  inspect(ascii_string_of_bytesview(result1), content="Line1\\nLine2")
-
-  // Test CR conversion to LF
-  let input2 = b"Line1\rLine2"
-  let result2 = tokenize_pdf_literal_string(input2)
-  inspect(ascii_string_of_bytesview(result2), content="Line1\\nLine2")
-
-  // Test LF remains LF
-  let input3 = b"Line1\nLine2"
-  let result3 = tokenize_pdf_literal_string(input3)
-  inspect(ascii_string_of_bytesview(result3), content="Line1\\nLine2")
-}
-
-///|
-test "tokenize_pdf_literal multi-line continuation" {
-  // Test backslash followed by CRLF (should be ignored)
-  let input1 = b"Line1\\\r\nLine2"
-  let result1 = tokenize_pdf_literal_string(input1)
-  inspect(ascii_string_of_bytesview(result1), content="Line1Line2")
-
-  // Test backslash followed by CR (should be ignored)
-  let input2 = b"Line1\\\rLine2"
-  let result2 = tokenize_pdf_literal_string(input2)
-  inspect(ascii_string_of_bytesview(result2), content="Line1Line2")
-
-  // Test backslash followed by LF (should be ignored)
-  let input3 = b"Line1\\\nLine2"
-  let result3 = tokenize_pdf_literal_string(input3)
-  inspect(ascii_string_of_bytesview(result3), content="Line1Line2")
-}
-
-///|
-test "tokenize_pdf_literal complex mixed content" {
-  // Test combination of various escape sequences and content
-  let input = b"Start\\n\\tIndented\\\\Path\\(param\\)\\101nd\\12Bell\\0Null"
-  let result = tokenize_pdf_literal_string(input)
-  inspect(
-    ascii_string_of_bytesview(result),
-    content="Start\\n\\tIndented\\\\Path(param)And\\nBell\\000Null",
-  )
-}
-
-///|
-test "tokenize_pdf_literal edge cases" {
-  // Test empty string
-  let input1 = b""
-  let result1 = tokenize_pdf_literal_string(input1)
-  inspect(ascii_string_of_bytesview(result1), content="")
-
-  // Test unrecognized escape sequence (backslash should be ignored)
-  let input2 = b"Test\\zInvalid"
-  let result2 = tokenize_pdf_literal_string(input2)
-  inspect(ascii_string_of_bytesview(result2), content="TestInvalid")
-
-  // Test form feed escape
-  let input3 = b"Page1\\fPage2"
-  let result3 = tokenize_pdf_literal_string(input3)
-  inspect(ascii_string_of_bytesview(result3), content="Page1\\fPage2")
-
-  // Test backspace escape
-  let input4 = b"Back\\bSpace"
-  let result4 = tokenize_pdf_literal_string(input4)
-  inspect(ascii_string_of_bytesview(result4), content="Back\\bSpace")
-
-  // Test carriage return escape
-  let input5 = b"Car\\rReturn"
-  let result5 = tokenize_pdf_literal_string(input5)
-  inspect(ascii_string_of_bytesview(result5), content="Car\\rReturn")
-}
-
-///|
 test "tokenize_pdf_name basic characters" {
   // Test normal ASCII printable characters
   let input1 = b"SimpleNameTest"
-  let result1 = tokenize_pdf_name(input1)
+  let (result1, offset1) = tokenize_pdf_name(input1)
   inspect(ascii_string_of_bytesview(result1), content="SimpleNameTest")
+  inspect(offset1, content="14")
 
   // Test with numbers and underscores
   let input2 = b"Name123_Test"
-  let result2 = tokenize_pdf_name(input2)
+  let (result2, offset2) = tokenize_pdf_name(input2)
   inspect(ascii_string_of_bytesview(result2), content="Name123_Test")
+  inspect(offset2, content="12")
 
   // Test empty input
   let input3 = b""
-  let result3 = tokenize_pdf_name(input3)
+  let (result3, offset3) = tokenize_pdf_name(input3)
   inspect(ascii_string_of_bytesview(result3), content="")
+  inspect(offset3, content="0")
 }
 
 ///|
 test "tokenize_pdf_name hex escape sequences" {
   // Test basic hex escape sequences
   let input1 = b"Name#41Test" // #41 is 'A' (65)
-  let result1 = tokenize_pdf_name(input1)
+  let (result1, offset1) = tokenize_pdf_name(input1)
   inspect(ascii_string_of_bytesview(result1), content="NameATest")
+  inspect(offset1, content="11")
 
   // Test lowercase hex
   let input2 = b"Name#61Test" // #61 is 'a' (97)
-  let result2 = tokenize_pdf_name(input2)
+  let (result2, offset2) = tokenize_pdf_name(input2)
   inspect(ascii_string_of_bytesview(result2), content="NameaTest")
+  inspect(offset2, content="11")
 
   // Test uppercase hex
   let input3 = b"Name#4FTest" // #4F is 'O' (79)
-  let result3 = tokenize_pdf_name(input3)
+  let (result3, offset3) = tokenize_pdf_name(input3)
   inspect(ascii_string_of_bytesview(result3), content="NameOTest")
+  inspect(offset3, content="11")
 
   // Test mixed case hex
   let input4 = b"Name#4fTest" // #4f is 'O' (79)
-  let result4 = tokenize_pdf_name(input4)
+  let (result4, offset4) = tokenize_pdf_name(input4)
   inspect(ascii_string_of_bytesview(result4), content="NameOTest")
+  inspect(offset4, content="11")
 }
 
 ///|
 test "tokenize_pdf_name special characters" {
   // Test space escape
   let input1 = b"Name#20Test" // #20 is space (32)
-  let result1 = tokenize_pdf_name(input1)
+  let (result1, offset1) = tokenize_pdf_name(input1)
   inspect(ascii_string_of_bytesview(result1), content="Name Test")
+  inspect(offset1, content="11")
 
   // Test null character
   let input2 = b"Name#00Test" // #00 is null (0)
-  let result2 = tokenize_pdf_name(input2)
+  let (result2, offset2) = tokenize_pdf_name(input2)
   inspect(ascii_string_of_bytesview(result2), content="Name\\000Test")
+  inspect(offset2, content="11")
 
   // Test control character
   let input3 = b"Name#07Test" // #07 is bell (7)
-  let result3 = tokenize_pdf_name(input3)
+  let (result3, offset3) = tokenize_pdf_name(input3)
   inspect(ascii_string_of_bytesview(result3), content="Name\\007Test")
+  inspect(offset3, content="11")
 }
 
 ///|
 test "tokenize_pdf_name edge cases" {
   // Test invalid hex sequences (should treat # as literal)
   let input1 = b"Name#GGTest" // Invalid hex characters
-  let result1 = tokenize_pdf_name(input1)
+  let (result1, offset1) = tokenize_pdf_name(input1)
   inspect(ascii_string_of_bytesview(result1), content="Name#GGTest")
+  inspect(offset1, content="11")
 
   // Test incomplete hex sequence at end
   let input2 = b"Name#4" // Incomplete, should be treated as #40
-  let result2 = tokenize_pdf_name(input2)
+  let (result2, offset2) = tokenize_pdf_name(input2)
   inspect(ascii_string_of_bytesview(result2), content="Name@") // #40 is '@' (64)
+  inspect(offset2, content="6")
 
   // Test lone # at end
   let input3 = b"Name#"
-  let result3 = tokenize_pdf_name(input3)
+  let (result3, offset3) = tokenize_pdf_name(input3)
   inspect(ascii_string_of_bytesview(result3), content="Name#")
+  inspect(offset3, content="5")
 
   // Test invalid single hex character
   let input4 = b"Name#XY" // X is invalid
-  let result4 = tokenize_pdf_name(input4)
+  let (result4, offset4) = tokenize_pdf_name(input4)
   inspect(ascii_string_of_bytesview(result4), content="Name#XY")
+  inspect(offset4, content="7")
 }
 
 ///|
@@ -306,6 +210,73 @@ test "tokenize_pdf_hexadecimal_string basic hex pairs" {
   let input4 = b""
   let result4 = tokenize_pdf_hexadecimal_string(input4[:])
   inspect(ascii_string_of_bytesview(result4), content="")
+}
+
+///|
+test "tokenize_pdf_name delimiter handling" {
+  // Test name stops at space
+  let input1 = b"Name Test"
+  let (result1, offset1) = tokenize_pdf_name(input1)
+  inspect(ascii_string_of_bytesview(result1), content="Name")
+  inspect(offset1, content="4")
+
+  // Test name stops at forward slash
+  let input2 = b"Name/Test"
+  let (result2, offset2) = tokenize_pdf_name(input2)
+  inspect(ascii_string_of_bytesview(result2), content="Name")
+  inspect(offset2, content="4")
+
+  // Test name stops at left parenthesis
+  let input3 = b"Name(Test"
+  let (result3, offset3) = tokenize_pdf_name(input3)
+  inspect(ascii_string_of_bytesview(result3), content="Name")
+  inspect(offset3, content="4")
+
+  // Test name stops at right parenthesis
+  let input4 = b"Name)Test"
+  let (result4, offset4) = tokenize_pdf_name(input4)
+  inspect(ascii_string_of_bytesview(result4), content="Name")
+  inspect(offset4, content="4")
+
+  // Test name stops at left bracket
+  let input5 = b"Name[Test"
+  let (result5, offset5) = tokenize_pdf_name(input5)
+  inspect(ascii_string_of_bytesview(result5), content="Name")
+  inspect(offset5, content="4")
+
+  // Test name stops at right bracket
+  let input6 = b"Name]Test"
+  let (result6, offset6) = tokenize_pdf_name(input6)
+  inspect(ascii_string_of_bytesview(result6), content="Name")
+  inspect(offset6, content="4")
+
+  // Test name stops at angle brackets
+  let input7 = b"Name<Test"
+  let (result7, offset7) = tokenize_pdf_name(input7)
+  inspect(ascii_string_of_bytesview(result7), content="Name")
+  inspect(offset7, content="4")
+  let input8 = b"Name>Test"
+  let (result8, offset8) = tokenize_pdf_name(input8)
+  inspect(ascii_string_of_bytesview(result8), content="Name")
+  inspect(offset8, content="4")
+
+  // Test name stops at comment start
+  let input9 = b"Name%comment"
+  let (result9, offset9) = tokenize_pdf_name(input9)
+  inspect(ascii_string_of_bytesview(result9), content="Name")
+  inspect(offset9, content="4")
+
+  // Test name stops at tab
+  let input10 = b"Name\tTest"
+  let (result10, offset10) = tokenize_pdf_name(input10)
+  inspect(ascii_string_of_bytesview(result10), content="Name")
+  inspect(offset10, content="4")
+
+  // Test name stops at newline
+  let input11 = b"Name\nTest"
+  let (result11, offset11) = tokenize_pdf_name(input11)
+  inspect(ascii_string_of_bytesview(result11), content="Name")
+  inspect(offset11, content="4")
 }
 
 ///|
@@ -443,7 +414,7 @@ test "tokenize_pdf_hexadecimal_string edge cases" {
 test "tokenize" {
   let input = b"/hello"
   let tokens = tokenize(input).map(triple => triple.0)
-  inspect(tokens, content="[NAME(hello), EOF]")
+  inspect(tokens, content="[NAME(/hello), EOF]")
 }
 
 ///|
@@ -477,7 +448,7 @@ test "tokenize delimiters" {
   let tokens = tokenize(input).map(triple => triple.0)
   inspect(
     tokens,
-    content="[LEFT_PARENTHESIS, RIGHT_PARENTHESIS, LEFT_CURLY_BRACE, RIGHT_CURLY_BRACE, LEFT_SQUARE_BRACKET, RIGHT_SQUARE_BRACKET, STRING(), SOLIDUS, DICT_BEGIN, DICT_END, EOF]",
+    content="[STRING(), LEFT_CURLY_BRACE, RIGHT_CURLY_BRACE, LEFT_SQUARE_BRACKET, RIGHT_SQUARE_BRACKET, STRING(), NAME(/), DICT_BEGIN, DICT_END, EOF]",
   )
 }
 
@@ -486,14 +457,14 @@ test "tokenize pdf names" {
   // Test simple PDF names
   let input1 = b"/Name /Type /Subtype"
   let tokens1 = tokenize(input1).map(triple => triple.0)
-  inspect(tokens1, content="[NAME(Name), NAME(Type), NAME(Subtype), EOF]")
+  inspect(tokens1, content="[NAME(/Name), NAME(/Type), NAME(/Subtype), EOF]")
 
   // Test PDF names with numbers and underscores
   let input2 = b"/Name123 /_Private /Test_Name"
   let tokens2 = tokenize(input2).map(triple => triple.0)
   inspect(
     tokens2,
-    content="[NAME(Name123), NAME(_Private), NAME(Test_Name), EOF]",
+    content="[NAME(/Name123), NAME(/_Private), NAME(/Test_Name), EOF]",
   )
 }
 
@@ -502,17 +473,14 @@ test "tokenize literal strings" {
   // Test simple literal strings
   let input1 = b"(Hello World) (Simple string)"
   let tokens1 = tokenize(input1).map(triple => triple.0)
-  inspect(
-    tokens1,
-    content="[LEFT_PARENTHESIS, RIGHT_PARENTHESIS, LEFT_PARENTHESIS, RIGHT_PARENTHESIS, EOF]",
-  )
+  inspect(tokens1, content="[STRING(Hello World), STRING(Simple string), EOF]")
 
   // Test literal strings with escape sequences
   let input2 = b"(Line1\\nLine2) (Tab\\tSeparated) (Quote\\\"Test)"
   let tokens2 = tokenize(input2).map(triple => triple.0)
   inspect(
     tokens2,
-    content="[LEFT_PARENTHESIS, INTEGER(1), INTEGER(2), RIGHT_PARENTHESIS, LEFT_PARENTHESIS, RIGHT_PARENTHESIS, LEFT_PARENTHESIS, RIGHT_PARENTHESIS, EOF]",
+    content="[STRING(Line1\\nLine2), STRING(Tab\\tSeparated), STRING(QuoteTest), EOF]",
   )
 }
 
@@ -541,7 +509,7 @@ test "tokenize mixed content" {
   let tokens = tokenize(input).map(triple => triple.0)
   inspect(
     tokens,
-    content="[DICT_BEGIN, NAME(Type), NAME(Catalog), NAME(Pages), INTEGER(123), NAME(Count), INTEGER(5), DICT_END, EOF]",
+    content="[DICT_BEGIN, NAME(/Type), NAME(/Catalog), NAME(/Pages), INTEGER(123), NAME(/Count), INTEGER(5), DICT_END, EOF]",
   )
 }
 
@@ -552,7 +520,7 @@ test "tokenize arrays and objects" {
   let tokens1 = tokenize(input1).map(triple => triple.0)
   inspect(
     tokens1,
-    content="[LEFT_SQUARE_BRACKET, INTEGER(1), INTEGER(2), INTEGER(3), NAME(Name), LEFT_PARENTHESIS, RIGHT_PARENTHESIS, RIGHT_SQUARE_BRACKET, EOF]",
+    content="[LEFT_SQUARE_BRACKET, INTEGER(1), INTEGER(2), INTEGER(3), NAME(/Name), STRING(string), RIGHT_SQUARE_BRACKET, EOF]",
   )
 
   // Test nested structures
@@ -560,7 +528,7 @@ test "tokenize arrays and objects" {
   let tokens2 = tokenize(input2).map(triple => triple.0)
   inspect(
     tokens2,
-    content="[LEFT_CURLY_BRACE, LEFT_SQUARE_BRACKET, NAME(Key), LEFT_PARENTHESIS, RIGHT_PARENTHESIS, RIGHT_SQUARE_BRACKET, DICT_BEGIN, NAME(Inner), TRUE, DICT_END, RIGHT_CURLY_BRACE, EOF]",
+    content="[LEFT_CURLY_BRACE, LEFT_SQUARE_BRACKET, NAME(/Key), STRING(Value), RIGHT_SQUARE_BRACKET, DICT_BEGIN, NAME(/Inner), TRUE, DICT_END, RIGHT_CURLY_BRACE, EOF]",
   )
 }
 
@@ -673,7 +641,7 @@ test "tokenize complex pdf document structure" {
   inspect(
     token_strings,
     content=(
-      #|["LESS_THAN_SIGN", "LESS_THAN_SIGN", "SOLIDUS", "SOLIDUS", "SOLIDUS", "INTEGER(3)", "INTEGER(0)", "SOLIDUS", "LEFT_SQUARE_BRACKET", "INTEGER(0)", "INTEGER(0)", "INTEGER(6)", "INTEGER(1)", "INTEGER(2)", "INTEGER(7)", "INTEGER(9)", "INTEGER(2)", "RIGHT_SQUARE_BRACKET", "SOLIDUS", "INTEGER(5)", "INTEGER(0)", "SOLIDUS", "LESS_THAN_SIGN", "LESS_THAN_SIGN", "SOLIDUS", "LESS_THAN_SIGN", "LESS_THAN_SIGN", "SOLIDUS", "INTEGER(1)", "INTEGER(6)", "INTEGER(0)", "GREATER_THAN_SIGN", "GREATER_THAN_SIGN", "SOLIDUS", "LEFT_SQUARE_BRACKET", "SOLIDUS", "SOLIDUS", "RIGHT_SQUARE_BRACKET", "GREATER_THAN_SIGN", "GREATER_THAN_SIGN", "GREATER_THAN_SIGN", "GREATER_THAN_SIGN", "EOF"]
+      #|["LESS_THAN_SIGN", "LESS_THAN_SIGN", "NAME(/)", "NAME(/)", "NAME(/)", "INTEGER(3)", "INTEGER(0)", "NAME(/)", "LEFT_SQUARE_BRACKET", "INTEGER(0)", "INTEGER(0)", "INTEGER(6)", "INTEGER(1)", "INTEGER(2)", "INTEGER(7)", "INTEGER(9)", "INTEGER(2)", "RIGHT_SQUARE_BRACKET", "NAME(/)", "INTEGER(5)", "INTEGER(0)", "NAME(/)", "LESS_THAN_SIGN", "LESS_THAN_SIGN", "NAME(/)", "LESS_THAN_SIGN", "LESS_THAN_SIGN", "NAME(/)", "INTEGER(1)", "INTEGER(6)", "INTEGER(0)", "GREATER_THAN_SIGN", "GREATER_THAN_SIGN", "NAME(/)", "LEFT_SQUARE_BRACKET", "NAME(/)", "NAME(/)", "RIGHT_SQUARE_BRACKET", "GREATER_THAN_SIGN", "GREATER_THAN_SIGN", "GREATER_THAN_SIGN", "GREATER_THAN_SIGN", "EOF"]
     ),
   )
 }
@@ -704,16 +672,13 @@ test "tokenize string escaping comprehensive" {
   // This should parse the escape sequences according to PDF literal string rules
   inspect(
     tokens,
-    content="[LEFT_PARENTHESIS, STRING(n\\tIndented\\\\Path(param), RIGHT_PARENTHESIS, STRING(101nd\\nBell), INTEGER(0), RIGHT_PARENTHESIS, EOF]",
+    content="[STRING(Start\\n\\tIndented\\\\Path(param)And\\nBell\\000Null), EOF]",
   )
 
   // Test multiline string continuation
   let input2 = b"(Line1\\\nLine2)"
   let tokens2 = tokenize(input2).map(triple => triple.0)
-  inspect(
-    tokens2,
-    content="[LEFT_PARENTHESIS, INTEGER(1), INTEGER(2), RIGHT_PARENTHESIS, EOF]",
-  )
+  inspect(tokens2, content="[STRING(Line1Line2), EOF]")
 }
 
 ///|
@@ -742,12 +707,12 @@ test "tokenize pdf name with escapes" {
   // Test PDF names with hex escape sequences  
   let input1 = b"/Name#20With#20Spaces"
   let tokens1 = tokenize(input1).map(triple => triple.0)
-  inspect(tokens1, content="[NAME(Name), INTEGER(20), INTEGER(20), EOF]")
+  inspect(tokens1, content="[NAME(/Name With Spaces), EOF]")
 
   // Test PDF names with special characters
   let input2 = b"/Søren#20Åberg"
   let tokens2 = tokenize(input2).map(triple => triple.0)
-  inspect(tokens2, content="[NAME(S), INTEGER(20), EOF]")
+  inspect(tokens2, content="[NAME(/S\\303\\270ren \\303\\205berg), EOF]")
 }
 
 ///|
@@ -760,7 +725,7 @@ test "tokenize error resilience" {
   // Should tokenize everything it can recognize
   inspect(
     tokens,
-    content="[TRUE, LEFT_PARENTHESIS, NAME(name), INTEGER(123), FALSE, EOF]",
+    content="[TRUE, STRING(unclosed string /name 123 false), EOF]",
   )
 }
 
@@ -794,7 +759,7 @@ test "tokenize pdf indirect object references" {
   let tokens5 = tokenize(input5).map(triple => triple.0)
   inspect(
     tokens5,
-    content="[NAME(Parent), INDIRECT(3, 0), NAME(Contents), INDIRECT(5, 0), EOF]",
+    content="[NAME(/Parent), INDIRECT(3, 0), NAME(/Contents), INDIRECT(5, 0), EOF]",
   )
 }
 
@@ -840,7 +805,7 @@ test "tokenize comprehensive integration" {
   inspect(
     found_token_types,
     content=(
-      #|["EOF", "ARRAY", "OTHER", "INTEGER"]
+      #|["EOF", "NAME", "ARRAY", "OTHER", "STRING", "INTEGER"]
     ),
   )
 }
@@ -856,4 +821,61 @@ test {
     tokens,
     content="[(TRUE, {row: 0, col: 0}, {row: 0, col: 4}), (EOF, {row: 1, col: 0}, {row: 1, col: 0})]",
   )
+}
+
+///|
+test "tokenize stream data" {
+  // Test basic stream with simple content
+  let input1 = b"stream\nHello World\nendstream"
+  let tokens1 = tokenize(input1).map(triple => triple.0)
+  inspect(tokens1, content="[STREAM_BYTES(Hello World\\n), EOF]")
+
+  // Test stream with binary data
+  let input2 = Bytes::from_array([
+    115, 116, 114, 101, 97, 109, 10, // "stream\n"
+     1, 2, 3, 4, // binary data
+     101, 110, 100, 115, 116, 114, 101, 97, 109, // "endstream"
+  ])
+  let tokens2 = tokenize(input2).map(triple => triple.0)
+  let stream_data = match tokens2[0] {
+    STREAM_BYTES(data) => data.to_array()
+    _ => []
+  }
+  inspect(stream_data, content="[b'\\x01', b'\\x02', b'\\x03', b'\\x04']")
+
+  // Test stream with multiple lines
+  let input3 = b"stream\nLine 1\nLine 2\nLine 3\nendstream"
+  let tokens3 = tokenize(input3).map(triple => triple.0)
+  inspect(tokens3, content="[STREAM_BYTES(Line 1\\nLine 2\\nLine 3\\n), EOF]")
+
+  // Test stream with different whitespace after "stream"
+  let input4 = b"stream \t\r\nData after whitespace\nendstream"
+  let tokens4 = tokenize(input4).map(triple => triple.0)
+  inspect(
+    tokens4,
+    content="[STREAM_BYTES( \\t\\r\\nData after whitespace\\n), EOF]",
+  )
+}
+
+///|
+test "tokenize stream edge cases" {
+  // Test empty stream
+  let input1 = b"stream\nendstream"
+  let tokens1 = tokenize(input1).map(triple => triple.0)
+  inspect(tokens1, content="[STREAM_BYTES(), EOF]")
+
+  // Test stream without endstream (should handle gracefully)
+  let input2 = b"stream\nData without end"
+  let tokens2 = tokenize(input2).map(triple => triple.0)
+  inspect(tokens2, content="[STREAM_BYTES(), EOF]")
+
+  // Test stream with endstream in the middle of data
+  let input3 = b"stream\nThis has endstream word but\nendstream"
+  let tokens3 = tokenize(input3).map(triple => triple.0)
+  inspect(tokens3, content="[STREAM_BYTES(This has ), STREAM_BYTES(), EOF]")
+
+  // Test immediate stream->endstream (no newline)
+  let input4 = b"streamendstream"
+  let tokens4 = tokenize(input4).map(triple => triple.0)
+  inspect(tokens4, content="[STREAM_BYTES(), EOF]")
 }

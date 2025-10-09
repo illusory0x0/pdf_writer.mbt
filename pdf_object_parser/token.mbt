@@ -46,5 +46,10 @@ pub impl Show for Token with output(self, logger) {
     }
     EOF => logger.write_string("EOF")
     NULL => logger.write_string("NULL")
+    STREAM_BYTES(stream_bytes) => {
+      logger.write_string("STREAM_BYTES(")
+      logger.write_string(stream_bytes |> ascii_string_of_bytesview)
+      logger.write_string(")")
+    }
   }
 }

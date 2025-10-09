@@ -8,7 +8,7 @@ test "parse simple PDF" {
     "major": 1,
     "minor": 4,
     "objects": [["Boolean", true]],
-    "trailer": ["Dictionary", [["Size", ["Integer", 2]]]],
+    "trailer": ["Dictionary", [["/Size", ["Integer", 2]]]],
   })
 
   // test lexer
@@ -69,74 +69,79 @@ test "parse simple PDF" {
 ///|
 test {
   let input = try! @fs.read_file_to_bytes("./output/hello.pdf")
-  let tokens = @pdf_file_lexer.tokenize_file(input)
-  @json.inspect(tokens, content={
-    "value": {
-      "header": { "major": 1, "minor": 4 },
-      "body": [
-        {
-          "bytes_offset": 120,
-          "object_num": 1,
-          "generation_num": 0,
-          "obj_bytes": "<<\\n  /Length 53\\n>>\\nstream\\n 1 0 0 1 50 770 cm BT /F0 36 Tf (Hello, World!) Tj ET\\nendstream\\n",
-        },
-        {
-          "bytes_offset": 187,
-          "object_num": 2,
-          "generation_num": 0,
-          "obj_bytes": "<<\\n  /Type /Pages  \\n  /Kids [4 0 R]  \\n  /Count 1\\n>>\\n",
-        },
-        {
-          "bytes_offset": 242,
-          "object_num": 3,
-          "generation_num": 0,
-          "obj_bytes": "<<\\n  /Type /Catalog  \\n  /Pages 2 0 R\\n>>\\n",
-        },
-        {
-          "bytes_offset": 463,
-          "object_num": 4,
-          "generation_num": 0,
-          "obj_bytes": "<<\\n  /Type /Page  \\n  /Contents 1 0 R  \\n  /Parent 2 0 R  \\n  /MediaBox [0 0 595.2765 841.89105]  \\n  /Resources <<\\n  /Font <<\\n  /F0 <<\\n  /Type /Font  \\n  /Subtype /Type1  \\n  /BaseFont /Times-Italic\\n>>\\n>>\\n>>\\n>>\\n",
-        },
+  let result = parse(input)
+  @json.inspect(result, content={
+    "major": 1,
+    "minor": 4,
+    "objects": [
+      [
+        "Stream",
+        ["Dictionary", [["/Length", ["Integer", 53]]]],
+        ["Stream", " 1 0 0 1 50 770 cm BT /F0 36 Tf (Hello, World!) Tj ET\\x0a"],
       ],
-      "xref_table": {
-        "entries": [
-          { "bytes_offset": 0, "generation_num": 65535, "state": "Free" },
-          { "bytes_offset": 105, "generation_num": 0, "state": "InUse" },
-          { "bytes_offset": 67, "generation_num": 0, "state": "InUse" },
-          { "bytes_offset": 55, "generation_num": 0, "state": "InUse" },
-          { "bytes_offset": 221, "generation_num": 0, "state": "InUse" },
+      [
+        "Dictionary",
+        [
+          ["/Type", ["Name", "/Pages"]],
+          ["/Kids", ["Array", [["Indirect", 4]]]],
+          ["/Count", ["Integer", 1]],
         ],
-        "start_num": 0,
-      },
-      "trailer": "<<\\n  /Size 5  \\n  /Root 3 0 R\\n>>",
-      "start_xref_pos": 622,
-    },
-    "bytes_offset": 631,
-    "rest": "\\n",
+      ],
+      [
+        "Dictionary",
+        [["/Type", ["Name", "/Catalog"]], ["/Pages", ["Indirect", 2]]],
+      ],
+      [
+        "Dictionary",
+        [
+          ["/Type", ["Name", "/Page"]],
+          ["/Contents", ["Indirect", 1]],
+          ["/Parent", ["Indirect", 2]],
+          [
+            "/MediaBox",
+            [
+              "Array",
+              [
+                ["Integer", 0],
+                ["Integer", 0],
+                ["Real", 595.2765],
+                ["Real", 841.89105],
+              ],
+            ],
+          ],
+          [
+            "/Resources",
+            [
+              "Dictionary",
+              [
+                [
+                  "/Font",
+                  [
+                    "Dictionary",
+                    [
+                      [
+                        "/F0",
+                        [
+                          "Dictionary",
+                          [
+                            ["/Type", ["Name", "/Font"]],
+                            ["/Subtype", ["Name", "/Type1"]],
+                            ["/BaseFont", ["Name", "/Times-Italic"]],
+                          ],
+                        ],
+                      ],
+                    ],
+                  ],
+                ],
+              ],
+            ],
+          ],
+        ],
+      ],
+    ],
+    "trailer": [
+      "Dictionary",
+      [["/Size", ["Integer", 5]], ["/Root", ["Indirect", 3]]],
+    ],
   })
-  let obj0 = tokens.value.body.0[0].obj_bytes
-  inspect(obj0 |> @helper.ascii_string_of_bytesview, content="<<\\n  /Length 53\\n>>\\nstream\\n 1 0 0 1 50 770 cm BT /F0 36 Tf (Hello, World!) Tj ET\\nendstream\\n")
-  // let obj = @pdf_object_parser.parse(@pdf_object_parser.tokenize(obj0)) catch {
-  //   @pdf_object_parser.ParseError::UnexpectedToken(tok, range, kinds) => {
-  //     println(tok)
-  //     println(range)
-  //     println(kinds)
-  //     panic()
-  //   }
-  //   @pdf_object_parser.ParseError::UnexpectedEndOfInput(_, _) => panic()
-  // }
-
-  // let result = try parse(input) catch {
-  //   @pdf_object_parser.ParseError::UnexpectedToken(tok,range,kinds) => {
-  //     println(tok)
-  //     println(range)
-  //     println(kinds)
-  //     panic()
-  //   }
-  //   @pdf_object_parser.ParseError::UnexpectedEndOfInput(_,_) => {
-  //     panic()
-  //   }
-  //   _ => panic()
-  // }
 }
