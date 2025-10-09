@@ -7,5 +7,9 @@
       "alias": "pdf"
     }
   ],
-  "test-import": ["illusory0x0/pdf/helper"]
+  "test-import": [
+    "illusory0x0/pdf/helper",
+    "moonbitlang/x/fs",
+    "illusory0x0/pdf/pdf_helper"
+  ]
 }
