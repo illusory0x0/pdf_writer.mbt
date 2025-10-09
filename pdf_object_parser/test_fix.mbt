@@ -35,16 +35,7 @@ test {
     tokens.map(triple => triple.0),
     content="[DICT_BEGIN, NAME(/hello), NULL, DICT_END, STREAM_BYTES(  hello world \\n), EOF]",
   )
-  let result = parse(tokens) catch {
-    UnexpectedToken(tok, range, kinds) => {
-      println(tok)
-      println(range)
-      println(kinds)
-      panic()
-    }
-    UnexpectedEndOfInput(_, _) => panic()
-    _ => panic()
-  }
+  let result = parse(tokens)
   @json.inspect(result, content=[
     "Stream",
     ["Dictionary", [["/hello", "Null"]]],

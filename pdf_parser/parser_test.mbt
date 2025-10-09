@@ -145,3 +145,14 @@ test {
     ],
   })
 }
+
+///|
+test {
+  let input = try! @fs.read_dir("./output")
+  let files = input.map(basename => "./output/\{basename}")
+  for file in files {
+    let input = try! @fs.read_file_to_bytes(file)
+    let result = parse(input)
+    ignore(result)
+  }
+}
