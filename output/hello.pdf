@@ -18,7 +18,8 @@ endobj
 3 0 obj
 <<
   /Type /Catalog  
-  /Pages 2 0 R
+  /Pages 2 0 R  
+  /Outlines 5 0 R
 >>
 endobj
 4 0 obj
@@ -38,18 +39,39 @@ endobj
 >>
 >>
 endobj
+5 0 obj
+<<
+  /Type /Outlines  
+  /First 6 0 R  
+  /Last 6 0 R  
+  /Count 0
+>>
+endobj
+6 0 obj
+<<
+  /Title (Chapter 1)  
+  /Parent 5 0 R  
+  /Prev null  
+  /Next null  
+  /First null  
+  /Last null  
+  /Count 0
+>>
+endobj
 xref
-0 5
+0 7
 0000000000 65535 f 
 0000000105 00000 n
 0000000067 00000 n
-0000000055 00000 n
+0000000075 00000 n
 0000000221 00000 n
+0000000085 00000 n
+0000000134 00000 n
 trailer
 <<
   /Size 5  
   /Root 3 0 R
 >>
 startxref
-622
+901
 %%EOF

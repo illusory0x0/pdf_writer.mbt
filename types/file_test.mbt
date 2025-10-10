@@ -59,6 +59,44 @@ test {
 }
 
 ///|
+/// 
+/// first and last should be indirect references
+fn make_outline(first : @pdf.Object, last : @pdf.Object) -> @pdf.Object {
+  @pdf.Dictionary([
+    ("/Type", @pdf.Name(b"/Outlines")),
+    ("/First", first),
+    ("/Last", last),
+    ("/Count", @pdf.Integer(0)),
+  ])
+}
+
+///|
+fn make_outline_item(
+  title : Bytes,
+  parent : @pdf.Object,
+  prev : @pdf.Object,
+  next : @pdf.Object,
+  first : @pdf.Object,
+  last : @pdf.Object,
+) -> @pdf.Object {
+  @pdf.Dictionary([
+    ("/Title", @pdf.String(title)),
+    ("/Parent", parent),
+    ("/Prev", prev),
+    ("/Next", next),
+    ("/First", first),
+    ("/Last", last),
+    ("/Count", @pdf.Integer(0)),
+  ])
+}
+
+///|
+fn define_catalog(pages~ : @pdf.Object, outlines~ : @pdf.Object) -> @pdf.Object {
+  Dictionary([("/Type", Name("/Catalog")), ("/Pages", pages), ("/Outlines", outlines)])
+}
+
+
+///|
 test (t : @test.T) {
   let buffer = @fmt.Memory::make(4096, Byte::default())
   let buf = buffer
@@ -93,9 +131,8 @@ test (t : @test.T) {
   let pages = @pdf_helper.define_pages(pages=[@pdf.Indirect(4)])
 
   // 3 0 obj - Use define_catalog helper
-  let catalog = @pdf_helper.define_catalog(pages=@pdf.Indirect(2))
+  let catalog = define_catalog(pages=@pdf.Indirect(2), outlines=@pdf.Indirect(5))
 
-  // 4 0 obj - Use define_page and helper functions for resources
   let times_italic_font = @pdf.Dictionary([
     ("/Type", @pdf.Name(b"/Font")),
     ("/Subtype", @pdf.Name(b"/Type1")),
@@ -105,67 +142,20 @@ test (t : @test.T) {
     name=b"/F0",
     font=times_italic_font,
   )
+  // 4 0 obj - Use define_page and helper functions for resources
   let font_resources = @pdf_helper.define_fonts(fonts=[font_f0])
   let page = @pdf_helper.define_page(
     contents=@pdf.Indirect(1),
     parent=@pdf.Indirect(2),
     resources=[font_resources],
   )
-  let offset = @fmt.write(stm, buf, 0)
-  inspect(
-    @mem_helper.string_of_memory(buf, offset),
-    content=(
-      #|<<
-      #|  /Length 53
-      #|>>
-      #|stream
-      #| 1 0 0 1 50 770 cm BT /F0 36 Tf (Hello, World!) Tj ET
-      #|endstream
-    ),
-  )
-  let offset = @fmt.write(pages, buf, 0)
-  inspect(
-    @mem_helper.string_of_memory(buf, offset),
-    content=(
-      #|<<
-      #|  /Type /Pages  
-      #|  /Kids [4 0 R]  
-      #|  /Count 1
-      #|>>
-    ),
-  )
-  let offset = @fmt.write(catalog, buf, 0)
-  inspect(
-    @mem_helper.string_of_memory(buf, offset),
-    content=(
-      #|<<
-      #|  /Type /Catalog  
-      #|  /Pages 2 0 R
-      #|>>
-    ),
-  )
-  let offset = @fmt.write(page, buf, 0)
-  inspect(
-    @mem_helper.string_of_memory(buf, offset),
-    content=(
-      #|<<
-      #|  /Type /Page  
-      #|  /Contents 1 0 R  
-      #|  /Parent 2 0 R  
-      #|  /MediaBox [0 0 595.2765 841.89105]  
-      #|  /Resources <<
-      #|  /Font <<
-      #|  /F0 <<
-      #|  /Type /Font  
-      #|  /Subtype /Type1  
-      #|  /BaseFont /Times-Italic
-      #|>>
-      #|>>
-      #|>>
-      #|>>
-    ),
-  )
-  let pdf = @pdf_helper.make_pdf(@pdf.Indirect(3), [stm, pages, catalog, page])
+  // 5 0 obj - outline dictionary
+  let outline = make_outline(@pdf.Indirect(6), @pdf.Indirect(6))
+  // 6 0 obj - outline item
+  let outline_item = make_outline_item("Chapter 1", @pdf.Indirect(5), @pdf.Null, @pdf.Null, @pdf.Null, @pdf.Null)
+
+
+  let pdf = @pdf_helper.make_pdf(@pdf.Indirect(3), [stm, pages, catalog, page,outline,outline_item])
   let offset = @fmt.write(pdf, buf, 0)
   let pdf_file = @mem_helper.bytes_of_memory(buf, offset)
   @fs.write_bytes_to_file("./output/hello.pdf", pdf_file)
