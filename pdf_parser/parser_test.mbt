@@ -89,7 +89,11 @@ test {
       ],
       [
         "Dictionary",
-        [["/Type", ["Name", "/Catalog"]], ["/Pages", ["Indirect", 2]]],
+        [
+          ["/Type", ["Name", "/Catalog"]],
+          ["/Pages", ["Indirect", 2]],
+          ["/Outlines", ["Indirect", 5]],
+        ],
       ],
       [
         "Dictionary",
@@ -136,6 +140,63 @@ test {
               ],
             ],
           ],
+        ],
+      ],
+      [
+        "Dictionary",
+        [
+          ["/Type", ["Name", "/Outlines"]],
+          ["/First", ["Indirect", 6]],
+          ["/Last", ["Indirect", 6]],
+          ["/Count", ["Integer", 0]],
+        ],
+      ],
+      [
+        "Dictionary",
+        [
+          ["/Title", ["String", "chapter 1"]],
+          ["/Parent", ["Indirect", 5]],
+          ["/Prev", "Null"],
+          ["/Next", "Null"],
+          ["/First", ["Indirect", 7]],
+          ["/Last", ["Indirect", 8]],
+          ["/Count", ["Integer", 0]],
+        ],
+      ],
+      [
+        "Dictionary",
+        [
+          ["/Title", ["String", "section 1.1"]],
+          ["/Parent", ["Indirect", 6]],
+          ["/Prev", "Null"],
+          ["/Next", ["Indirect", 8]],
+          ["/First", "Null"],
+          ["/Last", "Null"],
+          ["/Count", ["Integer", 0]],
+        ],
+      ],
+      [
+        "Dictionary",
+        [
+          ["/Title", ["String", "section 1.2"]],
+          ["/Parent", ["Indirect", 6]],
+          ["/Prev", ["Indirect", 7]],
+          ["/Next", "Null"],
+          ["/First", ["Indirect", 9]],
+          ["/Last", ["Indirect", 9]],
+          ["/Count", ["Integer", 0]],
+        ],
+      ],
+      [
+        "Dictionary",
+        [
+          ["/Title", ["String", "subsection 1.2.1"]],
+          ["/Parent", ["Indirect", 8]],
+          ["/Prev", "Null"],
+          ["/Next", "Null"],
+          ["/First", "Null"],
+          ["/Last", "Null"],
+          ["/Count", ["Integer", 0]],
         ],
       ],
     ],
