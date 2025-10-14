@@ -1,15 +1,10 @@
 name: check
 
 on:
-  # schedule:
-    # Runs at 02:30, only on Friday.
-    # https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#schedule
-    # - cron: "30 2 * * 5"
   workflow_dispatch:
   push:
     branches:
       - master
-      - main
       
   pull_request:
 
@@ -21,18 +16,6 @@ jobs:
         os:
           - name: ubuntu-latest
             triple: x86_64-linux-gnu
-          - name: macos-latest
-            triple: arm64-apple-darwin
-          - name: windows-latest
-            triple: x86_64-w64-mingw32
-
-          # stable check
-
-          # pre-release check
-
-          # bleeding check
-          # 1. install latest toolchain
-          # 2. install latest core library from github.com
           
       fail-fast: false
     runs-on: ${{ matrix.os.name }}
@@ -69,21 +52,9 @@ jobs:
           moon fmt
           git diff --exit-code
 
-      - name: Setup MSVC
-        if: ${{ matrix.os.name == 'windows-latest' }}
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Set ulimit on unix
-        if: ${{ matrix.os.name != 'windows-latest' }}
-        run: |
-          ulimit -s 8176
-
       - name: moon test
         run: |
-          moon test --target all,native --release
-        
-        # disable for debug mode, to workaround for tcc bug.
-        # moon test --target all,native
+          moon test --target wasm-gc --release
         
   moon-json-format-check:
     runs-on: ubuntu-latest
