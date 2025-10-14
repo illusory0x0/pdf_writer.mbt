@@ -11,108 +11,112 @@
 /// terminal symbols
 /// 
 ///
+typealias @pdf.Object
 
 ///|
 /// Terminal symbol: Left parenthesis '('
-type LEFT_PARENTHESIS
+pub type LEFT_PARENTHESIS
 
 ///|
 /// Terminal symbol: Right parenthesis ')'
-type RIGHT_PARENTHESIS
+pub type RIGHT_PARENTHESIS
 
 ///|
 /// Terminal symbol: Left curly brace '{'
-type LEFT_CURLY_BRACE
+pub type LEFT_CURLY_BRACE
 
 ///|
 /// Terminal symbol: Right curly brace '}'
-type RIGHT_CURLY_BRACE
+pub type RIGHT_CURLY_BRACE
 
 ///|
 /// Terminal symbol: Left square bracket '['
-type LEFT_SQUARE_BRACKET
+pub type LEFT_SQUARE_BRACKET
 
 ///|
 /// Terminal symbol: Right square bracket ']'
-type RIGHT_SQUARE_BRACKET
+pub type RIGHT_SQUARE_BRACKET
 
 ///|
 /// Terminal symbol:  
-struct INDIRECT {
+pub(all) struct INDIRECT {
   object_num : Int
   generation_num : Int
-} derive(Show, Eq)
+}
 
 ///|
 /// Terminal symbol: Less than sign '<'
-type LESS_THAN_SIGN
+pub type LESS_THAN_SIGN
 
 ///|
 /// Terminal symbol: Greater than sign '>'
-type GREATER_THAN_SIGN
+pub type GREATER_THAN_SIGN
 
 ///|
 /// Terminal symbol: Solidus '/'
-type SOLIDUS
+pub type SOLIDUS
 
 ///|
 /// Terminal symbol: Dictionary begin marker
-type DICT_BEGIN
+pub type DICT_BEGIN
 
 ///|
 /// Terminal symbol: Dictionary end marker
-type DICT_END
+pub type DICT_END
 
 ///|
 /// Terminal symbol: Boolean true literal
-type TRUE
+pub type TRUE
 
 ///|
 /// Terminal symbol: Boolean false literal
-type FALSE
+pub type FALSE
 
 ///|
 /// Terminal symbol: End of file marker
-type EOF
+pub type EOF
 
 ///|
 /// Non-terminal symbol: Object represented as Atom
-typealias Object as Atom
+pub typealias Object as Atom
 
 ///|
 /// Terminal symbol: Null value literal
-type NULL
+pub type NULL
 
 ///|
 /// Non-terminal symbol: Integer represented as Int
-typealias Int as INTEGER
+pub typealias Int as INTEGER
 
 ///|
 /// Non-terminal symbol: Real number represented as Double
-typealias Double as REAL
+pub typealias Double as REAL
 
 ///|
 /// Non-terminal symbol: String represented as Bytes
-typealias Bytes as STRING
+pub typealias Bytes as STRING
 
 ///|
 /// Non-terminal symbol: Name represented as Bytes
-typealias Bytes as NAME
+pub typealias Bytes as NAME
 
 ///|
-typealias Array[Atom] as NonEmptyElems
+pub typealias Array[Atom] as NonEmptyElems
 
 ///|
-typealias Object as PDF_Array
+pub typealias Object as PDF_Array
 
 ///|
-typealias Object as PDF_Dict
+pub typealias Object as PDF_Dict
 
 ///|
-typealias Array[(NAME, Object)] as DictEntries
+pub typealias Array[(NAME, Object)] as DictEntries
 
 ///|
-typealias Object as PDF_Obj
+pub typealias Object as PDF_Obj
 
 ///|
-typealias Bytes as STREAM_BYTES
+pub typealias Bytes as STREAM_BYTES
+
+///|
+pub typealias PDF_Obj as PDF_Stream
