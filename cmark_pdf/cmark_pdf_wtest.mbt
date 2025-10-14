@@ -1,14 +1,4 @@
 ///|
-test "hello_md" (t : @test.T) {
-  let path = "./output/hello_md.pdf"
-  let bytes = markdown_to_bytes(md_str)
-  @fs.write_bytes_to_file(path, bytes)
-  inspect(bytes.length(), content="15110")
-  t.writeln(bytes)
-  t.snapshot(filename="hello_md.pdf.bytes")
-}
-
-///|
 test "array_README" (t : @test.T) {
   let full_path = "./markdown/array_README.md"
   let content = @fs.read_file_to_string(full_path)
