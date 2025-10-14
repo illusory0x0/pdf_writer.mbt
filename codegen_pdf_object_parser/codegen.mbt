@@ -94,19 +94,15 @@ test {
     #|;
     #|
     #|
-  let path = @edsl_parser.current_source_location().path.replace(
-    old="parser_declaration.mbt",
-    new="parser.mbty",
-  )
   let buffer = StringBuilder::new()
   let atom = [
     rule(fn(val : NAME) -> Atom { Name(val) }),
     rule(fn(val : STRING) -> Atom { String(val) }),
     rule(fn(val : INTEGER) -> Atom { Integer(val) }),
     rule(fn(val : REAL) -> Atom { Real(val) }),
-    rule(fn(val : NULL) -> Atom { Null }),
-    rule(fn(val : TRUE) -> Atom { Boolean(true) }),
-    rule(fn(val : FALSE) -> Atom { Boolean(false) }),
+    rule(fn(_ : NULL) -> Atom { Null }),
+    rule(fn(_ : TRUE) -> Atom { Boolean(true) }),
+    rule(fn(_ : FALSE) -> Atom { Boolean(false) }),
     rule(fn(val : INDIRECT) -> Atom { Indirect(val.object_num) }),
   ]
   let array_non_empty_elems = [
@@ -166,8 +162,8 @@ test {
     buffer.write_string(NonTerminal::from(non_terminal).emit())
   }
   buffer.write_string("\n\n%%\n")
-  try! @fs.write_string_to_file(path, buffer.to_string())
+  try! @fs.write_string_to_file(
+    "./pdf_object_parser/parser.mbty",
+    buffer.to_string(),
+  )
 }
-
-///|
-typealias PDF_Obj as PDF_Stream

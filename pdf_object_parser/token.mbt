@@ -1,55 +1,105 @@
 ///|
-fnalias @helper.ascii_string_of_bytesview
+pub(all) enum Token {
+  LEFT_PARENTHESIS
+  RIGHT_PARENTHESIS
+  LEFT_CURLY_BRACE
+  RIGHT_CURLY_BRACE
+  LEFT_SQUARE_BRACKET
+  RIGHT_SQUARE_BRACKET
+  LESS_THAN_SIGN
+  GREATER_THAN_SIGN
+  SOLIDUS
+  DICT_BEGIN
+  DICT_END
+  NULL
+  TRUE
+  FALSE
+  INTEGER(Int)
+  REAL(Double)
+  STRING(Bytes)
+  NAME(Bytes)
+  INDIRECT(INDIRECT)
+  STREAM_BYTES(Bytes)
+  EOF
+}
 
 ///|
-pub impl Show for Token with output(self, logger) {
+pub fn Token::kind(self : Token) -> TokenKind {
   match self {
-    LEFT_PARENTHESIS => logger.write_string("LEFT_PARENTHESIS")
-    RIGHT_PARENTHESIS => logger.write_string("RIGHT_PARENTHESIS")
-    LEFT_CURLY_BRACE => logger.write_string("LEFT_CURLY_BRACE")
-    RIGHT_CURLY_BRACE => logger.write_string("RIGHT_CURLY_BRACE")
-    LEFT_SQUARE_BRACKET => logger.write_string("LEFT_SQUARE_BRACKET")
-    RIGHT_SQUARE_BRACKET => logger.write_string("RIGHT_SQUARE_BRACKET")
-    LESS_THAN_SIGN => logger.write_string("LESS_THAN_SIGN")
-    GREATER_THAN_SIGN => logger.write_string("GREATER_THAN_SIGN")
-    SOLIDUS => logger.write_string("SOLIDUS")
-    DICT_BEGIN => logger.write_string("DICT_BEGIN")
-    DICT_END => logger.write_string("DICT_END")
-    TRUE => logger.write_string("TRUE")
-    FALSE => logger.write_string("FALSE")
-    INTEGER(value) => {
-      logger.write_string("INTEGER(")
-      logger.write_string(value.to_string())
-      logger.write_string(")")
-    }
-    REAL(value) => {
-      logger.write_string("REAL(")
-      logger.write_string(value.to_string())
-      logger.write_string(")")
-    }
-    STRING(value) => {
-      logger.write_string("STRING(")
-      logger.write_string(value |> ascii_string_of_bytesview)
-      logger.write_string(")")
-    }
-    NAME(value) => {
-      logger.write_string("NAME(")
-      logger.write_string(value |> ascii_string_of_bytesview)
-      logger.write_string(")")
-    }
-    INDIRECT(value) => {
-      logger.write_string("INDIRECT(")
-      logger.write_string(value.object_num.to_string())
-      logger.write_string(", ")
-      logger.write_string(value.generation_num.to_string())
-      logger.write_string(")")
-    }
-    EOF => logger.write_string("EOF")
-    NULL => logger.write_string("NULL")
-    STREAM_BYTES(stream_bytes) => {
-      logger.write_string("STREAM_BYTES(")
-      logger.write_string(stream_bytes |> ascii_string_of_bytesview)
-      logger.write_string(")")
-    }
+    LEFT_PARENTHESIS => TK_LEFT_PARENTHESIS
+    RIGHT_PARENTHESIS => TK_RIGHT_PARENTHESIS
+    LEFT_CURLY_BRACE => TK_LEFT_CURLY_BRACE
+    RIGHT_CURLY_BRACE => TK_RIGHT_CURLY_BRACE
+    LEFT_SQUARE_BRACKET => TK_LEFT_SQUARE_BRACKET
+    RIGHT_SQUARE_BRACKET => TK_RIGHT_SQUARE_BRACKET
+    LESS_THAN_SIGN => TK_LESS_THAN_SIGN
+    GREATER_THAN_SIGN => TK_GREATER_THAN_SIGN
+    SOLIDUS => TK_SOLIDUS
+    DICT_BEGIN => TK_DICT_BEGIN
+    DICT_END => TK_DICT_END
+    NULL => TK_NULL
+    TRUE => TK_TRUE
+    FALSE => TK_FALSE
+    INTEGER(_) => TK_INTEGER
+    REAL(_) => TK_REAL
+    STRING(_) => TK_STRING
+    NAME(_) => TK_NAME
+    INDIRECT(_) => TK_INDIRECT
+    STREAM_BYTES(_) => TK_STREAM_BYTES
+    EOF => TK_EOF
   }
+}
+
+///|
+pub(all) enum TokenKind {
+  TK_LEFT_PARENTHESIS
+  TK_RIGHT_PARENTHESIS
+  TK_LEFT_CURLY_BRACE
+  TK_RIGHT_CURLY_BRACE
+  TK_LEFT_SQUARE_BRACKET
+  TK_RIGHT_SQUARE_BRACKET
+  TK_LESS_THAN_SIGN
+  TK_GREATER_THAN_SIGN
+  TK_SOLIDUS
+  TK_DICT_BEGIN
+  TK_DICT_END
+  TK_NULL
+  TK_TRUE
+  TK_FALSE
+  TK_INTEGER
+  TK_REAL
+  TK_STRING
+  TK_NAME
+  TK_INDIRECT
+  TK_STREAM_BYTES
+  TK_EOF
+} derive(Eq)
+
+///|
+pub impl Show for TokenKind with output(self, logger) {
+  logger.write_string(
+    match self {
+      TK_LEFT_PARENTHESIS => "\"(\""
+      TK_RIGHT_PARENTHESIS => "\")\""
+      TK_LEFT_CURLY_BRACE => "\"{\""
+      TK_RIGHT_CURLY_BRACE => "\"}\""
+      TK_LEFT_SQUARE_BRACKET => "\"[\""
+      TK_RIGHT_SQUARE_BRACKET => "\"]\""
+      TK_LESS_THAN_SIGN => "\"<\""
+      TK_GREATER_THAN_SIGN => "\">\""
+      TK_SOLIDUS => "\"/\""
+      TK_DICT_BEGIN => "\"<<\""
+      TK_DICT_END => "\">>\""
+      TK_NULL => "\"null\""
+      TK_TRUE => "\"true\""
+      TK_FALSE => "\"false\""
+      TK_INTEGER => "INTEGER"
+      TK_REAL => "REAL"
+      TK_STRING => "STRING"
+      TK_NAME => "NAME"
+      TK_INDIRECT => "INDIRECT"
+      TK_STREAM_BYTES => "STREAM_BYTES"
+      TK_EOF => "EOF"
+    },
+  )
 }

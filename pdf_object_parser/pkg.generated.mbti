@@ -2,6 +2,7 @@
 package "illusory0x0/pdf/pdf_object_parser"
 
 import(
+  "illusory0x0/pdf/codegen_pdf_object_parser"
   "illusory0x0/pdf/types"
   "moonbitlang/core/json"
 )
@@ -24,30 +25,6 @@ pub suberror ParseError {
 }
 
 // Types and methods
-type DICT_BEGIN
-
-type DICT_END
-
-type EOF
-
-type FALSE
-
-type GREATER_THAN_SIGN
-
-type INDIRECT
-impl Eq for INDIRECT
-impl Show for INDIRECT
-
-type LEFT_CURLY_BRACE
-
-type LEFT_PARENTHESIS
-
-type LEFT_SQUARE_BRACKET
-
-type LESS_THAN_SIGN
-
-type NULL
-
 pub struct Position {
   row : Int
   col : Int
@@ -55,16 +32,6 @@ pub struct Position {
 impl Show for Position
 impl ToJson for Position
 impl @json.FromJson for Position
-
-type RIGHT_CURLY_BRACE
-
-type RIGHT_PARENTHESIS
-
-type RIGHT_SQUARE_BRACKET
-
-type SOLIDUS
-
-type TRUE
 
 pub(all) enum Token {
   LEFT_PARENTHESIS
@@ -85,7 +52,7 @@ pub(all) enum Token {
   REAL(Double)
   STRING(Bytes)
   NAME(Bytes)
-  INDIRECT(INDIRECT)
+  INDIRECT(@codegen_pdf_object_parser.INDIRECT)
   STREAM_BYTES(Bytes)
   EOF
 }
