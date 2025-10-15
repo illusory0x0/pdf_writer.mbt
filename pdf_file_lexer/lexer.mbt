@@ -10,8 +10,11 @@ pub(all) struct LexResult[T] {
 
 ///|
 pub fn tokenize_header(input : BytesView) -> LexResult[Header] raise LexError {
-  lexmatch input {
-    ("%PDF-" ("\d+" as major) "." ("\d+" as minor) "(\r\n)|\r|\n") as all, rest => {
+  lexmatch input with longest {
+    (
+      ("%PDF-" ("\d+" as major) "." ("\d+" as minor) "(\r\n)|\r|\n") as all,
+      rest
+    ) => {
       let major = try! @lexer_bytes.tokenize_int(major)
       let minor = try! @lexer_bytes.tokenize_int(minor)
       LexResult::{
@@ -33,9 +36,19 @@ pub fn tokenize_body(
   let mut rest = input
   let body = []
   for {
-    lexmatch rest {
+    lexmatch rest with longest {
       // Parse object header first, then handwrite non-greedy content parsing
-      (("\d+" as obj_num) "[ ]+" ("\d+" as gen_num) "[ ]+" "obj" "(\r\n)|\r|\n") as header, rest_after_header => {
+      (
+        (
+          ("\d+" as obj_num)
+          "[ ]+"
+          ("\d+" as gen_num)
+          "[ ]+"
+          "obj"
+          "(\r\n)|\r|\n"
+        ) as header,
+        rest_after_header
+      ) => {
         // Handwritten non-greedy search for first "endobj"
         let endobj_pattern = b"endobj"
         let mut obj_content_end = 0
@@ -60,8 +73,8 @@ pub fn tokenize_body(
           endobj_pattern.length():]
 
         // Now match the newline after "endobj"
-        lexmatch rest_after_endobj {
-          "(\r\n)|\r|\n" as newline, r => {
+        lexmatch rest_after_endobj with longest {
+          ("(\r\n)|\r|\n" as newline, r) => {
             let all_length = header.length() +
               obj_content_end +
               endobj_pattern.length() +
@@ -81,7 +94,7 @@ pub fn tokenize_body(
           _ => break // No valid newline after "endobj", stop parsing
         }
       }
-      "(\r\n)|\r|\n" as all, r => {
+      ("(\r\n)|\r|\n" as all, r) => {
         bytes_offset += all.length()
         rest = r
       }
@@ -101,16 +114,19 @@ pub fn tokenize_xref_entry(
   input : BytesView,
   start_bytes_offset : Int,
 ) -> LexResult[XRefEntry] raise LexError {
-  lexmatch input {
+  lexmatch input with longest {
     (
-      ("\d+" as offset_str)
-      " "
-      ("\d+" as gen_str)
-      " "
-      "n"
-      "[ ]*"
-      "( \r)|( \n)|(\r\n)|\n|\r"
-    ) as all, rest => {
+      (
+        ("\d+" as offset_str)
+        " "
+        ("\d+" as gen_str)
+        " "
+        "n"
+        "[ ]*"
+        "( \r)|( \n)|(\r\n)|\n|\r"
+      ) as all,
+      rest
+    ) => {
       let bytes_offset = try! @lexer_bytes.tokenize_int(offset_str)
       let generation_num = try! @lexer_bytes.tokenize_int(gen_str)
       let state = EntryState::InUse
@@ -121,14 +137,17 @@ pub fn tokenize_xref_entry(
       }
     }
     (
-      ("\d+" as offset_str)
-      " "
-      ("\d+" as gen_str)
-      " "
-      "f"
-      "[ ]*"
-      "( \r)|( \n)|(\r\n)|\n|\r"
-    ) as all, rest => {
+      (
+        ("\d+" as offset_str)
+        " "
+        ("\d+" as gen_str)
+        " "
+        "f"
+        "[ ]*"
+        "( \r)|( \n)|(\r\n)|\n|\r"
+      ) as all,
+      rest
+    ) => {
       let bytes_offset = try! @lexer_bytes.tokenize_int(offset_str)
       let generation_num = try! @lexer_bytes.tokenize_int(gen_str)
       let state = EntryState::Free
@@ -150,15 +169,18 @@ pub fn tokenize_xref_table(
   input : BytesView,
   start_bytes_offset : Int,
 ) -> LexResult[XRefTable] raise LexError {
-  lexmatch input {
+  lexmatch input with longest {
     (
-      "xref"
-      "(\r\n)|\r|\n"
-      ("\d+" as start_num_str)
-      " "
-      ("\d+" as count_str)
-      "(\r\n)|\r|\n"
-    ) as header, rest => {
+      (
+        "xref"
+        "(\r\n)|\r|\n"
+        ("\d+" as start_num_str)
+        " "
+        ("\d+" as count_str)
+        "(\r\n)|\r|\n"
+      ) as header,
+      rest
+    ) => {
       let start_num = try! @lexer_bytes.tokenize_int(start_num_str)
       let count = try! @lexer_bytes.tokenize_int(count_str)
       let mut current_rest = rest
@@ -185,9 +207,9 @@ pub fn tokenize_trailer(
   input : BytesView,
   start_bytes_offset : Int,
 ) -> LexResult[BytesView] raise LexError {
-  lexmatch input {
+  lexmatch input with longest {
     // Parse trailer header first, then handwrite non-greedy content parsing
-    ("trailer" "(\r\n)|\r|\n") as header, rest_after_header => {
+    (("trailer" "(\r\n)|\r|\n") as header, rest_after_header) => {
       // Handwritten non-greedy search for first "startxref" (preceded by newline)
       let startxref_pattern = b"startxref"
       let mut trailer_content_end = 0
@@ -242,8 +264,8 @@ pub fn tokenize_trailer(
       let rest_at_newline = rest_after_header[dict_end:]
 
       // Now match the newline before "startxref"
-      lexmatch rest_at_newline {
-        "(\r\n)|\r|\n" as newline, rest => {
+      lexmatch rest_at_newline with longest {
+        ("(\r\n)|\r|\n" as newline, rest) => {
           let all_length = header.length() + dict_end + newline.length()
           LexResult::{
             value: trailer_dict,
@@ -263,8 +285,11 @@ pub fn tokenize_startxref(
   input : BytesView,
   start_bytes_offset : Int,
 ) -> LexResult[Int] raise LexError {
-  lexmatch input {
-    ("startxref" "(\r\n)|\r|\n" ("\d+" as offset_str) "(\r\n)|\r|\n" "%%EOF") as all, rest => {
+  lexmatch input with longest {
+    (
+      ("startxref" "(\r\n)|\r|\n" ("\d+" as offset_str) "(\r\n)|\r|\n" "%%EOF") as all,
+      rest
+    ) => {
       let xref_offset = try! @lexer_bytes.tokenize_int(offset_str)
       LexResult::{
         value: xref_offset,
@@ -279,9 +304,9 @@ pub fn tokenize_startxref(
 ///|
 /// return advance offset
 pub fn skip_comment(input : BytesView) -> Int {
-  lexmatch input {
+  lexmatch input with longest {
     // Parse comment start marker first, then handwrite length-limited content parsing
-    "%" as _percent, rest_after_percent => {
+    ("%" as _percent, rest_after_percent) => {
       // Handwritten comment parsing with DoS protection (max 1024 chars)
       let max_comment_length = 1024
       let mut comment_content_end = 0
@@ -310,8 +335,8 @@ pub fn skip_comment(input : BytesView) -> Int {
       } else if found_newline {
         // Comment with newline - match the newline using lexmatch
         let rest_at_newline = rest_after_percent[comment_content_end:]
-        lexmatch rest_at_newline {
-          "(\r\n)|\r|\n" as newline, _rest =>
+        lexmatch rest_at_newline with longest {
+          ("(\r\n)|\r|\n" as newline, _rest) =>
             1 + comment_content_end + newline.length()
           _ => // 1 for the '%' character
             0 // Shouldn't happen since we found newline, but safety fallback

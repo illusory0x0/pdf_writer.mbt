@@ -1,0 +1,70 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "illusory0x0/pdf/codegen_pdf_object_parser"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub type DICT_BEGIN
+
+pub type DICT_END
+
+pub type EOF
+
+pub type FALSE
+
+pub type GREATER_THAN_SIGN
+
+pub(all) struct INDIRECT {
+  object_num : Int
+  generation_num : Int
+}
+
+pub type LEFT_CURLY_BRACE
+
+pub type LEFT_PARENTHESIS
+
+pub type LEFT_SQUARE_BRACKET
+
+pub type LESS_THAN_SIGN
+
+pub type NULL
+
+pub type RIGHT_CURLY_BRACE
+
+pub type RIGHT_PARENTHESIS
+
+pub type RIGHT_SQUARE_BRACKET
+
+pub type SOLIDUS
+
+pub type TRUE
+
+// Type aliases
+pub typealias @illusory0x0/pdf/types.Object as Atom
+
+pub typealias Array[(Bytes, @illusory0x0/pdf/types.Object)] as DictEntries
+
+pub typealias Int as INTEGER
+
+pub typealias Bytes as NAME
+
+pub typealias Array[@illusory0x0/pdf/types.Object] as NonEmptyElems
+
+pub typealias @illusory0x0/pdf/types.Object as PDF_Array
+
+pub typealias @illusory0x0/pdf/types.Object as PDF_Dict
+
+pub typealias @illusory0x0/pdf/types.Object as PDF_Obj
+
+pub typealias @illusory0x0/pdf/types.Object as PDF_Stream
+
+pub typealias Double as REAL
+
+pub typealias Bytes as STREAM_BYTES
+
+pub typealias Bytes as STRING
+
+// Traits
+

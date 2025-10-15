@@ -22,8 +22,10 @@ pub struct Func {
   rslt_typ : String
   body : String
 }
+fn Func::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError // from trait `@json.FromJson`
 fn Func::name(Self) -> String
 fn Func::parse(StringView) -> Self
+fn Func::to_json(Self) -> Json // from trait `ToJson`
 fn Func::to_production_rule(Self) -> String
 impl ToJson for Func
 impl @json.FromJson for Func
@@ -31,8 +33,10 @@ impl @json.FromJson for Func
 pub struct NonTerminal(Array[Func])
 fn NonTerminal::emit(Self) -> String
 fn NonTerminal::from(Array[SourceLocation]) -> Self raise
+fn NonTerminal::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError // from trait `@json.FromJson`
 #deprecated
 fn NonTerminal::inner(Self) -> Array[Func]
+fn NonTerminal::to_json(Self) -> Json // from trait `ToJson`
 impl ToJson for NonTerminal
 impl @json.FromJson for NonTerminal
 
@@ -40,6 +44,8 @@ pub struct Parm {
   name : String
   typ : String
 }
+fn Parm::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError // from trait `@json.FromJson`
+fn Parm::to_json(Self) -> Json // from trait `ToJson`
 impl ToJson for Parm
 impl @json.FromJson for Parm
 

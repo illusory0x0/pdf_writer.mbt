@@ -29,6 +29,10 @@ pub struct Position {
   row : Int
   col : Int
 }
+fn Position::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError // from trait `@json.FromJson`
+fn Position::output(Self, &Logger) -> Unit // from trait `Show`
+fn Position::to_json(Self) -> Json // from trait `ToJson`
+fn Position::to_string(Self) -> String // from trait `Show`
 impl Show for Position
 impl ToJson for Position
 impl @json.FromJson for Position
@@ -57,6 +61,8 @@ pub(all) enum Token {
   EOF
 }
 fn Token::kind(Self) -> TokenKind
+fn Token::output(Self, &Logger) -> Unit // from trait `Show`
+fn Token::to_string(Self) -> String // from trait `Show`
 impl Show for Token
 
 pub(all) enum TokenKind {
@@ -82,6 +88,11 @@ pub(all) enum TokenKind {
   TK_STREAM_BYTES
   TK_EOF
 }
+fn TokenKind::equal(Self, Self) -> Bool // from trait `Eq`
+#deprecated
+fn TokenKind::op_equal(Self, Self) -> Bool // from trait `Eq`
+fn TokenKind::output(Self, &Logger) -> Unit // from trait `Show`
+fn TokenKind::to_string(Self) -> String // from trait `Show`
 impl Eq for TokenKind
 impl Show for TokenKind
 
