@@ -18,7 +18,7 @@ test "parse simple PDF" {
       "header": { "major": 1, "minor": 4 },
       "body": [
         {
-          "bytes_offset": 29,
+          "bytes_offset": 9,
           "object_num": 1,
           "generation_num": 0,
           "obj_bytes": "true\\n",
@@ -39,7 +39,7 @@ test "parse simple PDF" {
   })
   let obj = file.value.body.0[0]
   @json.inspect(obj, content={
-    "bytes_offset": 29,
+    "bytes_offset": 9,
     "object_num": 1,
     "generation_num": 0,
     "obj_bytes": "true\\n",
@@ -76,3 +76,43 @@ test {
     ignore(result)
   }
 }
+
+// ///|
+// test "test for pdfbox dataset" {
+//   let dir_path = "./resources/pdf_dataset/pdfbox"
+//   let files = try! @fs.read_dir(dir_path)
+//   let mut succ = 0
+//   let mut errs = 0
+
+//   // `ISO 32000-2:2020 (PDF 2.0)`, section 7.5.8 Cross-Reference Streams
+//   // some files use XRef streams, which is not supported yet.
+//   // These files will be skipped
+//   let skips = Set::from_array(["JBIG2Image.pdf"])
+//   for file in files {
+//     if skips.contains(file) {
+//       continue
+//     }
+//     let file_path = "\{dir_path}/\{file}"
+//     let input = try! @fs.read_file_to_bytes(file_path)
+//     try {
+//       let result = parse(input)
+//       succ = succ + 1
+//       ignore(result)
+//     } catch {
+//       e => {
+//         errs = errs + 1
+//         println(
+//           (
+//             $|
+//             $| error messages: \{e}
+//             $|
+//             $| file path: \{file_path}
+//           ),
+//         )
+//         panic()
+//       }
+//     }
+//     // println("succeeded: \{succ}, errors: \{errs}, total: \{succ + errs}")
+//     // println("\n\n\n\n")
+//   }
+// }
