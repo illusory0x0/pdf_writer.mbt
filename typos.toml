@@ -1,5 +1,5 @@
 [files]
-extend-exclude = ["cmark_pdf/markdown_data.mbt"]
+extend-exclude = ["types/__snapshot__/ocaml.pdf.bytes"]
 
 [default.extend-words]
 Flate = "Flate"
