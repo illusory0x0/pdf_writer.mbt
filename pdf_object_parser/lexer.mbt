@@ -23,15 +23,15 @@ pub fn tokenize(input : BytesView) -> Array[(Token, Position, Position)] {
   }
 
   for {
-    lexmatch input {
+    lexmatch input with longest {
       // Whitespace (spaces, tabs, form feed, null character)
-      "[ \t\f\0]+" as s, rest => {
+      ("[ \t\f\0]+" as s, rest) => {
         push_no_token(s.length())
         input = rest
       }
 
       // Newlines (CR, LF, CRLF)
-      "(\r\n)|\r|\n", rest => {
+      ("(\r\n)|\r|\n", rest) => {
         row += 1
         col = 0
         start_row = row
@@ -41,7 +41,7 @@ pub fn tokenize(input : BytesView) -> Array[(Token, Position, Position)] {
 
       // PDF Comments (% until end of line, including the end-of-line marker)
       // Handles all three PDF end-of-line markers: \r\n, \r, \n
-      "%[^\r\n]*(\r\n|\r|\n)", rest => {
+      ("%[^\r\n]*(\r\n|\r|\n)", rest) => {
         // Comments are ignored, advance to next line
         row += 1
         col = 0
@@ -55,51 +55,54 @@ pub fn tokenize(input : BytesView) -> Array[(Token, Position, Position)] {
       // The above pattern requires a newline after the comment: "%[^\r\n]*(\r\n|\r|\n)"
       // This pattern handles comments at EOF WITHOUT trailing newlines: "%[^\r\n]*$"
       // Example: "true % comment" (comment at end with no newline)
-      "%[^\r\n]*$", rest =>
+      ("%[^\r\n]*$", rest) =>
         // Comment at end of file, just advance position
         input = rest
 
       // Dictionary delimiters (must come before < and >)
-      "<<", rest => {
+      ("<<", rest) => {
         push(DICT_BEGIN, 2)
         input = rest
       }
-      ">>", rest => {
+      (">>", rest) => {
         push(DICT_END, 2)
         input = rest
       }
 
       // Boolean literals (must come before general identifiers)
-      "true", rest => {
+      ("true", rest) => {
         push(TRUE, 4)
         input = rest
       }
-      "false", rest => {
+      ("false", rest) => {
         push(FALSE, 5)
         input = rest
       }
-      "null", rest => {
+      ("null", rest) => {
         push(NULL, 4)
         input = rest
       }
 
       // Real numbers (must come before integers to catch decimals)
       // Matches: 123.456, .456, 123., 123.456E10, 123E-5, -123.456, +123.456
-      "-?(([0-9]+\.[0-9]*|\.[0-9]+)([eE][+\-]?[0-9]+)?|[0-9]+[eE][+\-]?[0-9]+)" as s, rest => {
+      (
+        "-?(([0-9]+\.[0-9]*|\.[0-9]+)([eE][+\-]?[0-9]+)?|[0-9]+[eE][+\-]?[0-9]+)" as s,
+        rest
+      ) => {
         let value = try! @lexer_bytes.tokenize_double(s)
         push(REAL(value), s.length())
         input = rest
       }
 
       // Integers (positive, negative, decimal, octal, hex)
-      "-?([1-9][0-9]*|0[xX][0-9a-fA-F]+|0[0-7]*)" as s, rest => {
+      ("-?([1-9][0-9]*|0[xX][0-9a-fA-F]+|0[0-7]*)" as s, rest) => {
         let value = try! @lexer_bytes.tokenize_int(s)
         push(INTEGER(value), s.length())
         input = rest
       }
 
       // PDF Names: /Name (starts with solidus)
-      "/" as s, rest => {
+      ("/" as s, rest) => {
         let (value, offset) = tokenize_pdf_name(rest)
         let total_length = 1 + offset // 1 for the '/' + offset for the name
         let full_name = Bytes::from_array([b'/']) + value
@@ -109,62 +112,62 @@ pub fn tokenize(input : BytesView) -> Array[(Token, Position, Position)] {
 
       // Literal strings: (text with possible escape sequences)
       // For now, use a simple approach and handle more complex cases later
-      "\(" as s, rest => {
+      ("\(" as s, rest) => {
         let (value, length) = tokenize_pdf_literal_string(rest) // Exclude the surrounding parentheses
         push(STRING(value), length)
         input = rest[length:]
       }
 
       // Single character delimiters
-      "\(", rest => {
+      ("\(", rest) => {
         push(LEFT_PARENTHESIS, 1)
         input = rest
       }
-      "\)", rest => {
+      ("\)", rest) => {
         push(RIGHT_PARENTHESIS, 1)
         input = rest
       }
-      "[{]", rest => {
+      ("[{]", rest) => {
         push(LEFT_CURLY_BRACE, 1)
         input = rest
       }
-      "[}]", rest => {
+      ("[}]", rest) => {
         push(RIGHT_CURLY_BRACE, 1)
         input = rest
       }
-      "\[", rest => {
+      ("\[", rest) => {
         push(LEFT_SQUARE_BRACKET, 1)
         input = rest
       }
-      "\]", rest => {
+      ("\]", rest) => {
         push(RIGHT_SQUARE_BRACKET, 1)
         input = rest
       }
 
       // Hexadecimal strings: <hex digits and whitespace>
-      "<[0-9a-fA-F \t\r\n]*>" as s, rest => {
+      ("<[0-9a-fA-F \t\r\n]*>" as s, rest) => {
         let value = tokenize_pdf_hexadecimal_string(s[1:s.length() - 1]) // Exclude the surrounding angle brackets
         push(STRING(value), s.length())
         input = rest
       }
-      "<", rest => {
+      ("<", rest) => {
         push(LESS_THAN_SIGN, 1)
         input = rest
       }
-      ">", rest => {
+      (">", rest) => {
         push(GREATER_THAN_SIGN, 1)
         input = rest
       }
-      "/", rest => {
+      ("/", rest) => {
         push(SOLIDUS, 1)
         input = rest
       }
-      "\d+[ \t]+\d+[ \t]+R" as s, rest => {
+      ("\d+[ \t]+\d+[ \t]+R" as s, rest) => {
         let indirect = tokenize_pdf_indirect(s)
         push(INDIRECT(indirect), s.length())
         input = rest
       }
-      "stream", rest => {
+      ("stream", rest) => {
         // Manual non-greedy match for stream data: `stream` `.*?` `endstream`
         let mut stream_input = rest
         // Skip only the first EOL marker after "stream" (LF or CRLF)
@@ -229,7 +232,7 @@ pub fn tokenize(input : BytesView) -> Array[(Token, Position, Position)] {
       }
 
       // End of input
-      "$", rest => {
+      ("$", rest) => {
         push(EOF, 0)
         break
       }

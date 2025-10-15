@@ -7,11 +7,14 @@ package "illusory0x0/pdf/types"
 
 // Types and methods
 pub(all) struct ContentStream(Array[GraphicOperator])
+fn ContentStream::count(Self) -> Int // from trait `@illusory0x0/fmt/types.Format`
 #deprecated
 fn ContentStream::inner(Self) -> Array[GraphicOperator]
 fn ContentStream::iter(Self) -> Iter[GraphicOperator]
+fn ContentStream::to_json(Self) -> Json // from trait `ToJson`
 fn ContentStream::to_stream(Self) -> Stream
 fn ContentStream::to_stream_object(Self) -> Object
+fn ContentStream::write(Self, @illusory0x0/fmt/types.Memory, Int) -> Int // from trait `@illusory0x0/fmt/types.Format`
 impl @illusory0x0/fmt/types.Format for ContentStream
 impl ToJson for ContentStream
 
@@ -21,6 +24,9 @@ pub(all) struct File {
   objects : Array[Object]
   trailer : Object
 }
+fn File::count(Self) -> Int // from trait `@illusory0x0/fmt/types.Format`
+fn File::to_json(Self) -> Json // from trait `ToJson`
+fn File::write(Self, @illusory0x0/fmt/types.Memory, Int) -> Int // from trait `@illusory0x0/fmt/types.Format`
 impl @illusory0x0/fmt/types.Format for File
 impl ToJson for File
 
@@ -101,6 +107,9 @@ pub(all) enum GraphicOperator {
   Op_Unknown(Bytes)
   Op_Comment(Bytes)
 }
+fn GraphicOperator::count(Self) -> Int // from trait `@illusory0x0/fmt/types.Format`
+fn GraphicOperator::to_json(Self) -> Json // from trait `ToJson`
+fn GraphicOperator::write(Self, @illusory0x0/fmt/types.Memory, Int) -> Int // from trait `@illusory0x0/fmt/types.Format`
 impl @illusory0x0/fmt/types.Format for GraphicOperator
 impl ToJson for GraphicOperator
 
@@ -116,6 +125,9 @@ pub(all) enum Object {
   Stream(Object, Stream)
   Indirect(Int)
 }
+fn Object::count(Self) -> Int // from trait `@illusory0x0/fmt/types.Format`
+fn Object::to_json(Self) -> Json // from trait `ToJson`
+fn Object::write(Self, @illusory0x0/fmt/types.Memory, Int) -> Int // from trait `@illusory0x0/fmt/types.Format`
 impl @illusory0x0/fmt/types.Format for Object
 impl ToJson for Object
 
@@ -135,14 +147,18 @@ pub(all) enum StandardFont {
   Symbol
   ZapfDingbats
 }
+fn StandardFont::output(Self, &Logger) -> Unit // from trait `Show`
+fn StandardFont::to_json(Self) -> Json // from trait `ToJson`
 fn StandardFont::to_pdf_dictionary(Self) -> Object
 fn StandardFont::to_pdf_name(Self) -> Object
+fn StandardFont::to_string(Self) -> String // from trait `Show`
 impl Show for StandardFont
 impl ToJson for StandardFont
 
 pub(all) struct Stream(Bytes)
 #deprecated
 fn Stream::inner(Self) -> Bytes
+fn Stream::to_json(Self) -> Json // from trait `ToJson`
 impl ToJson for Stream
 
 pub(all) struct TransformMatrix {
@@ -153,6 +169,7 @@ pub(all) struct TransformMatrix {
   e : Double
   f : Double
 }
+fn TransformMatrix::to_json(Self) -> Json // from trait `ToJson`
 impl ToJson for TransformMatrix
 
 // Type aliases

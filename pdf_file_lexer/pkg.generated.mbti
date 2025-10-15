@@ -20,12 +20,20 @@ fn tokenize_xref_table(BytesView, Int) -> LexResult[XRefTable] raise LexError
 
 // Errors
 type LexError
+fn LexError::output(Self, &Logger) -> Unit // from trait `Show`
+fn LexError::to_string(Self) -> String // from trait `Show`
 impl Show for LexError
 
 // Types and methods
 pub(all) struct Body(Array[Obj])
+fn Body::equal(Self, Self) -> Bool // from trait `Eq`
 #deprecated
 fn Body::inner(Self) -> Array[Obj]
+#deprecated
+fn Body::op_equal(Self, Self) -> Bool // from trait `Eq`
+fn Body::output(Self, &Logger) -> Unit // from trait `Show`
+fn Body::to_json(Self) -> Json // from trait `ToJson`
+fn Body::to_string(Self) -> String // from trait `Show`
 impl Eq for Body
 impl Show for Body
 impl ToJson for Body
@@ -34,6 +42,12 @@ pub(all) enum EntryState {
   InUse
   Free
 }
+fn EntryState::equal(Self, Self) -> Bool // from trait `Eq`
+#deprecated
+fn EntryState::op_equal(Self, Self) -> Bool // from trait `Eq`
+fn EntryState::output(Self, &Logger) -> Unit // from trait `Show`
+fn EntryState::to_json(Self) -> Json // from trait `ToJson`
+fn EntryState::to_string(Self) -> String // from trait `Show`
 impl Eq for EntryState
 impl Show for EntryState
 impl ToJson for EntryState
@@ -45,6 +59,12 @@ pub(all) struct File {
   trailer : BytesView
   start_xref_pos : Int
 }
+fn File::equal(Self, Self) -> Bool // from trait `Eq`
+#deprecated
+fn File::op_equal(Self, Self) -> Bool // from trait `Eq`
+fn File::output(Self, &Logger) -> Unit // from trait `Show`
+fn File::to_json(Self) -> Json // from trait `ToJson`
+fn File::to_string(Self) -> String // from trait `Show`
 impl Eq for File
 impl Show for File
 impl ToJson for File
@@ -53,6 +73,12 @@ pub(all) struct Header {
   major : Int
   minor : Int
 }
+fn Header::equal(Self, Self) -> Bool // from trait `Eq`
+#deprecated
+fn Header::op_equal(Self, Self) -> Bool // from trait `Eq`
+fn Header::output(Self, &Logger) -> Unit // from trait `Show`
+fn Header::to_json(Self) -> Json // from trait `ToJson`
+fn Header::to_string(Self) -> String // from trait `Show`
 impl Eq for Header
 impl Show for Header
 impl ToJson for Header
@@ -62,6 +88,9 @@ pub(all) struct LexResult[T] {
   bytes_offset : Int
   rest : BytesView
 }
+fn[T : Show] LexResult::output(Self[T], &Logger) -> Unit // from trait `Show`
+fn[T : ToJson] LexResult::to_json(Self[T]) -> Json // from trait `ToJson`
+fn[T : Show] LexResult::to_string(Self[T]) -> String // from trait `Show`
 impl[T : Show] Show for LexResult[T]
 impl[T : ToJson] ToJson for LexResult[T]
 
@@ -71,6 +100,12 @@ pub(all) struct Obj {
   generation_num : Int
   obj_bytes : BytesView
 }
+fn Obj::equal(Self, Self) -> Bool // from trait `Eq`
+#deprecated
+fn Obj::op_equal(Self, Self) -> Bool // from trait `Eq`
+fn Obj::output(Self, &Logger) -> Unit // from trait `Show`
+fn Obj::to_json(Self) -> Json // from trait `ToJson`
+fn Obj::to_string(Self) -> String // from trait `Show`
 impl Eq for Obj
 impl Show for Obj
 impl ToJson for Obj
@@ -80,6 +115,12 @@ pub(all) struct XRefEntry {
   generation_num : Int
   state : EntryState
 }
+fn XRefEntry::equal(Self, Self) -> Bool // from trait `Eq`
+#deprecated
+fn XRefEntry::op_equal(Self, Self) -> Bool // from trait `Eq`
+fn XRefEntry::output(Self, &Logger) -> Unit // from trait `Show`
+fn XRefEntry::to_json(Self) -> Json // from trait `ToJson`
+fn XRefEntry::to_string(Self) -> String // from trait `Show`
 impl Eq for XRefEntry
 impl Show for XRefEntry
 impl ToJson for XRefEntry
@@ -88,6 +129,12 @@ pub(all) struct XRefTable {
   entries : Array[XRefEntry]
   start_num : Int
 }
+fn XRefTable::equal(Self, Self) -> Bool // from trait `Eq`
+#deprecated
+fn XRefTable::op_equal(Self, Self) -> Bool // from trait `Eq`
+fn XRefTable::output(Self, &Logger) -> Unit // from trait `Show`
+fn XRefTable::to_json(Self) -> Json // from trait `ToJson`
+fn XRefTable::to_string(Self) -> String // from trait `Show`
 impl Eq for XRefTable
 impl Show for XRefTable
 impl ToJson for XRefTable

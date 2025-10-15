@@ -53,7 +53,7 @@ test "parse simple PDF" {
   inspect(
     bytes,
     content=(
-      #|b"\x74\x72\x75\x65\x0a"
+      #|b"true\x0a"
     ),
   )
   let tokens = @pdf_object_parser.tokenize(bytes.to_bytes())
