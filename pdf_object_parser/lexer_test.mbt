@@ -611,19 +611,21 @@ test "tokenize position tracking" {
 ///|
 test "tokenize complex pdf document structure" {
   // Test a realistic PDF object structure
-  let input = (
-    #|<< 
-    #|  /Type /Page
-    #|  /Parent 3 0 R
-    #|  /MediaBox [0 0 612 792]
-    #|  /Contents 5 0 R
-    #|  /Resources << 
-    #|    /Font << /F1 6 0 R >>
-    #|    /ProcSet [/PDF /Text]
-    #|  >>
-    #|>>
-    #|
-  ).to_bytes()
+  let input = @encoding/utf8.encode(
+    (
+      #|<< 
+      #|  /Type /Page
+      #|  /Parent 3 0 R
+      #|  /MediaBox [0 0 612 792]
+      #|  /Contents 5 0 R
+      #|  /Resources << 
+      #|    /Font << /F1 6 0 R >>
+      #|    /ProcSet [/PDF /Text]
+      #|  >>
+      #|>>
+      #|
+    ),
+  )
   let tokens = tokenize(input).map(triple => triple.0)
   // This tests a complex nested structure with various token types
   let expected_tokens = [
@@ -766,19 +768,21 @@ test "tokenize pdf indirect object references" {
 ///|
 test "tokenize comprehensive integration" {
   // Test a comprehensive example with all token types
-  let input = (
-    #|% PDF document structure example
-    #|<<
-    #|  /Type /Catalog
-    #|  /Version 1.4
-    #|  /Pages << /Type /Pages /Count 2 >>
-    #|  /Metadata (This is metadata)
-    #|  /ViewerPreferences << /FitWindow true >>
-    #|  /OpenAction [0 /XYZ null null 1.0]
-    #|  /Names <4E616D6573>
-    #|>>
-    #|
-  ).to_bytes()
+  let input = @encoding/utf8.encode(
+    (
+      #|% PDF document structure example
+      #|<<
+      #|  /Type /Catalog
+      #|  /Version 1.4
+      #|  /Pages << /Type /Pages /Count 2 >>
+      #|  /Metadata (This is metadata)
+      #|  /ViewerPreferences << /FitWindow true >>
+      #|  /OpenAction [0 /XYZ null null 1.0]
+      #|  /Names <4E616D6573>
+      #|>>
+      #|
+    ),
+  )
   let tokens = tokenize(input).map(triple => triple.0)
 
   // This integration test verifies that all major token types work together

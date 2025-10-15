@@ -59,7 +59,7 @@ const HEX_DIGITS = b"0123456789ABCDEF"
 /// 
 /// `#xx` where `xx` is the two-digit hexadecimal representation of the character's byte value.
 fn write_pdf_name_inner(
-  pdf_name : @bytes.View,
+  pdf_name : BytesView,
   buffer : @fmt.Memory,
   start : Int,
 ) -> Int {
