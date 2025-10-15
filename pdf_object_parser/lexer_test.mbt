@@ -643,7 +643,7 @@ test "tokenize complex pdf document structure" {
   inspect(
     token_strings,
     content=(
-      #|["LESS_THAN_SIGN", "LESS_THAN_SIGN", "NAME(/)", "NAME(/)", "NAME(/)", "INTEGER(3)", "INTEGER(0)", "NAME(/)", "LEFT_SQUARE_BRACKET", "INTEGER(0)", "INTEGER(0)", "INTEGER(6)", "INTEGER(1)", "INTEGER(2)", "INTEGER(7)", "INTEGER(9)", "INTEGER(2)", "RIGHT_SQUARE_BRACKET", "NAME(/)", "INTEGER(5)", "INTEGER(0)", "NAME(/)", "LESS_THAN_SIGN", "LESS_THAN_SIGN", "NAME(/)", "LESS_THAN_SIGN", "LESS_THAN_SIGN", "NAME(/)", "INTEGER(1)", "INTEGER(6)", "INTEGER(0)", "GREATER_THAN_SIGN", "GREATER_THAN_SIGN", "NAME(/)", "LEFT_SQUARE_BRACKET", "NAME(/)", "NAME(/)", "RIGHT_SQUARE_BRACKET", "GREATER_THAN_SIGN", "GREATER_THAN_SIGN", "GREATER_THAN_SIGN", "GREATER_THAN_SIGN", "EOF"]
+      #|["DICT_BEGIN", "NAME(/Type)", "NAME(/Page)", "NAME(/Parent)", "INDIRECT(3, 0)", "NAME(/MediaBox)", "LEFT_SQUARE_BRACKET", "INTEGER(0)", "INTEGER(0)", "INTEGER(612)", "INTEGER(792)", "RIGHT_SQUARE_BRACKET", "NAME(/Contents)", "INDIRECT(5, 0)", "NAME(/Resources)", "DICT_BEGIN", "NAME(/Font)", "DICT_BEGIN", "NAME(/F1)", "INDIRECT(6, 0)", "DICT_END", "NAME(/ProcSet)", "LEFT_SQUARE_BRACKET", "NAME(/PDF)", "NAME(/Text)", "RIGHT_SQUARE_BRACKET", "DICT_END", "DICT_END", "EOF"]
     ),
   )
 }
@@ -809,7 +809,7 @@ test "tokenize comprehensive integration" {
   inspect(
     found_token_types,
     content=(
-      #|["EOF", "NAME", "ARRAY", "OTHER", "STRING", "INTEGER"]
+      #|["EOF", "DICT", "NAME", "REAL", "ARRAY", "OTHER", "STRING", "BOOLEAN", "INTEGER"]
     ),
   )
 }
