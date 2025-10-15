@@ -81,9 +81,12 @@ pub fn tokenize_body(
               newline.length()
             let object_num = try! @lexer_bytes.tokenize_int(obj_num)
             let generation_num = try! @lexer_bytes.tokenize_int(gen_num)
+
+            // Store the START position of this object before updating bytes_offset
+            let object_start_position = bytes_offset
             bytes_offset += all_length
             let obj = Obj::{
-              bytes_offset,
+              bytes_offset: object_start_position, // FIX: Use START position, not end position
               object_num,
               generation_num,
               obj_bytes,
@@ -159,7 +162,7 @@ pub fn tokenize_xref_entry(
     }
     _ =>
       raise LexError(
-        "Invalid xref entry format in \{start_bytes_offset}, \{try! @encoding/utf8.decode(input)}",
+        "Invalid xref entry format in \{start_bytes_offset}, input `\{try! @encoding/utf8.decode(input)}`",
       )
   }
 }
@@ -198,7 +201,14 @@ pub fn tokenize_xref_table(
         rest: current_rest,
       }
     }
-    _ => raise LexError("Invalid xref table format in \{start_bytes_offset}")
+    _ =>
+      raise LexError(
+        (
+          $| Invalid xref table format in \{start_bytes_offset}
+          $|
+          $| input: \{try! @encoding/utf8.decode(input)}
+        ),
+      )
   }
 }
 

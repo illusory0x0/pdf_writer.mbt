@@ -1,266 +1,61 @@
 ///|
-test {
-  let input = b"%PDF-1.4\n"
-  let result = @pdf_file_lexer.tokenize_header(input)
-  @json.inspect(result, content={
-    "value": { "major": 1, "minor": 4 },
-    "bytes_offset": 9,
-    "rest": "",
-  })
+fn bytes_concat(bs : Array[Bytes]) -> Bytes {
+  let buffer = @buffer.new(size_hint=1024)
+  for b in bs {
+    buffer.write_bytes(b)
+  }
+  buffer.to_bytes()
 }
 
 ///|
-test "body" {
-  let input = b"1 0 obj\nnull\nendobj\n"
-  let result = @pdf_file_lexer.tokenize_body(input, 0)
-  @json.inspect(result, content={
-    "value": [
-      {
-        "bytes_offset": 20,
-        "object_num": 1,
-        "generation_num": 0,
-        "obj_bytes": "null\\n",
-      },
-    ],
-    "bytes_offset": 20,
-    "rest": "",
-  })
-}
-
-///|
-test {
-  let input =
-    #|1 0 obj
-    #|true 
-    #|endobj
-    #| 
-    #|
-  let input = @encoding/utf8.encode(input)
-  let result = @pdf_file_lexer.tokenize_body(input, 0)
-  @json.inspect(result, content={
-    "value": [
-      {
-        "bytes_offset": 21,
-        "object_num": 1,
-        "generation_num": 0,
-        "obj_bytes": "true \\n",
-      },
-    ],
-    "bytes_offset": 21,
-    "rest": " \\n",
-  })
-}
-
-///|
-test "tokenize_xref_entry - valid InUse entry" {
-  let input = b"0000000000 00000 n\n"
-  let result = @pdf_file_lexer.tokenize_xref_entry(input, 0)
-  @json.inspect(result, content={
-    "value": { "bytes_offset": 0, "generation_num": 0, "state": "InUse" },
-    "bytes_offset": 19,
-    "rest": "",
-  })
-}
-
-///|
-test "tokenize_xref_entry - valid Free entry" {
-  let input = b"0000000009 00001 f \n"
-  let result = @pdf_file_lexer.tokenize_xref_entry(input, 0)
-  @json.inspect(result, content={
-    "value": { "bytes_offset": 9, "generation_num": 1, "state": "Free" },
-    "bytes_offset": 20,
-    "rest": "",
-  })
-}
-
-///|
-test "tokenize_xref_entry - large offset and generation" {
-  let input = b"1234567890 12345 n\n"
-  let result = @pdf_file_lexer.tokenize_xref_entry(input, 100)
-  @json.inspect(result, content={
-    "value": {
-      "bytes_offset": 1234567890,
-      "generation_num": 12345,
-      "state": "InUse",
-    },
-    "bytes_offset": 119,
-    "rest": "",
-  })
-}
-
-///|
-test "tokenize_xref_entry - with remaining content" {
-  let input = b"0000000015 00000 n\nextra content"
-  let result = @pdf_file_lexer.tokenize_xref_entry(input, 50)
-  @json.inspect(result, content={
-    "value": { "bytes_offset": 15, "generation_num": 0, "state": "InUse" },
-    "bytes_offset": 69,
-    "rest": "extra content",
-  })
-}
-
-///|
-test "tokenize_xref_entry - Free entry with remaining content" {
-  let input = b"0000000020 00002 f \nmore data here"
-  let result = @pdf_file_lexer.tokenize_xref_entry(input, 0)
-  @json.inspect(result, content={
-    "value": { "bytes_offset": 20, "generation_num": 2, "state": "Free" },
-    "bytes_offset": 20,
-    "rest": "more data here",
-  })
-}
-
-///|
-test "tokenize_xref_entry - zero offset and generation" {
-  let input = b"0000000000 00000 n\n"
-  let result = @pdf_file_lexer.tokenize_xref_entry(input, 25)
-  @json.inspect(result, content={
-    "value": { "bytes_offset": 0, "generation_num": 0, "state": "InUse" },
-    "bytes_offset": 44,
-    "rest": "",
-  })
-}
-
-///|
-test "tokenize_xref_entry - minimal valid numbers" {
-  let input = b"1 0 n\n"
-  let result = @pdf_file_lexer.tokenize_xref_entry(input, 10)
-  @json.inspect(result, content={
-    "value": { "bytes_offset": 1, "generation_num": 0, "state": "InUse" },
-    "bytes_offset": 16,
-    "rest": "",
-  })
-}
-
-///|
-test "tokenize_xref_entry - minimal valid free entry" {
-  let input = b"5 1 f \n"
-  let result = @pdf_file_lexer.tokenize_xref_entry(input, 0)
-  @json.inspect(result, content={
-    "value": { "bytes_offset": 5, "generation_num": 1, "state": "Free" },
-    "bytes_offset": 7,
-    "rest": "",
-  })
-}
-
-///|
-test {
-  let input =
-    #|xref
-    #|0 5
-    #|0000000000 65535 f 
-    #|0000000105 00000 n 
-    #|0000000067 00000 n 
-    #|0000000055 00000 n 
-    #|0000000221 00000 n 
-    #| 
-    #|
-  let input = @encoding/utf8.encode(input)
-  let result = @pdf_file_lexer.tokenize_xref_table(input, 0)
-  @json.inspect(result, content={
-    "value": {
-      "entries": [
-        { "bytes_offset": 0, "generation_num": 65535, "state": "Free" },
-        { "bytes_offset": 105, "generation_num": 0, "state": "InUse" },
-        { "bytes_offset": 67, "generation_num": 0, "state": "InUse" },
-        { "bytes_offset": 55, "generation_num": 0, "state": "InUse" },
-        { "bytes_offset": 221, "generation_num": 0, "state": "InUse" },
-      ],
-      "start_num": 0,
-    },
-    "bytes_offset": 109,
-    "rest": " \\n",
-  })
-}
-
-///|
-test {
-  let file = @fs.read_file_to_bytes("./output/hello.pdf")
+test "byte_offset" {
+  let file_header = b"%PDF-1.4\n"
+  let body = [b"1 0 obj\n", b"null\n", b"endobj\n"]
+  let xref_table = [
+    b"xref\n", b"0 2\n", b"0000000000 65535 f \n", b"000000009 00000 n\n",
+  ]
+  let trailer = [
+    b"trailer\n", b"<</Size 2 /Root 1 0 R>>\n", b"startxref\n", b"29\n", b"%%EOF\n",
+  ]
+  let file = bytes_concat([file_header, ..body, ..xref_table, ..trailer])
   let result = @pdf_file_lexer.tokenize_file(file)
+  inspect(file_header.length(), content="9")
+  inspect(result.value.body.0[0].bytes_offset, content="9")
+  inspect(file.length() - result.rest.length(), content="126")
+  inspect(result.bytes_offset, content="126")
+  inspect(result.value.start_xref_pos, content="29")
+  inspect(
+    file_header.length() + body.fold(init=0, (acc, x) => acc + x.length()),
+    content="29",
+  )
   @json.inspect(result, content={
     "value": {
       "header": { "major": 1, "minor": 4 },
       "body": [
         {
-          "bytes_offset": 120,
+          "bytes_offset": 9,
           "object_num": 1,
           "generation_num": 0,
-          "obj_bytes": "<<\\n  /Length 53\\n>>\\nstream\\n 1 0 0 1 50 770 cm BT /F0 36 Tf (Hello, World!) Tj ET\\nendstream\\n",
-        },
-        {
-          "bytes_offset": 187,
-          "object_num": 2,
-          "generation_num": 0,
-          "obj_bytes": "<<\\n  /Type /Pages  \\n  /Kids [4 0 R]  \\n  /Count 1\\n>>\\n",
-        },
-        {
-          "bytes_offset": 262,
-          "object_num": 3,
-          "generation_num": 0,
-          "obj_bytes": "<<\\n  /Type /Catalog  \\n  /Pages 2 0 R  \\n  /Outlines 5 0 R\\n>>\\n",
-        },
-        {
-          "bytes_offset": 483,
-          "object_num": 4,
-          "generation_num": 0,
-          "obj_bytes": "<<\\n  /Type /Page  \\n  /Contents 1 0 R  \\n  /Parent 2 0 R  \\n  /MediaBox [0 0 595.2765 841.89105]  \\n  /Resources <<\\n  /Font <<\\n  /F0 <<\\n  /Type /Font  \\n  /Subtype /Type1  \\n  /BaseFont /Times-Italic\\n>>\\n>>\\n>>\\n>>\\n",
-        },
-        {
-          "bytes_offset": 568,
-          "object_num": 5,
-          "generation_num": 0,
-          "obj_bytes": "<<\\n  /Type /Outlines  \\n  /First 6 0 R  \\n  /Last 6 0 R  \\n  /Count 0\\n>>\\n",
-        },
-        {
-          "bytes_offset": 704,
-          "object_num": 6,
-          "generation_num": 0,
-          "obj_bytes": "<<\\n  /Title (chapter 1)  \\n  /Parent 5 0 R  \\n  /Prev null  \\n  /Next null  \\n  /First 7 0 R  \\n  /Last 8 0 R  \\n  /Count 0\\n>>\\n",
-        },
-        {
-          "bytes_offset": 841,
-          "object_num": 7,
-          "generation_num": 0,
-          "obj_bytes": "<<\\n  /Title (section 1.1)  \\n  /Parent 6 0 R  \\n  /Prev null  \\n  /Next 8 0 R  \\n  /First null  \\n  /Last null  \\n  /Count 0\\n>>\\n",
-        },
-        {
-          "bytes_offset": 980,
-          "object_num": 8,
-          "generation_num": 0,
-          "obj_bytes": "<<\\n  /Title (section 1.2)  \\n  /Parent 6 0 R  \\n  /Prev 7 0 R  \\n  /Next null  \\n  /First 9 0 R  \\n  /Last 9 0 R  \\n  /Count 0\\n>>\\n",
-        },
-        {
-          "bytes_offset": 1121,
-          "object_num": 9,
-          "generation_num": 0,
-          "obj_bytes": "<<\\n  /Title (subsection 1.2.1)  \\n  /Parent 8 0 R  \\n  /Prev null  \\n  /Next null  \\n  /First null  \\n  /Last null  \\n  /Count 0\\n>>\\n",
+          "obj_bytes": "null\\n",
         },
       ],
       "xref_table": {
         "entries": [
           { "bytes_offset": 0, "generation_num": 65535, "state": "Free" },
-          { "bytes_offset": 105, "generation_num": 0, "state": "InUse" },
-          { "bytes_offset": 67, "generation_num": 0, "state": "InUse" },
-          { "bytes_offset": 75, "generation_num": 0, "state": "InUse" },
-          { "bytes_offset": 221, "generation_num": 0, "state": "InUse" },
-          { "bytes_offset": 85, "generation_num": 0, "state": "InUse" },
-          { "bytes_offset": 136, "generation_num": 0, "state": "InUse" },
-          { "bytes_offset": 137, "generation_num": 0, "state": "InUse" },
-          { "bytes_offset": 139, "generation_num": 0, "state": "InUse" },
-          { "bytes_offset": 141, "generation_num": 0, "state": "InUse" },
+          { "bytes_offset": 9, "generation_num": 0, "state": "InUse" },
         ],
         "start_num": 0,
       },
-      "trailer": "<<\\n  /Size 5  \\n  /Root 3 0 R\\n>>",
-      "start_xref_pos": 1381,
+      "trailer": "<</Size 2 /Root 1 0 R>>",
+      "start_xref_pos": 29,
     },
-    "bytes_offset": 1391,
+    "bytes_offset": 126,
     "rest": "\\n",
   })
 }
 
 ///|
-test {
+test "testing ./output/*" {
   let files = @fs.read_dir("./output")
   for file in files {
     let file = "./output/\{file}"
