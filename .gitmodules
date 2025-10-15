@@ -1,0 +1,3 @@
+[submodule "resources/pdf_dataset"]
+	path = resources/pdf_dataset
+	url = https://github.com/illusory0x0/pdf_dataset.git
