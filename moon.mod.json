@@ -7,7 +7,7 @@
     "illusory0x0/fmt": "0.4.0"
   },
   "bin-deps": {
-    "moonbitlang/yacc": "0.6.14"
+    "moonbitlang/yacc": "0.7.2"
   },
   "readme": "README.md",
   "repository": "https://github.com/illusory0x0/pdf_writer.mbt",
