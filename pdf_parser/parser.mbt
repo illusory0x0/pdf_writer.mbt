@@ -26,12 +26,23 @@ pub fn parse(input : BytesView) -> @pdf.File raise {
 
 ///|
 /// Parse a PDF object from its byte representation
-fn parse_pdf_object(obj_bytes : BytesView) -> @pdf.Object raise {
+fn parse_pdf_object(
+  obj_bytes : BytesView,
+) -> @pdf.Object raise @pdf_object_parser.ParseError {
   // TODO: 
   // lexmatch might has some bug, here use `to_bytes()` as a workaround
   let tokens = @pdf_object_parser.tokenize(obj_bytes.to_bytes())
-
-  // Parse the tokens using the PDF object parser
-  let parsed_obj = @pdf_object_parser.parse(tokens) // Let ParseError propagate
+  let parsed_obj = @pdf_object_parser.parse(tokens)
+  // Let ParseError propagate
+   catch {
+    UnexpectedToken(lookahead, position, expected) as e => {
+      println(obj_bytes)
+      println(lookahead)
+      println(position)
+      println(expected)
+      raise e
+    }
+    e => raise e
+  }
   parsed_obj
 }
