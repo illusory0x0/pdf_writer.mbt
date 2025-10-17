@@ -33,11 +33,22 @@ pub fn tokenize_header(
 }
 
 ///|
+const EndObj = b"endobj"
+
+///|
+fn skip_space(input : BytesView) -> Int {
+  lexmatch input with longest {
+    ("[ \r\n]+" as all, _) => all.length()
+    _ => 0
+  }
+}
+
+///|
 pub fn tokenize_body(
   input : BytesView,
   start_bytes_offset~ : Int,
 ) -> LexResult[Body] {
-  let mut bytes_offset = start_bytes_offset
+  let mut offset = start_bytes_offset
   let mut rest = input
   let body_buffer = []
   for {
@@ -52,59 +63,35 @@ pub fn tokenize_body(
           "(\r\n)|\r|\n"
         ) as header,
         rest_after_header
-      ) => {
-        let endobj_pattern = b"endobj"
-        let mut obj_content_end = 0
-        let mut found_endobj = false
-        while obj_content_end + endobj_pattern.length() <=
-              rest_after_header.length() {
-          let slice = rest_after_header[obj_content_end:obj_content_end +
-            endobj_pattern.length()]
-          if slice == endobj_pattern[:] {
-            found_endobj = true
-            break
-          }
-          obj_content_end += 1
-        }
-        if not(found_endobj) {
-          break
-        }
-        let obj_bytes = rest_after_header[:obj_content_end]
-        let rest_after_endobj = rest_after_header[obj_content_end +
-          endobj_pattern.length():]
-        lexmatch rest_after_endobj with longest {
-          ("(\r\n)|\r|\n" as newline, r) => {
-            let all_length = header.length() +
-              obj_content_end +
-              endobj_pattern.length() +
-              newline.length()
+      ) =>
+        match rest_after_header.find(EndObj) {
+          Some(endobj_start_idx) => {
+            let obj_bytes = rest_after_header[0:endobj_start_idx]
             let object_num = try! @lexer_bytes.tokenize_int(obj_num)
             let generation_num = try! @lexer_bytes.tokenize_int(gen_num)
-            let object_start_position = bytes_offset
-            bytes_offset += all_length
             let obj = Obj::{
-              start_bytes_offset: object_start_position, // FIX: Use START position, not end position
+              start_bytes_offset: offset,
               object_num,
               generation_num,
               obj_bytes,
             }
-            rest = r
             body_buffer.push(obj)
+            let endobj_end_idx = endobj_start_idx + EndObj.length()
+            rest = rest_after_header[endobj_end_idx:]
+            offset += header.length() + endobj_end_idx
+            let skip_len = skip_space(rest)
+            rest = rest[skip_len:]
+            offset += skip_len
           }
-          _ => break // 
+          None => break
         }
-      }
-      ("(\r\n)|\r|\n" as all, r) => {
-        bytes_offset += all.length()
-        rest = r
-      }
       _ => break
     }
   }
   LexResult::{
     value: Body::from(body_buffer),
-    start_bytes_offset,
-    end_bytes_offset: bytes_offset,
+    start_bytes_offset: offset,
+    end_bytes_offset: offset,
     rest,
   }
 }
