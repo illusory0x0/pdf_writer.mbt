@@ -101,8 +101,8 @@ Atom -> Atom :
   | INDIRECT { Indirect($1.object_num) }
 ;
 NonEmptyElems -> NonEmptyElems :
-  | Atom { [$1] }
-  | NonEmptyElems Atom { $1.push($2)
+  | PDF_Obj { [$1] }
+  | NonEmptyElems PDF_Obj { $1.push($2)
       $1 }
 ;
 PDF_Array -> PDF_Array :
