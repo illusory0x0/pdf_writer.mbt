@@ -17,7 +17,7 @@ pub impl ToJson for Header with to_json(self) {
 ///|
 pub impl ToJson for Obj with to_json(self) {
   {
-    "bytes_offset": self.bytes_offset,
+    "bytes_offset": self.start_bytes_offset,
     "object_num": self.object_num,
     "generation_num": self.generation_num,
     "obj_bytes": @helper.ascii_string_of_bytesview(self.obj_bytes),
@@ -67,7 +67,7 @@ test "ToJson implementations" {
   })
   let test_bytes = b"Hello PDF"
   let obj : Obj = {
-    bytes_offset: 100,
+    start_bytes_offset: 100,
     object_num: 1,
     generation_num: 0,
     obj_bytes: test_bytes[:],

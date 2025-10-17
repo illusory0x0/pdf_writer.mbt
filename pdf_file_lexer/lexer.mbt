@@ -83,7 +83,7 @@ pub fn tokenize_body(
             let object_start_position = bytes_offset
             bytes_offset += all_length
             let obj = Obj::{
-              bytes_offset: object_start_position, // FIX: Use START position, not end position
+              start_bytes_offset: object_start_position, // FIX: Use START position, not end position
               object_num,
               generation_num,
               obj_bytes,

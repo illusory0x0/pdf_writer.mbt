@@ -96,7 +96,7 @@ impl[T : Show] Show for LexResult[T]
 impl[T : ToJson] ToJson for LexResult[T]
 
 pub(all) struct Obj {
-  bytes_offset : Int
+  start_bytes_offset : Int
   object_num : Int
   generation_num : Int
   obj_bytes : BytesView
