@@ -53,25 +53,18 @@ pub impl ToJson for EntryState with to_json(self) {
 
 ///|
 test "ToJson implementations" {
-  // Test EntryState
   let in_use : EntryState = InUse
   let free : EntryState = Free
   @json.inspect(in_use, content="InUse")
   @json.inspect(free, content="Free")
-
-  // Test Header
   let header : Header = { major: 1, minor: 7 }
   @json.inspect(header, content={ "major": 1, "minor": 7 })
-
-  // Test XRefEntry
   let entry : XRefEntry = { bytes_offset: 123, generation_num: 0, state: InUse }
   @json.inspect(entry, content={
     "bytes_offset": 123,
     "generation_num": 0,
     "state": "InUse",
   })
-
-  // Test Obj with BytesView
   let test_bytes = b"Hello PDF"
   let obj : Obj = {
     bytes_offset: 100,
@@ -98,7 +91,6 @@ pub impl[T : ToJson] ToJson for LexResult[T] with to_json(self) {
 
 ///|
 test "LexResult ToJson implementation" {
-  // Test LexResult with a simple Int value
   let test_bytes = b"remaining data"
   let lex_result : LexResult[Int] = {
     value: 42,
@@ -110,8 +102,6 @@ test "LexResult ToJson implementation" {
     "bytes_offset": 100,
     "rest": "remaining data",
   })
-
-  // Test LexResult with a Header value
   let header : Header = { major: 1, minor: 7 }
   let lex_result_header : LexResult[Header] = {
     value: header,

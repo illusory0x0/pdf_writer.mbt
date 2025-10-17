@@ -90,18 +90,11 @@ test "tokenize_file with comments between sections" {
     #|
   let input = @encoding/utf8.encode(pdf_content)
   let result = try? @pdf_file_lexer.tokenize_file(input)
-
-  // Should successfully parse despite comments
   @json.inspect(result is Ok(_), content=true)
   match result {
     Ok(file_result) => {
-      // Verify header was parsed correctly
       @json.inspect(file_result.value.header, content={ "major": 1, "minor": 4 })
-
-      // Verify body has one object (Body is Array[Obj], access via .0)
       @json.inspect(file_result.value.body.0.length(), content=1)
-
-      // Verify xref table has 2 entries
       @json.inspect(file_result.value.xref_table.entries.length(), content=2)
     }
     Err(_) => fail("Should not have failed to parse")
@@ -129,18 +122,11 @@ test "tokenize_file without comments" {
     #|
   let input = @encoding/utf8.encode(pdf_content)
   let result = try? @pdf_file_lexer.tokenize_file(input)
-
-  // Should also successfully parse without comments
   @json.inspect(result is Ok(_), content=true)
   match result {
     Ok(file_result) => {
-      // Verify header was parsed correctly
       @json.inspect(file_result.value.header, content={ "major": 1, "minor": 4 })
-
-      // Verify body has one object (Body is Array[Obj], access via .0)
       @json.inspect(file_result.value.body.0.length(), content=1)
-
-      // Verify xref table has 2 entries
       @json.inspect(file_result.value.xref_table.entries.length(), content=2)
     }
     Err(_) => fail("Should not have failed to parse")

@@ -37,7 +37,6 @@ pub fn tokenize_body(
   let body = []
   for {
     lexmatch rest with longest {
-      // Parse object header first, then handwrite non-greedy content parsing
       (
         (
           ("\d+" as obj_num)
@@ -49,12 +48,9 @@ pub fn tokenize_body(
         ) as header,
         rest_after_header
       ) => {
-        // Handwritten non-greedy search for first "endobj"
         let endobj_pattern = b"endobj"
         let mut obj_content_end = 0
         let mut found_endobj = false
-
-        // Search for first occurrence of "endobj"
         while obj_content_end + endobj_pattern.length() <=
               rest_after_header.length() {
           let slice = rest_after_header[obj_content_end:obj_content_end +
@@ -66,13 +62,11 @@ pub fn tokenize_body(
           obj_content_end += 1
         }
         if not(found_endobj) {
-          break // No "endobj" found, stop parsing
+          break
         }
         let obj_bytes = rest_after_header[:obj_content_end]
         let rest_after_endobj = rest_after_header[obj_content_end +
           endobj_pattern.length():]
-
-        // Now match the newline after "endobj"
         lexmatch rest_after_endobj with longest {
           ("(\r\n)|\r|\n" as newline, r) => {
             let all_length = header.length() +
@@ -81,8 +75,6 @@ pub fn tokenize_body(
               newline.length()
             let object_num = try! @lexer_bytes.tokenize_int(obj_num)
             let generation_num = try! @lexer_bytes.tokenize_int(gen_num)
-
-            // Store the START position of this object before updating bytes_offset
             let object_start_position = bytes_offset
             bytes_offset += all_length
             let obj = Obj::{
@@ -94,7 +86,7 @@ pub fn tokenize_body(
             rest = r
             body.push(obj)
           }
-          _ => break // No valid newline after "endobj", stop parsing
+          _ => break // 
         }
       }
       ("(\r\n)|\r|\n" as all, r) => {
@@ -218,29 +210,21 @@ pub fn tokenize_trailer(
   start_bytes_offset : Int,
 ) -> LexResult[BytesView] raise LexError {
   lexmatch input with longest {
-    // Parse trailer header first, then handwrite non-greedy content parsing
     (("trailer" "(\r\n)|\r|\n") as header, rest_after_header) => {
-      // Handwritten non-greedy search for first "startxref" (preceded by newline)
       let startxref_pattern = b"startxref"
       let mut trailer_content_end = 0
       let mut found_startxref = false
-
-      // Search for first occurrence of "\nstartxref" or "\r\nstartxref" or "\rstartxref"
       while trailer_content_end + startxref_pattern.length() <=
             rest_after_header.length() {
-        // Check if we're at a potential startxref location
         if trailer_content_end + startxref_pattern.length() <=
           rest_after_header.length() {
           let slice = rest_after_header[trailer_content_end:trailer_content_end +
             startxref_pattern.length()]
           if slice == startxref_pattern[:] {
-            // Found "startxref", but need to check if it's preceded by newline
             if trailer_content_end == 0 {
-              // At the very beginning, this shouldn't happen in valid PDF
               found_startxref = true
               break
             } else {
-              // Check if preceded by newline
               let prev_char = rest_after_header[trailer_content_end - 1]
               if prev_char == '\n' || prev_char == '\r' {
                 found_startxref = true
@@ -254,15 +238,11 @@ pub fn tokenize_trailer(
       if not(found_startxref) {
         raise LexError("No 'startxref' found after trailer")
       }
-
-      // Extract trailer dictionary content (excluding the final newline before startxref)
       let mut dict_end = trailer_content_end
-      // Remove trailing newline if present
       if dict_end > 0 {
         let last_char = rest_after_header[dict_end - 1]
         if last_char == '\n' || last_char == '\r' {
           dict_end -= 1
-          // Also remove \r if we have \r\n
           if dict_end > 0 &&
             last_char == '\n' &&
             rest_after_header[dict_end - 1] == '\r' {
@@ -272,8 +252,6 @@ pub fn tokenize_trailer(
       }
       let trailer_dict = rest_after_header[:dict_end]
       let rest_at_newline = rest_after_header[dict_end:]
-
-      // Now match the newline before "startxref"
       lexmatch rest_at_newline with longest {
         ("(\r\n)|\r|\n" as newline, rest) => {
           let all_length = header.length() + dict_end + newline.length()
@@ -315,15 +293,11 @@ pub fn tokenize_startxref(
 /// return advance offset
 pub fn skip_comment(input : BytesView) -> Int {
   lexmatch input with longest {
-    // Parse comment start marker first, then handwrite length-limited content parsing
     ("%" as _percent, rest_after_percent) => {
-      // Handwritten comment parsing with DoS protection (max 1024 chars)
       let max_comment_length = 1024
       let mut comment_content_end = 0
       let mut found_newline = false
       let mut is_eof_comment = false
-
-      // Search for newline or end of input, with length limit
       while comment_content_end < rest_after_percent.length() &&
             comment_content_end < max_comment_length {
         let char = rest_after_percent[comment_content_end]
@@ -333,41 +307,30 @@ pub fn skip_comment(input : BytesView) -> Int {
         }
         comment_content_end += 1
       }
-
-      // If we reached end of input without newline, it's an EOF comment
       if not(found_newline) &&
         comment_content_end == rest_after_percent.length() {
         is_eof_comment = true
       }
       if is_eof_comment {
-        // Comment at EOF without trailing newline - safe to consume all remaining
-        1 + comment_content_end // 1 for the '%' character
+        1 + comment_content_end
       } else if found_newline {
-        // Comment with newline - match the newline using lexmatch
         let rest_at_newline = rest_after_percent[comment_content_end:]
         lexmatch rest_at_newline with longest {
           ("(\r\n)|\r|\n" as newline, _rest) =>
             1 + comment_content_end + newline.length()
-          _ => // 1 for the '%' character
-            0 // Shouldn't happen since we found newline, but safety fallback
+          _ => 0
         }
       } else {
-        // Hit length limit without finding newline - truncate comment for DoS protection
-        1 + comment_content_end // 1 for the '%' character
+        1 + comment_content_end
       }
     }
-
-    // If input doesn't start with a comment, return 0 (no bytes skipped)
     _ => 0
   }
 }
 
 ///|
 pub fn tokenize_file(input : BytesView) -> LexResult[File] raise LexError {
-  // Parse header
   let header_result = tokenize_header(input)
-
-  // Skip any comments after header
   let mut current_rest = header_result.rest
   let mut current_offset = header_result.bytes_offset
   let comment_skip1 = skip_comment(current_rest)
@@ -375,11 +338,7 @@ pub fn tokenize_file(input : BytesView) -> LexResult[File] raise LexError {
     current_rest = current_rest[comment_skip1:]
     current_offset += comment_skip1
   }
-
-  // Parse body
   let body_result = tokenize_body(current_rest, current_offset)
-
-  // Skip any comments after body
   current_rest = body_result.rest
   current_offset = body_result.bytes_offset
   let comment_skip2 = skip_comment(current_rest)
@@ -387,11 +346,7 @@ pub fn tokenize_file(input : BytesView) -> LexResult[File] raise LexError {
     current_rest = current_rest[comment_skip2:]
     current_offset += comment_skip2
   }
-
-  // Parse xref table
   let xref_result = tokenize_xref_table(current_rest, current_offset)
-
-  // Skip any comments after xref table
   current_rest = xref_result.rest
   current_offset = xref_result.bytes_offset
   let comment_skip3 = skip_comment(current_rest)
@@ -399,11 +354,7 @@ pub fn tokenize_file(input : BytesView) -> LexResult[File] raise LexError {
     current_rest = current_rest[comment_skip3:]
     current_offset += comment_skip3
   }
-
-  // Parse trailer
   let trailer_result = tokenize_trailer(current_rest, current_offset)
-
-  // Skip any comments after trailer
   current_rest = trailer_result.rest
   current_offset = trailer_result.bytes_offset
   let comment_skip4 = skip_comment(current_rest)
@@ -411,11 +362,7 @@ pub fn tokenize_file(input : BytesView) -> LexResult[File] raise LexError {
     current_rest = current_rest[comment_skip4:]
     current_offset += comment_skip4
   }
-
-  // Parse startxref
   let startxref_result = tokenize_startxref(current_rest, current_offset)
-
-  // Construct the complete File
   LexResult::{
     value: File::{
       header: header_result.value,
