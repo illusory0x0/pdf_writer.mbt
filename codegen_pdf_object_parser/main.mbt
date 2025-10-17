@@ -1,11 +1,6 @@
 ///|
-fnalias @edsl_parser.rule
-
-///|
-typealias @edsl_parser.NonTerminal
-
-///|
-test {
+fn main {
+  println("Generating PDF Object Parser moonyacc grammar file...")
   let buffer = StringBuilder::new()
   let atom = [
     rule(fn(val : NAME) -> Atom { Name(val) }),
@@ -71,7 +66,7 @@ test {
   // dump the non-terminal declaration to the buffer
   buffer.write_string(TokenDecl)
   for non_terminal in non_terminal_symbols {
-    buffer.write_string(NonTerminal::from(non_terminal).emit())
+    buffer.write_string(try! NonTerminal::from(non_terminal).emit())
   }
   buffer.write_string("\n\n%%\n")
   try! @fs.write_string_to_file(
@@ -79,6 +74,12 @@ test {
     buffer.to_string(),
   )
 }
+
+///|
+fnalias @edsl_parser.rule
+
+///|
+typealias @edsl_parser.NonTerminal
 
 ///|
 const TokenDecl =
