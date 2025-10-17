@@ -5,22 +5,6 @@ pub struct Position {
 } derive(Show, ToJson, @json.FromJson)
 
 ///|
-typealias @pdf.Object
-
-///|
-typealias @codegen_pdf_object_parser.(
-  PDF_Stream,
-  STREAM_BYTES,
-  INDIRECT,
-  Atom,
-  PDF_Obj,
-  PDF_Dict,
-  PDF_Array,
-  DictEntries,
-  NonEmptyElems
-)
-
-///|
 fnalias @helper.ascii_string_of_bytesview
 
 ///|
