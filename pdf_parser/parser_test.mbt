@@ -34,7 +34,8 @@ test "parse simple PDF" {
       "trailer": "<</Size 2>>",
       "start_xref_pos": 40,
     },
-    "bytes_offset": 115,
+    "start_bytes_offset": 0,
+    "end_bytes_offset": 115,
     "rest": "",
   })
   let obj = file.value.body.0[0]

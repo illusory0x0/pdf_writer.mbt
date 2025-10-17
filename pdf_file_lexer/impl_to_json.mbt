@@ -84,33 +84,8 @@ test "ToJson implementations" {
 pub impl[T : ToJson] ToJson for LexResult[T] with to_json(self) {
   {
     "value": self.value,
-    "bytes_offset": self.bytes_offset,
+    "start_bytes_offset": self.start_bytes_offset,
+    "end_bytes_offset": self.end_bytes_offset,
     "rest": @helper.ascii_string_of_bytesview(self.rest),
   }
-}
-
-///|
-test "LexResult ToJson implementation" {
-  let test_bytes = b"remaining data"
-  let lex_result : LexResult[Int] = {
-    value: 42,
-    bytes_offset: 100,
-    rest: test_bytes[:],
-  }
-  @json.inspect(lex_result, content={
-    "value": 42,
-    "bytes_offset": 100,
-    "rest": "remaining data",
-  })
-  let header : Header = { major: 1, minor: 7 }
-  let lex_result_header : LexResult[Header] = {
-    value: header,
-    bytes_offset: 200,
-    rest: b"more data"[:],
-  }
-  @json.inspect(lex_result_header, content={
-    "value": { "major": 1, "minor": 7 },
-    "bytes_offset": 200,
-    "rest": "more data",
-  })
 }

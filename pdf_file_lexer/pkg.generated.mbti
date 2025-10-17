@@ -4,17 +4,17 @@ package "illusory0x0/pdf/pdf_file_lexer"
 // Values
 fn skip_comment(BytesView) -> Int
 
-fn tokenize_body(BytesView, Int) -> LexResult[Body]
+fn tokenize_body(BytesView, start_bytes_offset~ : Int) -> LexResult[Body]
 
 fn tokenize_file(BytesView) -> LexResult[File] raise LexError
 
-fn tokenize_header(BytesView) -> LexResult[Header] raise LexError
+fn tokenize_header(BytesView, start_bytes_offset~ : Int) -> LexResult[Header] raise LexError
 
 fn tokenize_startxref(BytesView, Int) -> LexResult[Int] raise LexError
 
 fn tokenize_trailer(BytesView, Int) -> LexResult[BytesView] raise LexError
 
-fn tokenize_xref_entry(BytesView, Int) -> LexResult[XRefEntry] raise LexError
+fn tokenize_xref_entry(BytesView, start_bytes_offset~ : Int) -> LexResult[XRefEntry] raise LexError
 
 fn tokenize_xref_table(BytesView, Int) -> LexResult[XRefTable] raise LexError
 
@@ -85,7 +85,8 @@ impl ToJson for Header
 
 pub(all) struct LexResult[T] {
   value : T
-  bytes_offset : Int
+  start_bytes_offset : Int
+  end_bytes_offset : Int
   rest : BytesView
 }
 fn[T : Show] LexResult::output(Self[T], &Logger) -> Unit // from trait `Show`
