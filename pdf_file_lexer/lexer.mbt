@@ -390,7 +390,7 @@ pub fn tokenize_file(input : BytesView) -> LexResult[File] raise LexError {
       body: body_result.value,
       xref_table: xref_result.value,
       trailer: trailer_result.value,
-      start_xref_pos: startxref_result.value,
+      start_xref_bytes_offset: startxref_result.value,
     },
     start_bytes_offset: 0,
     end_bytes_offset: startxref_result.end_bytes_offset,

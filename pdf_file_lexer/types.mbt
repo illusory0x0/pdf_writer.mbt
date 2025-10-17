@@ -4,7 +4,7 @@ pub(all) struct File {
   body : Body
   xref_table : XRefTable
   trailer : BytesView
-  start_xref_pos : Int
+  start_xref_bytes_offset : Int
 } derive(Eq, Show)
 
 ///|
