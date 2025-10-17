@@ -36,7 +36,7 @@ test "byte_offset" {
           "bytes_offset": 9,
           "object_num": 1,
           "generation_num": 0,
-          "obj_bytes": "null\\n",
+          "obj_bytes": "\\nnull\\n",
         },
       ],
       "xref_table": {
@@ -139,9 +139,71 @@ test {
   let input = b"4 0 obj \x0a<<\x0a/Border [0 0 0]\x0a/Subtype /Link\x0a/C [0 0 0]\x0a/A \x0a<<\x0a/URI (http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2006:033:0001:0017:EN:PDF#page=8)\x0a/S /URI\x0a>>\x0a/Type /Annot\x0a/Rect [312 719 469 735]\x0a>>\x0aendobj"
   let result = tokenize_body(input, start_bytes_offset=0)
   @json.inspect(result, content={
-    "value": [],
+    "value": [
+      {
+        "bytes_offset": 0,
+        "object_num": 4,
+        "generation_num": 0,
+        "obj_bytes": " \\n<<\\n/Border [0 0 0]\\n/Subtype /Link\\n/C [0 0 0]\\n/A \\n<<\\n/URI (http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2006:033:0001:0017:EN:PDF#page=8)\\n/S /URI\\n>>\\n/Type /Annot\\n/Rect [312 719 469 735]\\n>>\\n",
+      },
+    ],
     "start_bytes_offset": 0,
-    "end_bytes_offset": 0,
-    "rest": "4 0 obj \\n<<\\n/Border [0 0 0]\\n/Subtype /Link\\n/C [0 0 0]\\n/A \\n<<\\n/URI (http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2006:033:0001:0017:EN:PDF#page=8)\\n/S /URI\\n>>\\n/Type /Annot\\n/Rect [312 719 469 735]\\n>>\\nendobj",
+    "end_bytes_offset": 217,
+    "rest": "",
   })
+  inspect(input.length(), content="217")
+}
+
+///|
+test {
+  let objs = [
+    b"1 0 obj\nnull\nendobj\n", b"2 0 obj\n<< /Type /Catalog >>\nendobj\n", b"3 0 obj\n[ 1 2 3 ]\nendobj\n",
+  ]
+  let input = bytes_concat(objs)
+  let result = tokenize_body(input, start_bytes_offset=0)
+  let objs_offsets = result.value
+    .iter()
+    .map(x => x.start_bytes_offset)
+    .collect()
+  let expected_offsets = array_scanl(objs)(0, (acc, x) => acc + x.length())[0:objs_offsets.length()].to_array()
+  assert_eq(objs_offsets, expected_offsets)
+  @json.inspect(result, content={
+    "value": [
+      {
+        "bytes_offset": 0,
+        "object_num": 1,
+        "generation_num": 0,
+        "obj_bytes": "\\nnull\\n",
+      },
+      {
+        "bytes_offset": 20,
+        "object_num": 2,
+        "generation_num": 0,
+        "obj_bytes": "\\n<< /Type /Catalog >>\\n",
+      },
+      {
+        "bytes_offset": 56,
+        "object_num": 3,
+        "generation_num": 0,
+        "obj_bytes": "\\n[ 1 2 3 ]\\n",
+      },
+    ],
+    "start_bytes_offset": 0,
+    "end_bytes_offset": 81,
+    "rest": "",
+  })
+}
+
+///|
+fn[A, B] array_scanl(xs : Array[A]) -> (B, (B, A) -> B) -> Array[B] {
+  fn(init : B, f : (B, A) -> B) -> Array[B] {
+    let result : Array[B] = Array::new()
+    result.push(init)
+    let mut acc = init
+    for x in xs {
+      acc = f(acc, x)
+      result.push(acc)
+    }
+    result
+  }
 }
