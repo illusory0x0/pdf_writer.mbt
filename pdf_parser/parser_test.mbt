@@ -104,12 +104,10 @@ test "test for pdfbox dataset" {
   }
 }
 
-// ///|
-// test {
-//   if true {
-//     let file_path = "./resources/pdf_dataset/pdfbox/eu-001.pdf"
-//     let input = try! @fs.read_file_to_bytes(file_path)
-//     let result = parse(input)
-//     ignore(result)
-//   }
-// }
+///|
+test {
+  let file_path = "./resources/pdf_dataset/pdfbox/eu-001.pdf"
+  let input = try! @fs.read_file_to_bytes(file_path)
+  let result = parse(input)
+  ignore(result)
+}
