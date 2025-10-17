@@ -39,7 +39,7 @@ pub fn tokenize_body(
 ) -> LexResult[Body] {
   let mut bytes_offset = start_bytes_offset
   let mut rest = input
-  let body = []
+  let body_buffer = []
   for {
     lexmatch rest with longest {
       (
@@ -89,7 +89,7 @@ pub fn tokenize_body(
               obj_bytes,
             }
             rest = r
-            body.push(obj)
+            body_buffer.push(obj)
           }
           _ => break // 
         }
@@ -102,7 +102,7 @@ pub fn tokenize_body(
     }
   }
   LexResult::{
-    value: body,
+    value: Body::from(body_buffer),
     start_bytes_offset,
     end_bytes_offset: bytes_offset,
     rest,

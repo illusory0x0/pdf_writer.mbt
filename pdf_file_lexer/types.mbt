@@ -24,7 +24,23 @@ pub(all) struct Obj {
 } derive(Eq, Show)
 
 ///|
-pub(all) struct Body(Array[Obj]) derive(Eq, Show)
+struct Body(FixedArray[Obj]) derive(Eq, Show)
+
+///|
+pub fn Body::length(self : Body) -> Int = "%fixedarray.length"
+
+///|
+pub fn Body::op_get(self : Body, index : Int) -> Obj = "%fixedarray.get"
+
+///|
+pub fn Body::from(array : Array[Obj]) -> Body {
+  Body(FixedArray::from_array(array))
+}
+
+///|
+pub fn Body::iter(self : Body) -> Iter[Obj] {
+  FixedArray::iter(self.0)
+}
 
 ///|
 pub(all) struct XRefTable {

@@ -7,7 +7,7 @@ pub fn parse(input : BytesView) -> @pdf.File raise {
 
   // Step 2: Parse each object in the body using pdf_object_parser
   let parsed_objects = []
-  for obj in pdf_file.body.0 {
+  for obj in pdf_file.body {
     let parsed_obj = parse_pdf_object(obj.obj_bytes) // Let ParseError propagate
     parsed_objects.push(parsed_obj)
   }

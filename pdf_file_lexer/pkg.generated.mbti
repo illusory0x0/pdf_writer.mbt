@@ -25,12 +25,14 @@ fn LexError::to_string(Self) -> String // from trait `Show`
 impl Show for LexError
 
 // Types and methods
-pub(all) struct Body(Array[Obj])
+type Body
 fn Body::equal(Self, Self) -> Bool // from trait `Eq`
-#deprecated
-fn Body::inner(Self) -> Array[Obj]
+fn Body::from(Array[Obj]) -> Self
+fn Body::iter(Self) -> Iter[Obj]
+fn Body::length(Self) -> Int
 #deprecated
 fn Body::op_equal(Self, Self) -> Bool // from trait `Eq`
+fn Body::op_get(Self, Int) -> Obj
 fn Body::output(Self, &Logger) -> Unit // from trait `Show`
 fn Body::to_json(Self) -> Json // from trait `ToJson`
 fn Body::to_string(Self) -> String // from trait `Show`
