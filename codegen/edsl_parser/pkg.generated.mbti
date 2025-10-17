@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "illusory0x0/pdf/edsl_parser"
+package "illusory0x0/codegen/edsl_parser"
 
 import(
   "moonbitlang/core/json"
