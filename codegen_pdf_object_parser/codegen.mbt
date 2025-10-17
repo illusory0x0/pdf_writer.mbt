@@ -18,8 +18,8 @@ test {
     rule(fn(val : INDIRECT) -> Atom { Indirect(val.object_num) }),
   ]
   let array_non_empty_elems = [
-    rule(fn(val : Atom) -> NonEmptyElems { [val] }),
-    rule(fn(acc : NonEmptyElems, val : Atom) -> NonEmptyElems {
+    rule(fn(val : PDF_Obj) -> NonEmptyElems { [val] }),
+    rule(fn(acc : NonEmptyElems, val : PDF_Obj) -> NonEmptyElems {
       acc.push(val)
       acc
     }),
