@@ -38,7 +38,7 @@ test "parse simple PDF" {
     "end_bytes_offset": 115,
     "rest": "",
   })
-  let obj = file.value.body.0[0]
+  let obj = file.value.body[0]
   @json.inspect(obj, content={
     "bytes_offset": 9,
     "object_num": 1,

@@ -20,7 +20,7 @@ test "byte_offset" {
   let file = bytes_concat([file_header, ..body, ..xref_table, ..trailer])
   let result = @pdf_file_lexer.tokenize_file(file)
   inspect(file_header.length(), content="9")
-  inspect(result.value.body.0[0].start_bytes_offset, content="9")
+  inspect(result.value.body[0].start_bytes_offset, content="9")
   inspect(file.length() - result.rest.length(), content="126")
   inspect(result.end_bytes_offset, content="126")
   inspect(result.value.start_xref_bytes_offset, content="29")
@@ -95,7 +95,7 @@ test "tokenize_file with comments between sections" {
   match result {
     Ok(file_result) => {
       @json.inspect(file_result.value.header, content={ "major": 1, "minor": 4 })
-      @json.inspect(file_result.value.body.0.length(), content=1)
+      @json.inspect(file_result.value.body.length(), content=1)
       @json.inspect(file_result.value.xref_table.entries.length(), content=2)
     }
     Err(_) => fail("Should not have failed to parse")
@@ -127,7 +127,7 @@ test "tokenize_file without comments" {
   match result {
     Ok(file_result) => {
       @json.inspect(file_result.value.header, content={ "major": 1, "minor": 4 })
-      @json.inspect(file_result.value.body.0.length(), content=1)
+      @json.inspect(file_result.value.body.length(), content=1)
       @json.inspect(file_result.value.xref_table.entries.length(), content=2)
     }
     Err(_) => fail("Should not have failed to parse")
