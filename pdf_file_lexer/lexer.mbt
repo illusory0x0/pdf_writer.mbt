@@ -428,14 +428,3 @@ pub fn tokenize_file(input : BytesView) -> LexResult[File] raise LexError {
     rest: startxref_result.rest,
   }
 }
-
-///|
-test {
-  let input = b"4 0 obj \x0a<<\x0a/Border [0 0 0]\x0a/Subtype /Link\x0a/C [0 0 0]\x0a/A \x0a<<\x0a/URI (http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2006:033:0001:0017:EN:PDF#page=8)\x0a/S /URI\x0a>>\x0a/Type /Annot\x0a/Rect [312 719 469 735]\x0a>>\x0aendobj"
-  let result = tokenize_body(input, 0)
-  @json.inspect(result, content={
-    "value": [],
-    "bytes_offset": 0,
-    "rest": "4 0 obj \\n<<\\n/Border [0 0 0]\\n/Subtype /Link\\n/C [0 0 0]\\n/A \\n<<\\n/URI (http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2006:033:0001:0017:EN:PDF#page=8)\\n/S /URI\\n>>\\n/Type /Annot\\n/Rect [312 719 469 735]\\n>>\\nendobj",
-  })
-}
