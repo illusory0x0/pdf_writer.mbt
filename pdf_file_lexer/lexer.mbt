@@ -4,12 +4,16 @@ suberror LexError String derive(Show)
 ///|
 pub(all) struct LexResult[T] {
   value : T
-  bytes_offset : Int
+  start_bytes_offset : Int
+  end_bytes_offset : Int
   rest : BytesView
 } derive(Show)
 
 ///|
-pub fn tokenize_header(input : BytesView) -> LexResult[Header] raise LexError {
+pub fn tokenize_header(
+  input : BytesView,
+  start_bytes_offset~ : Int,
+) -> LexResult[Header] raise LexError {
   lexmatch input with longest {
     (
       ("%PDF-" ("\d+" as major) "." ("\d+" as minor) "(\r\n)|\r|\n") as all,
@@ -19,7 +23,8 @@ pub fn tokenize_header(input : BytesView) -> LexResult[Header] raise LexError {
       let minor = try! @lexer_bytes.tokenize_int(minor)
       LexResult::{
         value: Header::{ major, minor },
-        bytes_offset: all.length(),
+        start_bytes_offset,
+        end_bytes_offset: start_bytes_offset + all.length(),
         rest,
       }
     }
@@ -30,7 +35,7 @@ pub fn tokenize_header(input : BytesView) -> LexResult[Header] raise LexError {
 ///|
 pub fn tokenize_body(
   input : BytesView,
-  start_bytes_offset : Int,
+  start_bytes_offset~ : Int,
 ) -> LexResult[Body] {
   let mut bytes_offset = start_bytes_offset
   let mut rest = input
@@ -96,7 +101,12 @@ pub fn tokenize_body(
       _ => break
     }
   }
-  LexResult::{ value: body, bytes_offset, rest }
+  LexResult::{
+    value: body,
+    start_bytes_offset,
+    end_bytes_offset: bytes_offset,
+    rest,
+  }
 }
 
 ///|
@@ -107,7 +117,7 @@ pub fn tokenize_body(
 /// This not equals to end-of-line marker in PDF spec.
 pub fn tokenize_xref_entry(
   input : BytesView,
-  start_bytes_offset : Int,
+  start_bytes_offset~ : Int,
 ) -> LexResult[XRefEntry] raise LexError {
   lexmatch input with longest {
     (
@@ -127,7 +137,8 @@ pub fn tokenize_xref_entry(
       let state = EntryState::InUse
       LexResult::{
         value: XRefEntry::{ bytes_offset, generation_num, state },
-        bytes_offset: start_bytes_offset + all.length(),
+        start_bytes_offset,
+        end_bytes_offset: start_bytes_offset + all.length(),
         rest,
       }
     }
@@ -148,7 +159,8 @@ pub fn tokenize_xref_entry(
       let state = EntryState::Free
       LexResult::{
         value: XRefEntry::{ bytes_offset, generation_num, state },
-        bytes_offset: start_bytes_offset + all.length(),
+        start_bytes_offset,
+        end_bytes_offset: start_bytes_offset + all.length(),
         rest,
       }
     }
@@ -182,14 +194,18 @@ pub fn tokenize_xref_table(
       let mut current_offset = start_bytes_offset + header.length()
       let entries = []
       for i = 0; i < count; i = i + 1 {
-        let entry_result = tokenize_xref_entry(current_rest, current_offset)
+        let entry_result = tokenize_xref_entry(
+          current_rest,
+          start_bytes_offset=current_offset,
+        )
         entries.push(entry_result.value)
         current_rest = entry_result.rest
-        current_offset = entry_result.bytes_offset
+        current_offset = entry_result.end_bytes_offset
       }
       LexResult::{
         value: XRefTable::{ entries, start_num },
-        bytes_offset: current_offset,
+        start_bytes_offset,
+        end_bytes_offset: current_offset,
         rest: current_rest,
       }
     }
@@ -257,7 +273,8 @@ pub fn tokenize_trailer(
           let all_length = header.length() + dict_end + newline.length()
           LexResult::{
             value: trailer_dict,
-            bytes_offset: start_bytes_offset + all_length,
+            start_bytes_offset,
+            end_bytes_offset: start_bytes_offset + all_length,
             rest,
           }
         }
@@ -281,7 +298,8 @@ pub fn tokenize_startxref(
       let xref_offset = try! @lexer_bytes.tokenize_int(offset_str)
       LexResult::{
         value: xref_offset,
-        bytes_offset: start_bytes_offset + all.length(),
+        start_bytes_offset,
+        end_bytes_offset: start_bytes_offset + all.length(),
         rest,
       }
     }
@@ -330,17 +348,20 @@ pub fn skip_comment(input : BytesView) -> Int {
 
 ///|
 pub fn tokenize_file(input : BytesView) -> LexResult[File] raise LexError {
-  let header_result = tokenize_header(input)
+  let header_result = tokenize_header(input, start_bytes_offset=0)
   let mut current_rest = header_result.rest
-  let mut current_offset = header_result.bytes_offset
+  let mut current_offset = header_result.end_bytes_offset
   let comment_skip1 = skip_comment(current_rest)
   if comment_skip1 > 0 {
     current_rest = current_rest[comment_skip1:]
     current_offset += comment_skip1
   }
-  let body_result = tokenize_body(current_rest, current_offset)
+  let body_result = tokenize_body(
+    current_rest,
+    start_bytes_offset=current_offset,
+  )
   current_rest = body_result.rest
-  current_offset = body_result.bytes_offset
+  current_offset = body_result.end_bytes_offset
   let comment_skip2 = skip_comment(current_rest)
   if comment_skip2 > 0 {
     current_rest = current_rest[comment_skip2:]
@@ -348,7 +369,7 @@ pub fn tokenize_file(input : BytesView) -> LexResult[File] raise LexError {
   }
   let xref_result = tokenize_xref_table(current_rest, current_offset)
   current_rest = xref_result.rest
-  current_offset = xref_result.bytes_offset
+  current_offset = xref_result.end_bytes_offset
   let comment_skip3 = skip_comment(current_rest)
   if comment_skip3 > 0 {
     current_rest = current_rest[comment_skip3:]
@@ -356,7 +377,7 @@ pub fn tokenize_file(input : BytesView) -> LexResult[File] raise LexError {
   }
   let trailer_result = tokenize_trailer(current_rest, current_offset)
   current_rest = trailer_result.rest
-  current_offset = trailer_result.bytes_offset
+  current_offset = trailer_result.end_bytes_offset
   let comment_skip4 = skip_comment(current_rest)
   if comment_skip4 > 0 {
     current_rest = current_rest[comment_skip4:]
@@ -371,7 +392,8 @@ pub fn tokenize_file(input : BytesView) -> LexResult[File] raise LexError {
       trailer: trailer_result.value,
       start_xref_pos: startxref_result.value,
     },
-    bytes_offset: startxref_result.bytes_offset,
+    start_bytes_offset: 0,
+    end_bytes_offset: startxref_result.end_bytes_offset,
     rest: startxref_result.rest,
   }
 }

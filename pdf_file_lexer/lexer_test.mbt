@@ -22,7 +22,7 @@ test "byte_offset" {
   inspect(file_header.length(), content="9")
   inspect(result.value.body.0[0].bytes_offset, content="9")
   inspect(file.length() - result.rest.length(), content="126")
-  inspect(result.bytes_offset, content="126")
+  inspect(result.end_bytes_offset, content="126")
   inspect(result.value.start_xref_pos, content="29")
   inspect(
     file_header.length() + body.fold(init=0, (acc, x) => acc + x.length()),
@@ -49,7 +49,8 @@ test "byte_offset" {
       "trailer": "<</Size 2 /Root 1 0 R>>",
       "start_xref_pos": 29,
     },
-    "bytes_offset": 126,
+    "start_bytes_offset": 0,
+    "end_bytes_offset": 126,
     "rest": "\\n",
   })
 }
@@ -136,10 +137,11 @@ test "tokenize_file without comments" {
 ///|
 test {
   let input = b"4 0 obj \x0a<<\x0a/Border [0 0 0]\x0a/Subtype /Link\x0a/C [0 0 0]\x0a/A \x0a<<\x0a/URI (http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2006:033:0001:0017:EN:PDF#page=8)\x0a/S /URI\x0a>>\x0a/Type /Annot\x0a/Rect [312 719 469 735]\x0a>>\x0aendobj"
-  let result = tokenize_body(input, 0)
+  let result = tokenize_body(input, start_bytes_offset=0)
   @json.inspect(result, content={
     "value": [],
-    "bytes_offset": 0,
+    "start_bytes_offset": 0,
+    "end_bytes_offset": 0,
     "rest": "4 0 obj \\n<<\\n/Border [0 0 0]\\n/Subtype /Link\\n/C [0 0 0]\\n/A \\n<<\\n/URI (http://eur-lex.europa.eu/LexUriServ/LexUriServ.do?uri=OJ:L:2006:033:0001:0017:EN:PDF#page=8)\\n/S /URI\\n>>\\n/Type /Annot\\n/Rect [312 719 469 735]\\n>>\\nendobj",
   })
 }
