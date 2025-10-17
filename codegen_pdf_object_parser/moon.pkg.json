@@ -1,4 +1,5 @@
 {
+  "is-main": true,
   "import": [
     "moonbitlang/x/fs",
     "illusory0x0/pdf/edsl_parser",
