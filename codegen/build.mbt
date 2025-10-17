@@ -73,14 +73,19 @@ fn main {
     "./pdf_object_parser/parser.mbty",
     buffer.to_string(),
   )
-  exec(".mooncakes/moonbitlang/yacc/moonyacc --mode only-tokens ./pdf_object_parser/parser.mbty -o ./pdf_object_parser/token.mbt")
-  exec(".mooncakes/moonbitlang/yacc/moonyacc --no-comments --external-tokens ./pdf_object_parser/parser.mbty -o ./pdf_object_parser/parser.mbt")
+  exec(
+    ".mooncakes/moonbitlang/yacc/moonyacc --mode only-tokens ./pdf_object_parser/parser.mbty -o ./pdf_object_parser/token.mbt",
+  )
+  exec(
+    ".mooncakes/moonbitlang/yacc/moonyacc --no-comments --external-tokens ./pdf_object_parser/parser.mbty -o ./pdf_object_parser/parser.mbt",
+  )
   exec("moonfmt -w ./pdf_object_parser/token.mbt")
   exec("moonfmt -w ./pdf_object_parser/parser.mbt")
   let bytes = try! @fs.read_file_to_bytes("./codegen/symbols.mbt")
   try! @fs.write_bytes_to_file("./pdf_object_parser/symbols.mbt", bytes)
 }
 
+///|
 extern "js" fn exec(command : String) -> Unit = "(command) => require('child_process').execSync(command)"
 
 ///|
