@@ -1,0 +1,10 @@
+{
+  "name": "illusory0x0/codegen",
+  "deps": {
+    "moonbitlang/x": "0.4.34",
+    "illusory0x0/pdf": {
+      "path": ".."
+    }
+  },
+  "preferred-target": "js"
+}

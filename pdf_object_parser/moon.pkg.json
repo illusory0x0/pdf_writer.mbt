@@ -5,13 +5,19 @@
       "path": "illusory0x0/pdf/types",
       "alias": "pdf"
     },
-    "illusory0x0/pdf/helper",
-    "illusory0x0/pdf/codegen_pdf_object_parser"
+    "illusory0x0/pdf/helper"
   ],
   "test-import": [
     "illusory0x0/fmt",
     "illusory0x0/fmt/types",
     { "path": "illusory0x0/pdf/types", "alias": "pdf" }
   ],
-  "warn-list": "-1-2-3-4-6-7"
+  "warn-list": "-1-2-3-4-6-7",
+  "pre-build": [
+    {
+      "input": "../codegen/build.mbt",
+      "command": "moon run --target js -C codegen codegen/build.mbt",
+      "output": ["parser.mbty", "parser.mbt"]
+    }
+  ]
 }
