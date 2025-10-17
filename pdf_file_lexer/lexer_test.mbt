@@ -23,7 +23,7 @@ test "byte_offset" {
   inspect(result.value.body.0[0].start_bytes_offset, content="9")
   inspect(file.length() - result.rest.length(), content="126")
   inspect(result.end_bytes_offset, content="126")
-  inspect(result.value.start_xref_pos, content="29")
+  inspect(result.value.start_xref_bytes_offset, content="29")
   inspect(
     file_header.length() + body.fold(init=0, (acc, x) => acc + x.length()),
     content="29",

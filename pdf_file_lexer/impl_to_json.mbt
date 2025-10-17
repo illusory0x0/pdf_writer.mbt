@@ -5,7 +5,7 @@ pub impl ToJson for File with to_json(self) {
     "body": self.body,
     "xref_table": self.xref_table,
     "trailer": @helper.ascii_string_of_bytesview(self.trailer),
-    "start_xref_pos": self.start_xref_pos,
+    "start_xref_pos": self.start_xref_bytes_offset,
   }
 }
 
