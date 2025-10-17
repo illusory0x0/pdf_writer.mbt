@@ -20,7 +20,7 @@ test "byte_offset" {
   let file = bytes_concat([file_header, ..body, ..xref_table, ..trailer])
   let result = @pdf_file_lexer.tokenize_file(file)
   inspect(file_header.length(), content="9")
-  inspect(result.value.body.0[0].bytes_offset, content="9")
+  inspect(result.value.body.0[0].start_bytes_offset, content="9")
   inspect(file.length() - result.rest.length(), content="126")
   inspect(result.end_bytes_offset, content="126")
   inspect(result.value.start_xref_pos, content="29")

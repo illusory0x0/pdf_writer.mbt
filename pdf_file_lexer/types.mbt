@@ -17,7 +17,7 @@ pub(all) struct Header {
 pub(all) struct Obj {
   /// 0-based position in the file
   /// this is used to validate xref table entries
-  bytes_offset : Int
+  start_bytes_offset : Int
   object_num : Int
   generation_num : Int
   obj_bytes : BytesView
