@@ -139,9 +139,9 @@ pub typealias Int as INTEGER
 
 pub typealias Bytes as NAME
 
-pub typealias Array[@types.Object] as NonEmptyElems
-
 pub typealias @types.Object as PDF_Array
+
+pub typealias Array[@types.Object] as PDF_ArrayEntries
 
 pub typealias @types.Object as PDF_Dict
 

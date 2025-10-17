@@ -101,9 +101,6 @@ pub typealias Bytes as STRING
 pub typealias Bytes as NAME
 
 ///|
-pub typealias Array[Atom] as NonEmptyElems
-
-///|
 pub typealias Object as PDF_Array
 
 ///|
@@ -120,3 +117,6 @@ pub typealias Bytes as STREAM_BYTES
 
 ///|
 pub typealias PDF_Obj as PDF_Stream
+
+///|
+pub typealias Array[Object] as PDF_ArrayEntries

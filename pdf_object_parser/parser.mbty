@@ -100,14 +100,13 @@ Atom -> Atom :
   | FALSE { Boolean(false) }
   | INDIRECT { Indirect($1.object_num) }
 ;
-NonEmptyElems -> NonEmptyElems :
-  | PDF_Obj { [$1] }
-  | NonEmptyElems PDF_Obj { $1.push($2)
+PDF_ArrayEntries -> PDF_ArrayEntries :
+  |  { [] }
+  | PDF_ArrayEntries PDF_Obj { $1.push($2)
       $1 }
 ;
 PDF_Array -> PDF_Array :
-  | LEFT_SQUARE_BRACKET RIGHT_SQUARE_BRACKET { Object::Array([]) }
-  | LEFT_SQUARE_BRACKET NonEmptyElems RIGHT_SQUARE_BRACKET { Array($2) }
+  | LEFT_SQUARE_BRACKET PDF_ArrayEntries RIGHT_SQUARE_BRACKET { Array($2) }
 ;
 DictEntries -> DictEntries :
   | NAME PDF_Obj { [($1, $2)] }

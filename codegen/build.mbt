@@ -12,21 +12,17 @@ fn main {
     rule(fn(_ : FALSE) -> Atom { Boolean(false) }),
     rule(fn(val : INDIRECT) -> Atom { Indirect(val.object_num) }),
   ]
-  let array_non_empty_elems = [
-    rule(fn(val : PDF_Obj) -> NonEmptyElems { [val] }),
-    rule(fn(acc : NonEmptyElems, val : PDF_Obj) -> NonEmptyElems {
-      acc.push(val)
-      acc
+  let pdf_array_entries = [
+    rule(fn() -> PDF_ArrayEntries { [] }),
+    rule(fn(xs : PDF_ArrayEntries, x : PDF_Obj) -> PDF_ArrayEntries {
+      xs.push(x)
+      xs
     }),
   ]
   let pdf_array = [
-    // Array([]])
-    rule(fn(_ : LEFT_SQUARE_BRACKET, _ : RIGHT_SQUARE_BRACKET) -> PDF_Array {
-      Object::Array([])
-    }),
     rule(fn(
       _ : LEFT_SQUARE_BRACKET,
-      array : NonEmptyElems,
+      array : PDF_ArrayEntries,
       _ : RIGHT_SQUARE_BRACKET,
     ) -> PDF_Array {
       Array(array)
@@ -59,8 +55,7 @@ fn main {
     rule(fn(val : PDF_Stream) -> PDF_Obj { val }),
   ]
   let non_terminal_symbols = [
-    pdf_obj, atom, array_non_empty_elems, pdf_array, pdf_dict_entries, pdf_dict,
-    pdf_stream,
+    pdf_obj, atom, pdf_array_entries, pdf_array, pdf_dict_entries, pdf_dict, pdf_stream,
   ]
 
   // dump the non-terminal declaration to the buffer
