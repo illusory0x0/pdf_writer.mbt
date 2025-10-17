@@ -6,94 +6,6 @@ typealias @edsl_parser.NonTerminal
 
 ///|
 test {
-  let token_decl =
-    #|%derive<Eq> TokenKind 
-    #|
-    #|// moonyacc entry point, specify the `parse` non-terminal symbol as the start point
-    #|%start parse 
-    #|
-    #|// specify the position type 
-    #|%position<Position>
-    #|
-    #|
-    #|// PDF delimiter characters
-    #| 
-    #|%token LEFT_PARENTHESIS "("
-    #|%token RIGHT_PARENTHESIS ")"
-    #|%token LEFT_CURLY_BRACE "{"
-    #|%token RIGHT_CURLY_BRACE "}"
-    #|%token LEFT_SQUARE_BRACKET "["
-    #|%token RIGHT_SQUARE_BRACKET "]"
-    #|%token LESS_THAN_SIGN "<"
-    #|%token GREATER_THAN_SIGN ">"
-    #|%token SOLIDUS "/"
-    #|%token DICT_BEGIN "<<"
-    #|%token DICT_END ">>"
-    #|
-    #|
-    #|
-    #|
-    #|// PDF end-of-line markers
-    #|// `\r`, `\r\n`, `\n`, this can appear in  reverse solidus `\`
-    #|// reverse solidus after an end-of-line marker is used for multi-line literal strings, in this case, end-of-line marker is ignored.
-    #|
-    #|// if string literal has end-of-line marker, it would be convert to `\n`.
-    #|
-    #|
-    #|//
-    #|// PDF comment:
-    #|// starting with a percent sign (%) and continuing to the end of the line
-    #|// this comment should outside a PDF string or inside a content stream.
-    #|
-    #|// PDF Objects:
-    #|
-    #|// Null object, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.9
-    #|%token NULL "null"
-    #|
-    #|// Booleans objects, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.2
-    #|%token TRUE "true"
-    #|%token FALSE "false"
-    #|
-    #|// Numeric objects, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.3
-    #|%token<Int> INTEGER
-    #|
-    #|%token<Double> REAL 
-    #|
-    #|// String objects, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.4
-    #|//
-    #|// here we parse `Literal String` and `Hexadecimal String` into a unified representation as STRING token
-    #|//
-    #|%token<Bytes> STRING 
-    #|
-    #|// Name objects, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.5
-    #|// 
-    #|// here is different from the official PDF specification:
-    #|// warning!
-    #|//
-    #|// this NAME token contains the leading solidus (/) character
-    #|%token<Bytes> NAME
-    #|
-    #|// Indirect Object, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.10
-    #|%token<INDIRECT> INDIRECT
-    #|
-    #|// Array objects, Dictionary objects and Stream objects aren't terminal symbols.
-    #|
-    #|%token<Bytes> STREAM_BYTES 
-    #|
-    #|%nonassoc STREAM_BYTES
-    #|
-    #|
-    #|// here define an EOF token to mark the end of input
-    #|%token EOF
-    #|
-    #|%% 
-    #|// moonyacc entry point must be declared using `%start <symbol_name>` directive
-    #|// here is the definition of the entry point symbol
-    #|parse -> PDF_Obj :  
-    #|  |  PDF_Obj EOF { $1 }
-    #|;
-    #|
-    #|
   let buffer = StringBuilder::new()
   let atom = [
     rule(fn(val : NAME) -> Atom { Name(val) }),
@@ -157,7 +69,7 @@ test {
   ]
 
   // dump the non-terminal declaration to the buffer
-  buffer.write_string(token_decl)
+  buffer.write_string(TokenDecl)
   for non_terminal in non_terminal_symbols {
     buffer.write_string(NonTerminal::from(non_terminal).emit())
   }
@@ -167,3 +79,93 @@ test {
     buffer.to_string(),
   )
 }
+
+///|
+const TokenDecl =
+  #|%derive<Eq> TokenKind 
+  #|
+  #|// moonyacc entry point, specify the `parse` non-terminal symbol as the start point
+  #|%start parse 
+  #|
+  #|// specify the position type 
+  #|%position<Position>
+  #|
+  #|
+  #|// PDF delimiter characters
+  #| 
+  #|%token LEFT_PARENTHESIS "("
+  #|%token RIGHT_PARENTHESIS ")"
+  #|%token LEFT_CURLY_BRACE "{"
+  #|%token RIGHT_CURLY_BRACE "}"
+  #|%token LEFT_SQUARE_BRACKET "["
+  #|%token RIGHT_SQUARE_BRACKET "]"
+  #|%token LESS_THAN_SIGN "<"
+  #|%token GREATER_THAN_SIGN ">"
+  #|%token SOLIDUS "/"
+  #|%token DICT_BEGIN "<<"
+  #|%token DICT_END ">>"
+  #|
+  #|
+  #|
+  #|
+  #|// PDF end-of-line markers
+  #|// `\r`, `\r\n`, `\n`, this can appear in  reverse solidus `\`
+  #|// reverse solidus after an end-of-line marker is used for multi-line literal strings, in this case, end-of-line marker is ignored.
+  #|
+  #|// if string literal has end-of-line marker, it would be convert to `\n`.
+  #|
+  #|
+  #|//
+  #|// PDF comment:
+  #|// starting with a percent sign (%) and continuing to the end of the line
+  #|// this comment should outside a PDF string or inside a content stream.
+  #|
+  #|// PDF Objects:
+  #|
+  #|// Null object, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.9
+  #|%token NULL "null"
+  #|
+  #|// Booleans objects, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.2
+  #|%token TRUE "true"
+  #|%token FALSE "false"
+  #|
+  #|// Numeric objects, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.3
+  #|%token<Int> INTEGER
+  #|
+  #|%token<Double> REAL 
+  #|
+  #|// String objects, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.4
+  #|//
+  #|// here we parse `Literal String` and `Hexadecimal String` into a unified representation as STRING token
+  #|//
+  #|%token<Bytes> STRING 
+  #|
+  #|// Name objects, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.5
+  #|// 
+  #|// here is different from the official PDF specification:
+  #|// warning!
+  #|//
+  #|// this NAME token contains the leading solidus (/) character
+  #|%token<Bytes> NAME
+  #|
+  #|// Indirect Object, see more details in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.10
+  #|%token<INDIRECT> INDIRECT
+  #|
+  #|// Array objects, Dictionary objects and Stream objects aren't terminal symbols.
+  #|
+  #|%token<Bytes> STREAM_BYTES 
+  #|
+  #|%nonassoc STREAM_BYTES
+  #|
+  #|
+  #|// here define an EOF token to mark the end of input
+  #|%token EOF
+  #|
+  #|%% 
+  #|// moonyacc entry point must be declared using `%start <symbol_name>` directive
+  #|// here is the definition of the entry point symbol
+  #|parse -> PDF_Obj :  
+  #|  |  PDF_Obj EOF { $1 }
+  #|;
+  #|
+  #|
