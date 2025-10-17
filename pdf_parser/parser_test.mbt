@@ -21,7 +21,7 @@ test "parse simple PDF" {
           "bytes_offset": 9,
           "object_num": 1,
           "generation_num": 0,
-          "obj_bytes": "true\\n",
+          "obj_bytes": "\\ntrue\\n",
         },
       ],
       "xref_table": {
@@ -43,25 +43,25 @@ test "parse simple PDF" {
     "bytes_offset": 9,
     "object_num": 1,
     "generation_num": 0,
-    "obj_bytes": "true\\n",
+    "obj_bytes": "\\ntrue\\n",
   })
   let bytes = obj.obj_bytes
-  inspect(@helper.ascii_string_of_bytesview(bytes), content="true\\n")
+  inspect(@helper.ascii_string_of_bytesview(bytes), content="\\ntrue\\n")
   inspect(
     @helper.ascii_string_of_bytesview(bytes.to_bytes()),
-    content="true\\n",
+    content="\\ntrue\\n",
   )
   inspect(
     bytes,
     content=(
-      #|b"true\x0a"
+      #|b"\x0atrue\x0a"
     ),
   )
   let tokens = @pdf_object_parser.tokenize(bytes.to_bytes())
   inspect(tokens.length(), content="2")
   inspect(
     tokens,
-    content="[(TRUE, {row: 0, col: 0}, {row: 0, col: 4}), (EOF, {row: 1, col: 0}, {row: 1, col: 0})]",
+    content="[(TRUE, {row: 1, col: 0}, {row: 1, col: 4}), (EOF, {row: 2, col: 0}, {row: 2, col: 0})]",
   )
   let result = @pdf_object_parser.parse(tokens)
   @json.inspect(result, content=["Boolean", true])

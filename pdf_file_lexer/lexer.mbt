@@ -52,16 +52,15 @@ pub fn tokenize_body(
   let mut rest = input
   let body_buffer = []
   for {
+    // in `ISO 32000-2:2020 (PDF 2.0)`, section 7.3.10
+    // 
+    // The definition of and indirect object in a PDF file **shall** consist of its object number
+    // and generation number(separated by white-space), followed by the value of the object bracketed
+    // between the keywords `obj` and `endobj`
+    //
     lexmatch rest with longest {
       (
-        (
-          ("\d+" as obj_num)
-          "[ ]+"
-          ("\d+" as gen_num)
-          "[ ]+"
-          "obj"
-          "(\r\n)|\r|\n"
-        ) as header,
+        (("\d+" as obj_num) "[ ]+" ("\d+" as gen_num) "[ ]+" "obj") as header,
         rest_after_header
       ) =>
         match rest_after_header.find(EndObj) {
@@ -90,7 +89,7 @@ pub fn tokenize_body(
   }
   LexResult::{
     value: Body::from(body_buffer),
-    start_bytes_offset: offset,
+    start_bytes_offset,
     end_bytes_offset: offset,
     rest,
   }
