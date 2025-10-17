@@ -12,6 +12,28 @@ fn string_of_pdf_object(obj : @pdf.Object) -> String {
 }
 
 ///|
+test {
+  let s = b"[[] [13] [[[2323] 32] 232]]"
+  let tokens = tokenize(s)
+  let obj = parse(tokens)
+  inspect(string_of_pdf_object(obj), content="[[] [13] [[[2323] 32] 232]]")
+  @json.inspect(obj, content=[
+    "Array",
+    [
+      ["Array", []],
+      ["Array", [["Integer", 13]]],
+      [
+        "Array",
+        [
+          ["Array", [["Array", [["Integer", 2323]]], ["Integer", 32]]],
+          ["Integer", 232],
+        ],
+      ],
+    ],
+  ])
+}
+
+///|
 test "basic integer array" {
   let s = b"[123 323 434]"
   let tokens = tokenize(s)
