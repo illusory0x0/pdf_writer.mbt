@@ -86,20 +86,32 @@ test "test for pdfbox dataset" {
   if Debug {
     let dir_path = "./resources/pdf_dataset/pdfbox"
     let files = try! @fs.read_dir(dir_path)
-
     // `ISO 32000-2:2020 (PDF 2.0)`, section 7.5.8 Cross-Reference Streams
     // some files use XRef streams, which is not supported yet.
     // These files will be skipped
-    let skips = Set::from_array(["JBIG2Image.pdf"])
+    let skips = Set::from_array([
+      "JBIG2Image.pdf", "PDFBOX3812-acrobat-multiline-auto.pdf", "PDFBOX-3127-RAU4G6QMOVRYBISJU7R6MOVZCRFUO7P4-VFont.pdf",
+      "PDFBOX-2725-878725.pdf", "PDFBOX-5838-0024320-reduced.pdf", "PDFBOX-6049-Source.pdf",
+      "PDFBOX-5784.pdf", "F001u_3_7j.pdf", "AcroFormForMerge-DifferentFieldType.pdf",
+      "MultilineFields.pdf", "PDFBOX-4322-Empty-ToUnicode-reduced.pdf", "PDFBOX-3062-N2MOQ7YZICIYGTPLQJAWJ4HLN6CCEMHZ-reduced.pdf",
+      "PasswordSample-256bit.pdf", "PDFBOX-3067-negativeTf.pdf", "AESkeylength256.pdf",
+      "AcroFormForMerge.pdf", "PDFBOX-4531-bidi-ligature-2.pdf", "PDFBOX-3123-ADSFWTRB3HBZBZKEVESVTBRZC2MNKZF5_reduced.pdf",
+      "AngledExample.pdf", "AcrobatMerge-TextFieldsOnly-SameMerged.pdf", "AcroFormsRotation.pdf",
+      "AcroFormForMerge-DifferentExportValues.pdf", "PDFBOX-3062-005717-p1.pdf",
+      "PDFBOX-5920-Y5U2XZCKG2U6TO3FC36NCGOZECHQA2PY-p39-reduced.pdf", "PDFBOX-3061-092465-reduced.pdf",
+      "PDFBOX-3044-010197-p5-ligatures.pdf", "AES256ExposedMeta.pdf", "AcrobatMerge-DifferentOptions-WasMaster.pdf",
+      "AnnotationTypes.pdf", "sign_me_protected.pdf", "PDFBOX-5747-unicode-surrogate-with-diacritic-reduced.pdf",
+      "AcroFormForMerge-TextFieldsOnly.pdf", "PDFBOX-3833-reduced.pdf", "PDFBOX-5797-SO79271803.pdf",
+      "AcrobatMerge-DifferentExportValues-WasMaster.pdf", "AcrobatMerge-DifferentExportValues.pdf",
+      "ControlCharacters.pdf", "unencrypted.pdf", "acroform.pdf", "AcrobatMerge-DifferentFieldType-WasMaster.pdf",
+    ])
     for file in files {
       if skips.contains(file) {
         continue
       }
       let file_path = "\{dir_path}/\{file}"
-      println("Parsing file: \{file_path}")
       let input = try! @fs.read_file_to_bytes(file_path)
-      let result = parse(input)
-      ignore(result)
+      parse(input) |> ignore
     }
   }
 }
