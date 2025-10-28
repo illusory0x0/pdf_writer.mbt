@@ -1,4 +1,5 @@
 ///|
+/// PDF file withtout parsed objects, only lexed structures and bytes
 pub(all) struct File {
   header : Header
   body : Body
