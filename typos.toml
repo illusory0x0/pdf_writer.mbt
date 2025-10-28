@@ -1,5 +1,5 @@
 [files]
-extend-exclude = ["types/__snapshot__/ocaml.pdf.bytes"]
+extend-exclude = ["types/__snapshot__/ocaml.pdf.bytes","resources"]
 
 [default.extend-words]
 Flate = "Flate"
