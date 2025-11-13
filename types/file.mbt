@@ -79,7 +79,7 @@ fn write_pdf_header(pdf : File, buf : @fmt.Memory, start : Int) -> Int {
     //
     offset += @fmt.format_write(
       "%{}\n",
-      [@fmt.big_endian(0x80818283)],
+      [@fmt.BigEndian(0x80818283)],
       buf,
       offset,
     )
@@ -141,7 +141,7 @@ fn count_pdf_obj(obj : Object, n : Int) -> Int {
 fn write_pdf_xref(xref_offset : Int, buf : @fmt.Memory, start : Int) -> Int {
   try! @fmt.format_write(
     b"{} 00000 n\r\n",
-    [@padding.Left(xref_offset, width=10, padding=b'0')],
+    [@fmt.Left(xref_offset, width=10, padding=b'0')],
     buf,
     start,
   )

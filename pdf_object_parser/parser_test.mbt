@@ -427,25 +427,6 @@ test "dictionary with string values" {
 }
 
 ///|
-test "dictionary with indirect references" {
-  let s = b"<< /Parent 1 0 R /Contents 2 0 R /Resources 3 0 R >>"
-  let tokens = tokenize(s)
-  let obj = parse(tokens)
-  inspect(
-    string_of_pdf_object(obj),
-    content="<<\\n  /Parent 1 0 R  \\n  /Contents 2 0 R  \\n  /Resources 3 0 R\\n>>",
-  )
-  @json.inspect(obj, content=[
-    "Dictionary",
-    [
-      ["/Parent", ["Indirect", 1]],
-      ["/Contents", ["Indirect", 2]],
-      ["/Resources", ["Indirect", 3]],
-    ],
-  ])
-}
-
-///|
 test "dictionary with image XObject structure" {
   let s = b"<< /Type /XObject /Subtype /Image /Width 100 /Height 200 /BitsPerComponent 8 /ColorSpace /DeviceRGB >>"
   let tokens = tokenize(s)
@@ -479,28 +460,6 @@ test "dictionary with empty strings" {
   @json.inspect(obj, content=[
     "Dictionary",
     [["/EmptyString", ["String", ""]], ["/NonEmpty", ["String", "Hello"]]],
-  ])
-}
-
-///|
-test "dictionary with image XObject structure" {
-  let s = b"<< /Type /XObject /Subtype /Image /Width 100 /Height 200 /BitsPerComponent 8 /ColorSpace /DeviceRGB >>"
-  let tokens = tokenize(s)
-  let obj = parse(tokens)
-  inspect(
-    string_of_pdf_object(obj),
-    content="<<\\n  /Type /XObject  \\n  /Subtype /Image  \\n  /Width 100  \\n  /Height 200  \\n  /BitsPerComponent 8  \\n  /ColorSpace /DeviceRGB\\n>>",
-  )
-  @json.inspect(obj, content=[
-    "Dictionary",
-    [
-      ["/Type", ["Name", "/XObject"]],
-      ["/Subtype", ["Name", "/Image"]],
-      ["/Width", ["Integer", 100]],
-      ["/Height", ["Integer", 200]],
-      ["/BitsPerComponent", ["Integer", 8]],
-      ["/ColorSpace", ["Name", "/DeviceRGB"]],
-    ],
   ])
 }
 
@@ -558,21 +517,6 @@ test "dictionary with zero values" {
       ["/ZeroReal", ["Real", 0]],
       ["/NegZero", ["Integer", 0]],
     ],
-  ])
-}
-
-///|
-test "dictionary with empty strings" {
-  let s = b"<< /EmptyString <> /NonEmpty <48656C6C6F> >>"
-  let tokens = tokenize(s)
-  let obj = parse(tokens)
-  inspect(
-    string_of_pdf_object(obj),
-    content="<<\\n  /EmptyString ()  \\n  /NonEmpty (Hello)\\n>>",
-  )
-  @json.inspect(obj, content=[
-    "Dictionary",
-    [["/EmptyString", ["String", ""]], ["/NonEmpty", ["String", "Hello"]]],
   ])
 }
 

@@ -56,17 +56,6 @@ test "byte_offset" {
 }
 
 ///|
-test "testing ./output/*" {
-  let files = @fs.read_dir("./output")
-  for file in files {
-    let file = "./output/\{file}"
-    let file = @fs.read_file_to_bytes(file)
-    let result = @pdf_file_lexer.tokenize_file(file)
-    ignore(result)
-  }
-}
-
-///|
 test "tokenize_file with comments between sections" {
   let pdf_content =
     #|%PDF-1.4

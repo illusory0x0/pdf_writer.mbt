@@ -2,13 +2,13 @@
 package "illusory0x0/pdf/mem_helper"
 
 import(
-  "illusory0x0/fmt/types"
+  "illusory0x0/pdf/fmt"
 )
 
 // Values
-fn bytes_of_memory(@types.Memory, Int) -> Bytes
+fn bytes_of_memory(@fmt.Memory, Int) -> Bytes
 
-fn string_of_memory(@types.Memory, Int) -> String
+fn string_of_memory(@fmt.Memory, Int) -> String
 
 // Errors
 

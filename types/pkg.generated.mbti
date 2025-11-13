@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "illusory0x0/pdf/types"
 
+import(
+  "illusory0x0/pdf/fmt"
+)
+
 // Values
 
 // Errors
@@ -12,7 +16,7 @@ fn ContentStream::inner(Self) -> Array[GraphicOperator]
 fn ContentStream::iter(Self) -> Iter[GraphicOperator]
 fn ContentStream::to_stream(Self) -> Stream
 fn ContentStream::to_stream_object(Self) -> Object
-impl @illusory0x0/fmt/types.Format for ContentStream
+impl @fmt.Format for ContentStream
 impl ToJson for ContentStream
 
 pub(all) struct File {
@@ -21,7 +25,7 @@ pub(all) struct File {
   objects : Array[Object]
   trailer : Object
 }
-impl @illusory0x0/fmt/types.Format for File
+impl @fmt.Format for File
 impl ToJson for File
 
 pub(all) enum GraphicOperator {
@@ -101,7 +105,7 @@ pub(all) enum GraphicOperator {
   Op_Unknown(Bytes)
   Op_Comment(Bytes)
 }
-impl @illusory0x0/fmt/types.Format for GraphicOperator
+impl @fmt.Format for GraphicOperator
 impl ToJson for GraphicOperator
 
 pub(all) enum Object {
@@ -116,7 +120,7 @@ pub(all) enum Object {
   Stream(Object, Stream)
   Indirect(Int)
 }
-impl @illusory0x0/fmt/types.Format for Object
+impl @fmt.Format for Object
 impl ToJson for Object
 
 pub(all) enum StandardFont {

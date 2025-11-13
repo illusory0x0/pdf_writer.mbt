@@ -1,5 +1,6 @@
 {
   "import": [
+    "illusory0x0/pdf/fmt",
     "illusory0x0/lexer/lexer_bytes",
     {
       "path": "illusory0x0/pdf/types",
@@ -8,16 +9,15 @@
     "illusory0x0/pdf/helper"
   ],
   "test-import": [
-    "illusory0x0/fmt",
-    "illusory0x0/fmt/types",
     { "path": "illusory0x0/pdf/types", "alias": "pdf" }
   ],
-  "warn-list": "-1-2-3-4-6-7",
-  "pre-build": [
-    {
-      "input": "../codegen/build.mbt",
-      "command": "moon run --target js -C codegen codegen/build.mbt",
-      "output": ["parser.mbty", "parser.mbt"]
-    }
-  ]
+  "warn-list": "-1-2-3-4-6-7-29",
+  // "pre-build": [
+  //   {
+  //     "input": "../codegen/build.mbt",
+  //     "command": "moon run --target js -C codegen codegen/build.mbt",
+  //     "output": ["parser.mbty", "parser.mbt"]
+  //   }
+  // ]
+
 }
