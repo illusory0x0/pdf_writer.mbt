@@ -179,7 +179,7 @@ pub impl @fmt.Format for Object with write(
         let mut offset = start
         offset += @fmt.write(dict, buffer, offset)
         offset += @fmt.write(b"\nstream\n", buffer, offset)
-        offset += @fmt.write(data.inner(), buffer, offset)
+        offset += @fmt.write(data.0, buffer, offset)
         offset += @fmt.write(b"\nendstream", buffer, offset)
         offset - start
       }
@@ -229,7 +229,7 @@ pub impl @fmt.Format for Object with count(value : Object) -> Int {
       }
     Stream(dict, data) =>
       // dict + "\nstream\n" + data + "\nendstream"
-      @fmt.count(dict) + 9 + data.inner().length() + 10
+      @fmt.count(dict) + 9 + data.0.length() + 10
     Indirect(n) => @fmt.count(n) + 4 // number + " 0 R"
   }
 }

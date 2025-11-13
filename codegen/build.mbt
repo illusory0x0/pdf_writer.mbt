@@ -84,10 +84,10 @@ fn main {
 extern "js" fn exec(command : String) -> Unit = "(command) => require('child_process').execSync(command)"
 
 ///|
-fnalias @edsl_parser.rule
+using @edsl_parser {rule}
 
 ///|
-typealias @edsl_parser.NonTerminal
+using @edsl_parser {type NonTerminal}
 
 ///|
 const TokenDecl =

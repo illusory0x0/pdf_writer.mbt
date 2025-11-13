@@ -11,7 +11,7 @@
 /// terminal symbols
 /// 
 ///
-typealias @pdf.Object
+using @pdf {type Object}
 
 ///|
 /// Terminal symbol: Left parenthesis '('
@@ -107,7 +107,7 @@ pub typealias Object as PDF_Array
 pub typealias Object as PDF_Dict
 
 ///|
-pub typealias Array[(NAME, Object)] as DictEntries
+pub type DictEntries = Array[(NAME, Object)]
 
 ///|
 pub typealias Object as PDF_Obj
@@ -119,4 +119,4 @@ pub typealias Bytes as STREAM_BYTES
 pub typealias PDF_Obj as PDF_Stream
 
 ///|
-pub typealias Array[Object] as PDF_ArrayEntries
+pub type PDF_ArrayEntries = Array[Object]

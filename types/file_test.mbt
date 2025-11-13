@@ -266,7 +266,7 @@ test {
 }
 
 ///|
-test (t : @test.T) {
+test (t : @test.Test) {
   let buffer = @fmt.Memory::make(4096, Byte::default())
   let buf = buffer
   let tm : @pdf.TransformMatrix = @pdf.TransformMatrix::{
@@ -346,7 +346,7 @@ test (t : @test.T) {
 }
 
 ///|
-test "image" (t : @test.T) {
+test "image" (t : @test.Test) {
   let buffer = @fmt.Memory::make(1_000_000, Byte::default())
   let buf = buffer
   let times = 28.0
