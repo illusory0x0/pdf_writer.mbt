@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "deps": {
     "moonbitlang/x": "0.4.34",
-    "illusory0x0/lexer": "0.1.0",
     "moonbitlang/yacc": "0.7.2"
   },
   "bin-deps": {

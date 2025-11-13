@@ -19,8 +19,8 @@ pub fn tokenize_header(
       ("%PDF-" ("\d+" as major) "." ("\d+" as minor) "(\r\n)|\r|\n") as all,
       rest
     ) => {
-      let major = try! @lexer_bytes.tokenize_int(major)
-      let minor = try! @lexer_bytes.tokenize_int(minor)
+      let (major,_) = try! @lexer_bytes.tokenize_int(major)
+      let (minor,_) = try! @lexer_bytes.tokenize_int(minor)
       LexResult::{
         value: Header::{ major, minor },
         start_bytes_offset,
@@ -66,8 +66,8 @@ pub fn tokenize_body(
         match rest_after_header.find(EndObj) {
           Some(endobj_start_idx) => {
             let obj_bytes = rest_after_header[0:endobj_start_idx]
-            let object_num = try! @lexer_bytes.tokenize_int(obj_num)
-            let generation_num = try! @lexer_bytes.tokenize_int(gen_num)
+            let (object_num,_) = try! @lexer_bytes.tokenize_int(obj_num)
+            let (generation_num,_) = try! @lexer_bytes.tokenize_int(gen_num)
             let obj = Obj::{
               start_bytes_offset: offset,
               object_num,
@@ -118,8 +118,8 @@ pub fn tokenize_xref_entry(
       ) as all,
       rest
     ) => {
-      let bytes_offset = try! @lexer_bytes.tokenize_int(offset_str)
-      let generation_num = try! @lexer_bytes.tokenize_int(gen_str)
+      let (bytes_offset,_) = try! @lexer_bytes.tokenize_int(offset_str)
+      let (generation_num,_) = try! @lexer_bytes.tokenize_int(gen_str)
       let state = EntryState::InUse
       LexResult::{
         value: XRefEntry::{ bytes_offset, generation_num, state },
@@ -140,8 +140,8 @@ pub fn tokenize_xref_entry(
       ) as all,
       rest
     ) => {
-      let bytes_offset = try! @lexer_bytes.tokenize_int(offset_str)
-      let generation_num = try! @lexer_bytes.tokenize_int(gen_str)
+      let (bytes_offset,_) = try! @lexer_bytes.tokenize_int(offset_str)
+      let (generation_num,_) = try! @lexer_bytes.tokenize_int(gen_str)
       let state = EntryState::Free
       LexResult::{
         value: XRefEntry::{ bytes_offset, generation_num, state },
@@ -174,8 +174,8 @@ pub fn tokenize_xref_table(
       ) as header,
       rest
     ) => {
-      let start_num = try! @lexer_bytes.tokenize_int(start_num_str)
-      let count = try! @lexer_bytes.tokenize_int(count_str)
+      let (start_num,_) = try! @lexer_bytes.tokenize_int(start_num_str)
+      let (count,_) = try! @lexer_bytes.tokenize_int(count_str)
       let mut current_rest = rest
       let mut current_offset = start_bytes_offset + header.length()
       let entries = []
@@ -281,7 +281,7 @@ pub fn tokenize_startxref(
       ("startxref" "(\r\n)|\r|\n" ("\d+" as offset_str) "(\r\n)|\r|\n" "%%EOF") as all,
       rest
     ) => {
-      let xref_offset = try! @lexer_bytes.tokenize_int(offset_str)
+      let (xref_offset,_) = try! @lexer_bytes.tokenize_int(offset_str)
       LexResult::{
         value: xref_offset,
         start_bytes_offset,

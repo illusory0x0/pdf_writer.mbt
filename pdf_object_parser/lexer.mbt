@@ -89,14 +89,14 @@ pub fn tokenize(input : BytesView) -> Array[(Token, Position, Position)] {
         "-?(([0-9]+\.[0-9]*|\.[0-9]+)([eE][+\-]?[0-9]+)?|[0-9]+[eE][+\-]?[0-9]+)" as s,
         rest
       ) => {
-        let value = try! @lexer_bytes.tokenize_double(s)
+        let (value,_) = try! @lexer_bytes.tokenize_double(s)
         push(REAL(value), s.length())
         input = rest
       }
 
       // Integers (positive, negative, decimal, octal, hex)
       ("-?([1-9][0-9]*|0[xX][0-9a-fA-F]+|0[0-7]*)" as s, rest) => {
-        let value = try! @lexer_bytes.tokenize_int(s)
+        let (value,_) = try! @lexer_bytes.tokenize_int(s)
         push(INTEGER(value), s.length())
         input = rest
       }
