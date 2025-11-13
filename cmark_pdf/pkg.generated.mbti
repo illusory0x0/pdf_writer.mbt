@@ -30,6 +30,8 @@ fn define_xobject(xobjs~ : Array[(Bytes, @pdf.Object)]) -> (Bytes, @pdf.Object)
 
 fn make_pdf(@pdf.Object, Array[@pdf.Object]) -> @pdf.File
 
+fn markdown_to_bytes(String) -> Bytes
+
 fn string_of_memory(@fmt.Memory, Int) -> String
 
 // Errors
@@ -90,6 +92,7 @@ pub(all) struct Doc(Array[Block])
 fn Doc::from_cmark(@cmark.Doc) -> Self
 #deprecated
 fn Doc::inner(Self) -> Array[Block]
+fn Doc::to_flatheadings(Self) -> Array[FlatHeading]
 impl Show for Doc
 impl ToJson for Doc
 
