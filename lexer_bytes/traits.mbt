@@ -54,9 +54,7 @@ pub impl FromBytesView for Double with from(str) {
 }
 
 ///|
-pub fn[A : FromBytesView] tokenize(
-  str : BytesView,
-) -> (A, Int) raise LexError {
+pub fn[A : FromBytesView] tokenize(str : BytesView) -> (A, Int) raise LexError {
   A::from(str)
 }
 
