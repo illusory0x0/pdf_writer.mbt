@@ -4,7 +4,8 @@
   "deps": {
     "moonbitlang/x": "0.4.34",
     "illusory0x0/lexer": "0.1.0",
-    "illusory0x0/fmt": "0.4.0"
+    "illusory0x0/fmt": "0.4.0",
+    "moonbitlang/yacc": "0.7.2"
   },
   "bin-deps": {
     "moonbitlang/yacc": "0.7.2"
@@ -14,5 +15,7 @@
   "license": "Apache-2.0",
   "keywords": [],
   "description": "A MoonBit library for generating standards-compliant PDF documents with comprehensive support for PDF objects, graphics operators.",
-  "exclude": ["resources/pdf_dataset"]
+  "exclude": [
+    "resources/pdf_dataset"
+  ]
 }
