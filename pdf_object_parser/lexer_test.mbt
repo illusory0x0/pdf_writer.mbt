@@ -1,5 +1,5 @@
 ///|
-fnalias @helper.ascii_string_of_bytesview
+using @helper {ascii_string_of_bytesview}
 
 ///|
 test "PDF comment lexing with different end-of-line markers" {

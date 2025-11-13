@@ -44,10 +44,10 @@ priv suberror YYObj_DictEntries DictEntries
 priv suberror YYObj_PDF_ArrayEntries PDF_ArrayEntries
 
 ///|
-typealias (YYSymbol) -> YYDecision as YYState
+type YYState = (YYSymbol) -> YYDecision
 
 ///|
-typealias (Position, ArrayView[(YYObj, Position, Position)]) -> YYObj as YYAction
+type YYAction = (Position, ArrayView[(YYObj, Position, Position)]) -> YYObj
 
 ///|
 priv enum YYDecision {

@@ -5,7 +5,7 @@ pub struct Position {
 } derive(Show, ToJson, @json.FromJson)
 
 ///|
-fnalias @helper.ascii_string_of_bytesview
+using @helper {ascii_string_of_bytesview}
 
 ///|
 pub impl Show for Token with output(self, logger) {
