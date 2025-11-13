@@ -2,7 +2,7 @@
 fn Doc::remove_contiguous_blanklines(self : Doc) -> Doc {
   let result = []
   let mut last_was_blankline = false
-  for block in self.inner() {
+  for block in self.0 {
     if block is BlankLine {
       if !last_was_blankline {
         result.push(block)
@@ -34,7 +34,7 @@ fn Doc::to_flatheadings(self : Doc) -> Array[FlatHeading] {
   let mut h2 = 0
   let mut h3 = 0
   let result = []
-  for block in self.inner() {
+  for block in self.0 {
     if block is Heading(level~, text~) {
       match level {
         1 => {
@@ -66,7 +66,7 @@ fn Doc::to_flatheadings(self : Doc) -> Array[FlatHeading] {
 ///|
 fn Doc::to_graphic_operators(self : Doc) -> ContentStream {
   let canvas = Canvas::new()
-  for block in self.inner() {
+  for block in self.0 {
     Block::render_to_canvas(block, canvas)
   }
   canvas.to_content()
@@ -255,7 +255,7 @@ fn Doc::split(
   let result = []
   let mut current_height = 0.0
   let mut current_blocks = []
-  for block in self.inner() {
+  for block in self.0 {
     // Calculate the height that this block would add using the helper function
     let block_height = calculate_block_height(block, indent_level)
 
