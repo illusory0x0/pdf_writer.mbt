@@ -73,7 +73,7 @@ fn pdf_bytes_of_string(non_escape : String) -> Bytes {
 }
 
 ///|
-fn markdown_to_bytes(md_str : String) -> Bytes {
+pub fn markdown_to_bytes(md_str : String) -> Bytes {
   let tm : @pdf.TransformMatrix = @pdf.TransformMatrix::{
     a: 1,
     b: 0,

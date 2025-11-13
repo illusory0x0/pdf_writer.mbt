@@ -29,7 +29,7 @@ pub fn Doc::from_cmark(doc : @cmark.Doc) -> Doc {
 }
 
 ///|
-fn Doc::to_flatheadings(self : Doc) -> Array[FlatHeading] {
+pub fn Doc::to_flatheadings(self : Doc) -> Array[FlatHeading] {
   let mut h1 = 0
   let mut h2 = 0
   let mut h3 = 0

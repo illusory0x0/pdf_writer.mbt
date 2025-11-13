@@ -1,1 +1,1 @@
-README/README.mbt.md
+README/README.md
