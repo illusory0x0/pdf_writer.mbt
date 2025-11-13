@@ -1,8 +1,0 @@
-{
-  "import": [
-    "moonbitlang/x/fs",
-    "illusory0x0/codegen/edsl_parser",
-    { "path": "illusory0x0/pdf/types", "alias": "pdf" }
-  ],
-  "is-main": true
-}
