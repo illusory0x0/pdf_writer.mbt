@@ -3,7 +3,7 @@
 test "parse simple PDF" {
   // Create a minimal valid PDF content using bytes literal  
   let input = b"%PDF-1.4\n1 0 obj\ntrue\nendobj\nxref\n0 2\n0000000000 65535 f \n0000000009 00000 n\ntrailer\n<</Size 2>>\nstartxref\n40\n%%EOF"
-  let result = parse(input) // Let errors propagate
+  let result = parse_pdf_file(input) // Let errors propagate
   @json.inspect(result, content={
     "major": 1,
     "minor": 4,
@@ -57,13 +57,13 @@ test "parse simple PDF" {
       #|b"\x0atrue\x0a"
     ),
   )
-  let tokens = @pdf_object_parser.tokenize(bytes.to_bytes())
+  let tokens = @pdf.tokenize(bytes.to_bytes())
   inspect(tokens.length(), content="2")
   inspect(
     tokens,
     content="[(TRUE, {row: 1, col: 0}, {row: 1, col: 4}), (EOF, {row: 2, col: 0}, {row: 2, col: 0})]",
   )
-  let result = @pdf_object_parser.parse(tokens)
+  let result = @pdf.parse(tokens)
   @json.inspect(result, content=["Boolean", true])
 }
 
@@ -73,7 +73,7 @@ test {
   let files = input.map(basename => "./output/\{basename}")
   for file in files {
     let input = try! @fs.read_file_to_bytes(file)
-    let result = parse(input)
+    let result = parse_pdf_file(input)
     ignore(result)
   }
 }
@@ -122,7 +122,7 @@ test "test for pdfbox dataset" {
     }
     let file_path = "\{dir_path}/\{file}"
     let input = try! @fs.read_file_to_bytes(file_path)
-    parse(input) |> ignore
+    parse_pdf_file(input) |> ignore
     count = count + 1
   }
   inspect(count, content="81")
@@ -132,6 +132,6 @@ test "test for pdfbox dataset" {
 test {
   let file_path = "./resources/pdf_dataset/pdfbox/eu-001.pdf"
   let input = try! @fs.read_file_to_bytes(file_path)
-  let result = parse(input)
+  let result = parse_pdf_file(input)
   ignore(result)
 }

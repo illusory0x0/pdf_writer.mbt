@@ -11,7 +11,6 @@
 /// terminal symbols
 /// 
 ///
-using @pdf {type Object}
 
 ///|
 /// Terminal symbol: Left parenthesis '('
