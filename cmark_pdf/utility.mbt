@@ -86,11 +86,11 @@ fn markdown_to_bytes(md_str : String) -> Bytes {
   let doc = Doc::from_cmark(cmark_doc)
   let flat_headings = doc.to_flatheadings()
   let table_of_contents : ContentStream = [
-      Op_cm(tm),
-      Op_BT,
-      ..FlatHeading::to_graphic_operators(flat_headings),
-      Op_ET,
-    ]
+    Op_cm(tm),
+    Op_BT,
+    ..FlatHeading::to_graphic_operators(flat_headings),
+    Op_ET,
+  ]
   let trim_doc = doc.remove_contiguous_blanklines()
   let split_doc = trim_doc.split(max_height=660)
   // let split_doc = doc 
@@ -99,11 +99,11 @@ fn markdown_to_bytes(md_str : String) -> Bytes {
   // println    (doc)
   //   }
   let contents : Array[ContentStream] = split_doc.map(doc => [
-      Op_cm(tm),
-      Op_BT,
-      ..doc.to_graphic_operators(),
-      Op_ET,
-    ])
+    Op_cm(tm),
+    Op_BT,
+    ..doc.to_graphic_operators(),
+    Op_ET,
+  ])
   multiple_page_to_bytes([table_of_contents, ..contents])
 }
 

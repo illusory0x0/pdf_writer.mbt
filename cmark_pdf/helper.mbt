@@ -1,7 +1,6 @@
-using @pdf{
-  type Object,
-  type File
-}
+///|
+using @pdf {type Object, type File}
+
 ///|
 /// C language style escaped sequence spec.
 /// 
