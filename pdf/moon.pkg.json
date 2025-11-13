@@ -5,7 +5,6 @@
   ],
   "test-import": [
     "moonbitlang/x/fs",
-    { "path": "illusory0x0/pdf/types", "alias": "pdf" }
   ],
   "warn-list": "-2-6"
   // "pre-build": [
