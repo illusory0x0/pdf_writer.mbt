@@ -1,17 +1,5 @@
 {
-  "import": [
-    "illusory0x0/pdf/fmt",
-    "illusory0x0/pdf/lexer_bytes"
-  ],
-  "test-import": [
-    "moonbitlang/x/fs"
-  ],
+  "import": ["illusory0x0/pdf/fmt", "illusory0x0/pdf/lexer_bytes"],
+  "test-import": ["moonbitlang/x/fs"],
   "warn-list": "-2-6"
-  // "pre-build": [
-  //   {
-  //     "input": "../codegen/build.mbt",
-  //     "command": "moon run --target js -C codegen codegen/build.mbt",
-  //     "output": ["parser.mbty", "parser.mbt"]
-  //   }
-  // ]
 }
