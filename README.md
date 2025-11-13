@@ -1,4 +1,11 @@
-# illusory0x0/pdf 
+# MoonBit PDF library
+
+## Roadmap
+
+- [x] PDF Writer 
+- [ ] PDF Reader currently WIP
+- [x] simple markdown to PDF converter
+
 
 
 # Documentation
