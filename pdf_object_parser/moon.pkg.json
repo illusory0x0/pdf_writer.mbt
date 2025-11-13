@@ -8,10 +8,8 @@
     },
     "illusory0x0/pdf/helper"
   ],
-  "test-import": [
-    { "path": "illusory0x0/pdf/types", "alias": "pdf" }
-  ],
-  "warn-list": "-1-2-3-4-6-7-29",
+  "test-import": [{ "path": "illusory0x0/pdf/types", "alias": "pdf" }],
+  "warn-list": "-1-2-3-4-6-7-29"
   // "pre-build": [
   //   {
   //     "input": "../codegen/build.mbt",
@@ -19,5 +17,4 @@
   //     "output": ["parser.mbty", "parser.mbt"]
   //   }
   // ]
-
 }

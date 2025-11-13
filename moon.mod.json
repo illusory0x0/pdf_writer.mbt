@@ -14,7 +14,5 @@
   "license": "Apache-2.0",
   "keywords": [],
   "description": "A MoonBit library for generating standards-compliant PDF documents with comprehensive support for PDF objects, graphics operators.",
-  "exclude": [
-    "resources/pdf_dataset"
-  ]
+  "exclude": ["resources/pdf_dataset"]
 }
