@@ -2,11 +2,35 @@
 package "illusory0x0/pdf/cmark_pdf"
 
 import(
-  "illusory0x0/pdf/types"
+  "illusory0x0/pdf/fmt"
+  "illusory0x0/pdf/pdf"
   "rami3l/cmark/cmark"
 )
 
 // Values
+fn ascii_string_of_bytesview(BytesView) -> String
+
+fn bytes_of_memory(@fmt.Memory, Int) -> Bytes
+
+fn define_catalog(pages~ : @pdf.Object) -> @pdf.Object
+
+fn define_font_item(name~ : Bytes, font~ : @pdf.Object) -> (Bytes, @pdf.Object)
+
+fn define_fonts(fonts~ : Array[(Bytes, @pdf.Object)]) -> (Bytes, @pdf.Object)
+
+fn define_icc(icc~ : Bytes) -> @pdf.Object
+
+fn define_jpeg_image(image~ : Bytes, width~ : Int, height~ : Int, bpc~ : Int, icc~ : Int) -> @pdf.Object
+
+fn define_page(contents~ : @pdf.Object, parent~ : @pdf.Object, resources~ : Array[(Bytes, @pdf.Object)]) -> @pdf.Object
+
+fn define_pages(pages~ : Array[@pdf.Object]) -> @pdf.Object
+
+fn define_xobject(xobjs~ : Array[(Bytes, @pdf.Object)]) -> (Bytes, @pdf.Object)
+
+fn make_pdf(@pdf.Object, Array[@pdf.Object]) -> @pdf.File
+
+fn string_of_memory(@fmt.Memory, Int) -> String
 
 // Errors
 
@@ -55,8 +79,8 @@ fn Canvas::set_word_spacing(Self, Double) -> Unit
 fn Canvas::show_text(Self, Bytes) -> Unit
 fn Canvas::show_text_next_line(Self, Bytes) -> Unit
 fn Canvas::stroke(Self) -> Unit
-fn Canvas::to_array(Self) -> Array[@types.GraphicOperator]
-fn Canvas::to_content(Self) -> @types.ContentStream
+fn Canvas::to_array(Self) -> Array[@pdf.GraphicOperator]
+fn Canvas::to_content(Self) -> @pdf.ContentStream
 
 type ColorSpaned
 impl Show for ColorSpaned
@@ -97,7 +121,7 @@ impl Show for TokenStyle
 impl ToJson for TokenStyle
 
 // Type aliases
-pub typealias @types.ContentStream as ContentStream
+pub using @pdf {type ContentStream}
 
 // Traits
 
