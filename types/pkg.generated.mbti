@@ -7,11 +7,35 @@ import(
 )
 
 // Values
+fn ascii_string_of_bytesview(BytesView) -> String
+
+fn bytes_of_memory(@fmt.Memory, Int) -> Bytes
+
+fn define_catalog(pages~ : Object) -> Object
+
+fn define_font_item(name~ : Bytes, font~ : Object) -> (Bytes, Object)
+
+fn define_fonts(fonts~ : Array[(Bytes, Object)]) -> (Bytes, Object)
+
+fn define_icc(icc~ : Bytes) -> Object
+
+fn define_jpeg_image(image~ : Bytes, width~ : Int, height~ : Int, bpc~ : Int, icc~ : Int) -> Object
+
+fn define_page(contents~ : Object, parent~ : Object, resources~ : Array[(Bytes, Object)]) -> Object
+
+fn define_pages(pages~ : Array[Object]) -> Object
+
+fn define_xobject(xobjs~ : Array[(Bytes, Object)]) -> (Bytes, Object)
+
+fn make_pdf(Object, Array[Object]) -> File
+
 fn parse(Array[(Token, Position, Position)], initial_pos? : Position) -> Object raise ParseError
 
 fn parse_pdf_file(BytesView) -> File raise
 
 fn skip_comment(BytesView) -> Int
+
+fn string_of_memory(@fmt.Memory, Int) -> String
 
 fn tokenize(BytesView) -> Array[(Token, Position, Position)]
 
