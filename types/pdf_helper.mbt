@@ -1,9 +1,6 @@
 ///|
-pub fn make_pdf(
-  catalog : @pdf.Object,
-  objects : Array[@pdf.Object],
-) -> @pdf.File {
-  @pdf.File::{
+pub fn make_pdf(catalog : Object, objects : Array[Object]) -> File {
+  File::{
     major: 1,
     minor: 4,
     trailer: Dictionary([("/Size", Integer(5)), ("/Root", catalog)]),
@@ -12,22 +9,17 @@ pub fn make_pdf(
 }
 
 ///|
-pub fn define_font_item(
-  name~ : Bytes,
-  font~ : @pdf.Object,
-) -> (Bytes, @pdf.Object) {
+pub fn define_font_item(name~ : Bytes, font~ : Object) -> (Bytes, Object) {
   (name, font)
 }
 
 ///|
-pub fn define_fonts(
-  fonts~ : Array[(Bytes, @pdf.Object)],
-) -> (Bytes, @pdf.Object) {
+pub fn define_fonts(fonts~ : Array[(Bytes, Object)]) -> (Bytes, Object) {
   ("/Font", Dictionary(fonts))
 }
 
 ///|
-pub fn define_pages(pages~ : Array[@pdf.Object]) -> @pdf.Object {
+pub fn define_pages(pages~ : Array[Object]) -> Object {
   Dictionary([
     ("/Type", Name("/Pages")),
     ("/Kids", Array(pages)),
@@ -37,10 +29,10 @@ pub fn define_pages(pages~ : Array[@pdf.Object]) -> @pdf.Object {
 
 ///|
 pub fn define_page(
-  contents~ : @pdf.Object,
-  parent~ : @pdf.Object,
-  resources~ : Array[(Bytes, @pdf.Object)],
-) -> @pdf.Object {
+  contents~ : Object,
+  parent~ : Object,
+  resources~ : Array[(Bytes, Object)],
+) -> Object {
   Dictionary([
     ("/Type", Name("/Page")),
     ("/Contents", contents),
@@ -54,7 +46,7 @@ pub fn define_page(
 }
 
 ///|
-pub fn define_catalog(pages~ : @pdf.Object) -> @pdf.Object {
+pub fn define_catalog(pages~ : Object) -> Object {
   Dictionary([("/Type", Name("/Catalog")), ("/Pages", pages)])
 }
 
@@ -107,10 +99,8 @@ pub fn define_catalog(pages~ : @pdf.Object) -> @pdf.Object {
 ///
 
 ///|
-pub fn define_xobject(
-  xobjs~ : Array[(Bytes, @pdf.Object)],
-) -> (Bytes, @pdf.Object) {
-  ("/XObject", @pdf.Dictionary(xobjs))
+pub fn define_xobject(xobjs~ : Array[(Bytes, Object)]) -> (Bytes, Object) {
+  ("/XObject", Dictionary(xobjs))
 }
 
 ///|
@@ -120,27 +110,27 @@ pub fn define_jpeg_image(
   height~ : Int,
   bpc~ : Int,
   icc~ : Int,
-) -> @pdf.Object {
-  let obj = @pdf.Dictionary([
-    ("/Type", @pdf.Name("/XObject")),
-    ("/Subtype", @pdf.Name("/Image")),
-    ("/Width", @pdf.Integer(width)),
-    ("/Height", @pdf.Integer(height)),
-    ("/ColorSpace", @pdf.Array([@pdf.Name("/ICCBased"), @pdf.Indirect(icc)])),
-    ("/BitsPerComponent", @pdf.Integer(bpc)),
-    ("/Filter", @pdf.Name("/DCTDecode")),
-    ("/Length", @pdf.Integer(image.length())),
+) -> Object {
+  let obj = Dictionary([
+    ("/Type", Name("/XObject")),
+    ("/Subtype", Name("/Image")),
+    ("/Width", Integer(width)),
+    ("/Height", Integer(height)),
+    ("/ColorSpace", Array([Name("/ICCBased"), Indirect(icc)])),
+    ("/BitsPerComponent", Integer(bpc)),
+    ("/Filter", Name("/DCTDecode")),
+    ("/Length", Integer(image.length())),
   ])
-  @pdf.Stream(obj, @pdf.Stream(image))
+  Stream(obj, Stream(image))
 }
 
 ///|
-pub fn define_icc(icc~ : Bytes) -> @pdf.Object {
-  @pdf.Stream(
-    @pdf.Dictionary([
-      ("/Length", @pdf.Integer(icc.length())),
-      ("/N", @pdf.Integer(3)),
-      ("/Range", @pdf.Array([0, 1, 0, 1, 0, 1].map(@pdf.Integer(_)))),
+pub fn define_icc(icc~ : Bytes) -> Object {
+  Stream(
+    Dictionary([
+      ("/Length", Integer(icc.length())),
+      ("/N", Integer(3)),
+      ("/Range", Array([0, 1, 0, 1, 0, 1].map(Integer(_)))),
     ]),
     icc,
   )

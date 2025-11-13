@@ -46,9 +46,9 @@ test "parse simple PDF" {
     "obj_bytes": "\\ntrue\\n",
   })
   let bytes = obj.obj_bytes
-  inspect(@helper.ascii_string_of_bytesview(bytes), content="\\ntrue\\n")
+  inspect(@pdf.ascii_string_of_bytesview(bytes), content="\\ntrue\\n")
   inspect(
-    @helper.ascii_string_of_bytesview(bytes.to_bytes()),
+    @pdf.ascii_string_of_bytesview(bytes.to_bytes()),
     content="\\ntrue\\n",
   )
   inspect(

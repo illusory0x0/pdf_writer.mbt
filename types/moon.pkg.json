@@ -1,14 +1,13 @@
 {
   "import": [
     "illusory0x0/pdf/fmt",
-    "illusory0x0/pdf/mem_helper",
-    "illusory0x0/pdf/lexer_bytes", "illusory0x0/pdf/helper"
+    "illusory0x0/pdf/lexer_bytes"
   ],
   "test-import": [
     "moonbitlang/x/fs",
-    "illusory0x0/pdf/pdf_helper",
     { "path": "illusory0x0/pdf/types", "alias": "pdf" }
-  ]
+  ],
+  "warn-list": "-2-6"
   // "pre-build": [
   //   {
   //     "input": "../codegen/build.mbt",

@@ -8,10 +8,9 @@ pub impl ToJson for GraphicOperator with to_json(self) {
     Op_M(limit) => { "op": "M", "limit": limit }
     Op_d(pattern, phase) => { "op": "d", "pattern": pattern, "phase": phase }
     Op_ri(intent) =>
-      { "op": "ri", "intent": @helper.ascii_string_of_bytesview(intent[:]) }
+      { "op": "ri", "intent": ascii_string_of_bytesview(intent[:]) }
     Op_i(flatness) => { "op": "i", "flatness": flatness }
-    Op_gs(name) =>
-      { "op": "gs", "name": @helper.ascii_string_of_bytesview(name[:]) }
+    Op_gs(name) => { "op": "gs", "name": ascii_string_of_bytesview(name[:]) }
     Op_q => { "op": "q" }
     Op_Q => { "op": "Q" }
     Op_cm(matrix) => { "op": "cm", "matrix": matrix }
@@ -45,28 +44,23 @@ pub impl ToJson for GraphicOperator with to_json(self) {
     Op_Tz(scale) => { "op": "Tz", "scale": scale }
     Op_TL(leading) => { "op": "TL", "leading": leading }
     Op_Tf(font, size) =>
-      {
-        "op": "Tf",
-        "font": @helper.ascii_string_of_bytesview(font[:]),
-        "size": size,
-      }
+      { "op": "Tf", "font": ascii_string_of_bytesview(font[:]), "size": size }
     Op_Tr(mode) => { "op": "Tr", "mode": mode }
     Op_Ts(rise) => { "op": "Ts", "rise": rise }
     Op_Td(x, y) => { "op": "Td", "x": x, "y": y }
     Op_TD(x, y) => { "op": "TD", "x": x, "y": y }
     Op_Tm(matrix) => { "op": "Tm", "matrix": matrix }
     Op_T_star => { "op": "T*" }
-    Op_Tj(text) =>
-      { "op": "Tj", "text": @helper.ascii_string_of_bytesview(text[:]) }
+    Op_Tj(text) => { "op": "Tj", "text": ascii_string_of_bytesview(text[:]) }
     Op_TJ(array) => { "op": "TJ", "array": array }
     Op_single_quote(text) =>
-      { "op": "'", "text": @helper.ascii_string_of_bytesview(text[:]) }
+      { "op": "'", "text": ascii_string_of_bytesview(text[:]) }
     Op_double_quote(w, c, text) =>
       {
         "op": "\"",
         "word_spacing": w,
         "char_spacing": c,
-        "text": @helper.ascii_string_of_bytesview(text[:]),
+        "text": ascii_string_of_bytesview(text[:]),
       }
     Op_d0(x, y) => { "op": "d0", "x": x, "y": y }
     Op_d1(x, y, llx, lly, urx, ury) =>
@@ -79,10 +73,8 @@ pub impl ToJson for GraphicOperator with to_json(self) {
         "urx": urx,
         "ury": ury,
       }
-    Op_CS(name) =>
-      { "op": "CS", "name": @helper.ascii_string_of_bytesview(name[:]) }
-    Op_cs(name) =>
-      { "op": "cs", "name": @helper.ascii_string_of_bytesview(name[:]) }
+    Op_CS(name) => { "op": "CS", "name": ascii_string_of_bytesview(name[:]) }
+    Op_cs(name) => { "op": "cs", "name": ascii_string_of_bytesview(name[:]) }
     Op_SC(values) => { "op": "SC", "values": values }
     Op_sc(values) => { "op": "sc", "values": values }
     Op_SCN(values) => { "op": "SCN", "values": values }
@@ -90,13 +82,13 @@ pub impl ToJson for GraphicOperator with to_json(self) {
     Op_SCNName(name, values) =>
       {
         "op": "SCN",
-        "name": @helper.ascii_string_of_bytesview(name[:]),
+        "name": ascii_string_of_bytesview(name[:]),
         "values": values,
       }
     Op_scnName(name, values) =>
       {
         "op": "scn",
-        "name": @helper.ascii_string_of_bytesview(name[:]),
+        "name": ascii_string_of_bytesview(name[:]),
         "values": values,
       }
     Op_G(gray) => { "op": "G", "gray": gray }
@@ -105,39 +97,35 @@ pub impl ToJson for GraphicOperator with to_json(self) {
     Op_rg(r, g, b) => { "op": "rg", "r": r, "g": g, "b": b }
     Op_K(c, m, y, k) => { "op": "K", "c": c, "m": m, "y": y, "k": k }
     Op_k(c, m, y, k) => { "op": "k", "c": c, "m": m, "y": y, "k": k }
-    Op_sh(name) =>
-      { "op": "sh", "name": @helper.ascii_string_of_bytesview(name[:]) }
+    Op_sh(name) => { "op": "sh", "name": ascii_string_of_bytesview(name[:]) }
     InlineImage(dict, data) =>
       {
         "op": "BI/ID/EI",
         "dict": dict,
-        "data": @helper.ascii_string_of_bytesview(data[:]),
+        "data": ascii_string_of_bytesview(data[:]),
       }
-    Op_Do(name) =>
-      { "op": "Do", "name": @helper.ascii_string_of_bytesview(name[:]) }
-    Op_MP(tag) =>
-      { "op": "MP", "tag": @helper.ascii_string_of_bytesview(tag[:]) }
+    Op_Do(name) => { "op": "Do", "name": ascii_string_of_bytesview(name[:]) }
+    Op_MP(tag) => { "op": "MP", "tag": ascii_string_of_bytesview(tag[:]) }
     Op_DP(tag, properties) =>
       {
         "op": "DP",
-        "tag": @helper.ascii_string_of_bytesview(tag[:]),
+        "tag": ascii_string_of_bytesview(tag[:]),
         "properties": properties,
       }
-    Op_BMC(tag) =>
-      { "op": "BMC", "tag": @helper.ascii_string_of_bytesview(tag[:]) }
+    Op_BMC(tag) => { "op": "BMC", "tag": ascii_string_of_bytesview(tag[:]) }
     Op_BDC(tag, properties) =>
       {
         "op": "BDC",
-        "tag": @helper.ascii_string_of_bytesview(tag[:]),
+        "tag": ascii_string_of_bytesview(tag[:]),
         "properties": properties,
       }
     Op_EMC => { "op": "EMC" }
     Op_BX => { "op": "BX" }
     OP_EX => { "op": "EX" }
     Op_Unknown(data) =>
-      { "op": "Unknown", "data": @helper.ascii_string_of_bytesview(data[:]) }
+      { "op": "Unknown", "data": ascii_string_of_bytesview(data[:]) }
     Op_Comment(text) =>
-      { "op": "Comment", "text": @helper.ascii_string_of_bytesview(text[:]) }
+      { "op": "Comment", "text": ascii_string_of_bytesview(text[:]) }
   }
 }
 
@@ -198,7 +186,7 @@ pub impl ToJson for LexFile with to_json(self) {
     "header": self.header,
     "body": self.body,
     "xref_table": self.xref_table,
-    "trailer": @helper.ascii_string_of_bytesview(self.trailer),
+    "trailer": ascii_string_of_bytesview(self.trailer),
     "start_xref_pos": self.start_xref_bytes_offset,
   }
 }
@@ -214,7 +202,7 @@ pub impl ToJson for LexObj with to_json(self) {
     "bytes_offset": self.start_bytes_offset,
     "object_num": self.object_num,
     "generation_num": self.generation_num,
-    "obj_bytes": @helper.ascii_string_of_bytesview(self.obj_bytes),
+    "obj_bytes": ascii_string_of_bytesview(self.obj_bytes),
   }
 }
 
@@ -284,6 +272,6 @@ pub impl[T : ToJson] ToJson for LexResult[T] with to_json(self) {
     "value": self.value,
     "start_bytes_offset": self.start_bytes_offset,
     "end_bytes_offset": self.end_bytes_offset,
-    "rest": @helper.ascii_string_of_bytesview(self.rest),
+    "rest": ascii_string_of_bytesview(self.rest),
   }
 }

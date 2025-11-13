@@ -22,7 +22,7 @@ pub impl @fmt.Format for ContentStream with count(xs) {
 pub fn ContentStream::to_stream(self : Self) -> Stream {
   let buffer = @fmt.Memory::make(@fmt.count(self), 0)
   let offset = @fmt.write(self, buffer, 0)
-  let bytes = @mem_helper.bytes_of_memory(buffer, offset)
+  let bytes = bytes_of_memory(buffer, offset)
   bytes
 }
 

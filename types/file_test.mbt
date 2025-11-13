@@ -4,10 +4,10 @@ test "test write to file" {
   let buf = buffer
 
   // Use define_pages helper function
-  let pages = @pdf_helper.define_pages(pages=[@pdf.Indirect(4)])
+  let pages = define_pages(pages=[@pdf.Indirect(4)])
   let offset = @fmt.write(pages, buf, 0)
   inspect(
-    @mem_helper.string_of_memory(buffer, offset),
+    string_of_memory(buffer, offset),
     content=(
       #|<<
       #|  /Type /Pages  
@@ -31,7 +31,7 @@ test "test write to file" {
   let op5 = @pdf.Op_ET
   let content : @pdf.ContentStream = [op1, op2, op3, op4, op5]
   let offset = @fmt.write(content, buf, 0)
-  let bytes = @mem_helper.bytes_of_memory(buf, offset)
+  let bytes = bytes_of_memory(buf, offset)
   let len = bytes.length()
   let stm = @pdf.Object::Stream(
     @pdf.Dictionary([("/Length", @pdf.Integer(len))]),
@@ -39,7 +39,7 @@ test "test write to file" {
   )
   let offset = @fmt.write(stm, buf, 0)
   inspect(
-    @mem_helper.string_of_memory(buffer, offset),
+    string_of_memory(buffer, offset),
     content=(
       #|<<
       #|  /Length 53
@@ -55,7 +55,7 @@ test "test write to file" {
 test {
   let buffer = @fmt.Memory::make(4096, Byte::default())
   let offset = @fmt.format_write(" ET", [], buffer, 0)
-  inspect(@mem_helper.string_of_memory(buffer, offset), content=" ET")
+  inspect(string_of_memory(buffer, offset), content=" ET")
 }
 
 ///|
@@ -285,10 +285,10 @@ test (t : @test.Test) {
   let content : @pdf.ContentStream = [op1, op2, op3, op4, op5]
   let offset = @fmt.write(content, buf, 0)
   inspect(
-    @mem_helper.string_of_memory(buf, offset),
+    string_of_memory(buf, offset),
     content=" 1 0 0 1 50 770 cm BT /F0 36 Tf (Hello, World!) Tj ET",
   )
-  let bytes = @mem_helper.bytes_of_memory(buf, offset)
+  let bytes = bytes_of_memory(buf, offset)
   let len = bytes.length()
 
   // 1 0 obj
@@ -297,7 +297,7 @@ test (t : @test.Test) {
     bytes,
   )
   // 2 0 obj - Use define_pages helper
-  let pages = @pdf_helper.define_pages(pages=[@pdf.Indirect(4)])
+  let pages = define_pages(pages=[@pdf.Indirect(4)])
 
   // 3 0 obj - Use define_catalog helper
   let catalog = define_catalog(
@@ -309,17 +309,12 @@ test (t : @test.Test) {
     ("/Subtype", @pdf.Name(b"/Type1")),
     ("/BaseFont", @pdf.Name(b"/Times-Italic")),
   ])
-  let font_f0 = @pdf_helper.define_font_item(
-    name=b"/F0",
-    font=times_italic_font,
-  )
+  let font_f0 = define_font_item(name=b"/F0", font=times_italic_font)
   // 4 0 obj - Use define_page and helper functions for resources
-  let font_resources = @pdf_helper.define_fonts(fonts=[font_f0])
-  let page = @pdf_helper.define_page(
-    contents=@pdf.Indirect(1),
-    parent=@pdf.Indirect(2),
-    resources=[font_resources],
-  )
+  let font_resources = define_fonts(fonts=[font_f0])
+  let page = define_page(contents=@pdf.Indirect(1), parent=@pdf.Indirect(2), resources=[
+    font_resources,
+  ])
   // 5 0 obj - outline dictionary
   let outline = make_outline(@pdf.Indirect(6), @pdf.Indirect(6))
   let tree = Tree::{
@@ -334,12 +329,12 @@ test (t : @test.Test) {
   }
   let tree_with_index = TreeWithIndex::from(tree, 6)
   let outline_items = tree_with_index.to_outline_item(5).map(x => x.1)
-  let pdf = @pdf_helper.make_pdf(
+  let pdf = make_pdf(
     @pdf.Indirect(3),
     [stm, pages, catalog, page, outline, ..outline_items],
   )
   let offset = @fmt.write(pdf, buf, 0)
-  let pdf_file = @mem_helper.bytes_of_memory(buf, offset)
+  let pdf_file = bytes_of_memory(buf, offset)
   @fs.write_bytes_to_file("./output/hello.pdf", pdf_file)
   t.writeln(pdf_file)
   t.snapshot(filename="hello.pdf.bytes")
@@ -360,7 +355,7 @@ test "image" (t : @test.Test) {
   }
   let content : @pdf.ContentStream = [@pdf.Op_cm(tm), @pdf.Op_Do(b"/Im0")]
   let offset = @fmt.write(content, buf, 0)
-  let bytes = @mem_helper.bytes_of_memory(buf, offset)
+  let bytes = bytes_of_memory(buf, offset)
   let len = bytes.length()
 
   // 1 0 obj
@@ -369,10 +364,10 @@ test "image" (t : @test.Test) {
     bytes,
   )
   // 2 0 obj - Use define_pages helper
-  let pages = @pdf_helper.define_pages(pages=[@pdf.Indirect(4)])
+  let pages = define_pages(pages=[@pdf.Indirect(4)])
 
   // 3 0 obj - Use define_catalog helper
-  let catalog = @pdf_helper.define_catalog(pages=@pdf.Indirect(2))
+  let catalog = define_catalog(pages=@pdf.Indirect(2), outlines=Null)
 
   // 4 0 obj - Use define_page and helper functions for resources
   let times_italic_font = @pdf.Dictionary([
@@ -383,7 +378,7 @@ test "image" (t : @test.Test) {
   let image_bytes = @fs.read_file_to_bytes("images/ocaml.jpg")
   // 5 0 obj 
   //2187x601
-  let image = @pdf_helper.define_jpeg_image(
+  let image = define_jpeg_image(
     image=image_bytes,
     width=2187,
     height=601,
@@ -392,23 +387,16 @@ test "image" (t : @test.Test) {
   )
   let icc_bytes = @fs.read_file_to_bytes("./typst.icc")
   // 6 0 obj 
-  let icc = @pdf_helper.define_icc(icc=icc_bytes)
-  let font_f0 = @pdf_helper.define_font_item(
-    name=b"/F0",
-    font=times_italic_font,
-  )
-  let font_resources = @pdf_helper.define_fonts(fonts=[font_f0])
-  let xobjects = @pdf_helper.define_xobject(xobjs=[(b"/Im0", @pdf.Indirect(5))])
-  let page = @pdf_helper.define_page(
-    contents=@pdf.Indirect(1),
-    parent=@pdf.Indirect(2),
-    resources=[font_resources, xobjects],
-  )
-  let pdf = @pdf_helper.make_pdf(@pdf.Indirect(3), [
-    stm, pages, catalog, page, image, icc,
+  let icc = define_icc(icc=icc_bytes)
+  let font_f0 = define_font_item(name=b"/F0", font=times_italic_font)
+  let font_resources = define_fonts(fonts=[font_f0])
+  let xobjects = define_xobject(xobjs=[(b"/Im0", @pdf.Indirect(5))])
+  let page = define_page(contents=@pdf.Indirect(1), parent=@pdf.Indirect(2), resources=[
+    font_resources, xobjects,
   ])
+  let pdf = make_pdf(@pdf.Indirect(3), [stm, pages, catalog, page, image, icc])
   let offset = @fmt.write(pdf, buf, 0)
-  let bytes = @mem_helper.bytes_of_memory(buf, offset)
+  let bytes = bytes_of_memory(buf, offset)
   @fs.write_bytes_to_file("./output/ocaml.pdf", bytes)
   t.writeln(bytes)
   t.snapshot(filename="ocaml.pdf.bytes")
