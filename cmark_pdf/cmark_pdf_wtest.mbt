@@ -1,6 +1,6 @@
 ///|
 test "array_README" (t : @test.Test) {
-  let full_path = "./markdown/array_README.md"
+  let full_path = "./resources/markdown/array_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/array_README.pdf"
@@ -12,7 +12,7 @@ test "array_README" (t : @test.Test) {
 
 ///|
 test "bench_README" (t : @test.Test) {
-  let full_path = "./markdown/bench_README.md"
+  let full_path = "./resources/markdown/bench_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/bench_README.pdf"
@@ -24,7 +24,7 @@ test "bench_README" (t : @test.Test) {
 
 ///|
 test "bigint_README" (t : @test.Test) {
-  let full_path = "./markdown/bigint_README.md"
+  let full_path = "./resources/markdown/bigint_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/bigint_README.pdf"
@@ -36,7 +36,7 @@ test "bigint_README" (t : @test.Test) {
 
 ///|
 test "bool_README" (t : @test.Test) {
-  let full_path = "./markdown/bool_README.md"
+  let full_path = "./resources/markdown/bool_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/bool_README.pdf"
@@ -48,7 +48,7 @@ test "bool_README" (t : @test.Test) {
 
 ///|
 test "buffer_README" (t : @test.Test) {
-  let full_path = "./markdown/buffer_README.md"
+  let full_path = "./resources/markdown/buffer_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/buffer_README.pdf"
@@ -60,7 +60,7 @@ test "buffer_README" (t : @test.Test) {
 
 ///|
 test "builtin_README" (t : @test.Test) {
-  let full_path = "./markdown/builtin_README.md"
+  let full_path = "./resources/markdown/builtin_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/builtin_README.pdf"
@@ -72,7 +72,7 @@ test "builtin_README" (t : @test.Test) {
 
 ///|
 test "byte_README" (t : @test.Test) {
-  let full_path = "./markdown/byte_README.md"
+  let full_path = "./resources/markdown/byte_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/byte_README.pdf"
@@ -84,7 +84,7 @@ test "byte_README" (t : @test.Test) {
 
 ///|
 test "bytes_README" (t : @test.Test) {
-  let full_path = "./markdown/bytes_README.md"
+  let full_path = "./resources/markdown/bytes_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/bytes_README.pdf"
@@ -96,7 +96,7 @@ test "bytes_README" (t : @test.Test) {
 
 ///|
 test "char_README" (t : @test.Test) {
-  let full_path = "./markdown/char_README.md"
+  let full_path = "./resources/markdown/char_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/char_README.pdf"
@@ -108,7 +108,7 @@ test "char_README" (t : @test.Test) {
 
 ///|
 test "cmp_README" (t : @test.Test) {
-  let full_path = "./markdown/cmp_README.md"
+  let full_path = "./resources/markdown/cmp_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/cmp_README.pdf"
@@ -120,7 +120,7 @@ test "cmp_README" (t : @test.Test) {
 
 ///|
 test "coverage_README" (t : @test.Test) {
-  let full_path = "./markdown/coverage_README.md"
+  let full_path = "./resources/markdown/coverage_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/coverage_README.pdf"
@@ -132,7 +132,7 @@ test "coverage_README" (t : @test.Test) {
 
 ///|
 test "deque_README" (t : @test.Test) {
-  let full_path = "./markdown/deque_README.md"
+  let full_path = "./resources/markdown/deque_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/deque_README.pdf"
@@ -144,7 +144,7 @@ test "deque_README" (t : @test.Test) {
 
 ///|
 test "double_README" (t : @test.Test) {
-  let full_path = "./markdown/double_README.md"
+  let full_path = "./resources/markdown/double_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/double_README.pdf"
@@ -156,7 +156,7 @@ test "double_README" (t : @test.Test) {
 
 ///|
 test "env_README" (t : @test.Test) {
-  let full_path = "./markdown/env_README.md"
+  let full_path = "./resources/markdown/env_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/env_README.pdf"
@@ -168,7 +168,7 @@ test "env_README" (t : @test.Test) {
 
 ///|
 test "error_README" (t : @test.Test) {
-  let full_path = "./markdown/error_README.md"
+  let full_path = "./resources/markdown/error_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/error_README.pdf"
@@ -180,7 +180,7 @@ test "error_README" (t : @test.Test) {
 
 ///|
 test "float_README" (t : @test.Test) {
-  let full_path = "./markdown/float_README.md"
+  let full_path = "./resources/markdown/float_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/float_README.pdf"
@@ -192,7 +192,7 @@ test "float_README" (t : @test.Test) {
 
 ///|
 test "hashmap_README" (t : @test.Test) {
-  let full_path = "./markdown/hashmap_README.md"
+  let full_path = "./resources/markdown/hashmap_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/hashmap_README.pdf"
@@ -204,7 +204,7 @@ test "hashmap_README" (t : @test.Test) {
 
 ///|
 test "hashset_README" (t : @test.Test) {
-  let full_path = "./markdown/hashset_README.md"
+  let full_path = "./resources/markdown/hashset_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/hashset_README.pdf"
@@ -216,7 +216,7 @@ test "hashset_README" (t : @test.Test) {
 
 ///|
 test "int16_README" (t : @test.Test) {
-  let full_path = "./markdown/int16_README.md"
+  let full_path = "./resources/markdown/int16_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/int16_README.pdf"
@@ -228,7 +228,7 @@ test "int16_README" (t : @test.Test) {
 
 ///|
 test "int64_README" (t : @test.Test) {
-  let full_path = "./markdown/int64_README.md"
+  let full_path = "./resources/markdown/int64_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/int64_README.pdf"
@@ -240,7 +240,7 @@ test "int64_README" (t : @test.Test) {
 
 ///|
 test "int_README" (t : @test.Test) {
-  let full_path = "./markdown/int_README.md"
+  let full_path = "./resources/markdown/int_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/int_README.pdf"
@@ -252,7 +252,7 @@ test "int_README" (t : @test.Test) {
 
 ///|
 test "json_README" (t : @test.Test) {
-  let full_path = "./markdown/json_README.md"
+  let full_path = "./resources/markdown/json_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/json_README.pdf"
@@ -264,7 +264,7 @@ test "json_README" (t : @test.Test) {
 
 ///|
 test "list_README" (t : @test.Test) {
-  let full_path = "./markdown/list_README.md"
+  let full_path = "./resources/markdown/list_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/list_README.pdf"
@@ -276,7 +276,7 @@ test "list_README" (t : @test.Test) {
 
 ///|
 test "math_README" (t : @test.Test) {
-  let full_path = "./markdown/math_README.md"
+  let full_path = "./resources/markdown/math_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/math_README.pdf"
@@ -288,7 +288,7 @@ test "math_README" (t : @test.Test) {
 
 ///|
 test "option_README" (t : @test.Test) {
-  let full_path = "./markdown/option_README.md"
+  let full_path = "./resources/markdown/option_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/option_README.pdf"
@@ -300,7 +300,7 @@ test "option_README" (t : @test.Test) {
 
 ///|
 test "priority_queue_README" (t : @test.Test) {
-  let full_path = "./markdown/priority_queue_README.md"
+  let full_path = "./resources/markdown/priority_queue_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/priority_queue_README.pdf"
@@ -312,7 +312,7 @@ test "priority_queue_README" (t : @test.Test) {
 
 ///|
 test "queue_README" (t : @test.Test) {
-  let full_path = "./markdown/queue_README.md"
+  let full_path = "./resources/markdown/queue_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/queue_README.pdf"
@@ -324,7 +324,7 @@ test "queue_README" (t : @test.Test) {
 
 ///|
 test "quickcheck_README" (t : @test.Test) {
-  let full_path = "./markdown/quickcheck_README.md"
+  let full_path = "./resources/markdown/quickcheck_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/quickcheck_README.pdf"
@@ -336,7 +336,7 @@ test "quickcheck_README" (t : @test.Test) {
 
 ///|
 test "random_README" (t : @test.Test) {
-  let full_path = "./markdown/random_README.md"
+  let full_path = "./resources/markdown/random_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/random_README.pdf"
@@ -348,7 +348,7 @@ test "random_README" (t : @test.Test) {
 
 ///|
 test "rational_README" (t : @test.Test) {
-  let full_path = "./markdown/rational_README.md"
+  let full_path = "./resources/markdown/rational_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/rational_README.pdf"
@@ -360,7 +360,7 @@ test "rational_README" (t : @test.Test) {
 
 ///|
 test "ref_README" (t : @test.Test) {
-  let full_path = "./markdown/ref_README.md"
+  let full_path = "./resources/markdown/ref_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/ref_README.pdf"
@@ -372,7 +372,7 @@ test "ref_README" (t : @test.Test) {
 
 ///|
 test "result_README" (t : @test.Test) {
-  let full_path = "./markdown/result_README.md"
+  let full_path = "./resources/markdown/result_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/result_README.pdf"
@@ -384,7 +384,7 @@ test "result_README" (t : @test.Test) {
 
 ///|
 test "set_README" (t : @test.Test) {
-  let full_path = "./markdown/set_README.md"
+  let full_path = "./resources/markdown/set_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/set_README.pdf"
@@ -396,7 +396,7 @@ test "set_README" (t : @test.Test) {
 
 ///|
 test "sorted_map_README" (t : @test.Test) {
-  let full_path = "./markdown/sorted_map_README.md"
+  let full_path = "./resources/markdown/sorted_map_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/sorted_map_README.pdf"
@@ -408,7 +408,7 @@ test "sorted_map_README" (t : @test.Test) {
 
 ///|
 test "sorted_set_README" (t : @test.Test) {
-  let full_path = "./markdown/sorted_set_README.md"
+  let full_path = "./resources/markdown/sorted_set_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/sorted_set_README.pdf"
@@ -420,7 +420,7 @@ test "sorted_set_README" (t : @test.Test) {
 
 ///|
 test "strconv_README" (t : @test.Test) {
-  let full_path = "./markdown/strconv_README.md"
+  let full_path = "./resources/markdown/strconv_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/strconv_README.pdf"
@@ -432,7 +432,7 @@ test "strconv_README" (t : @test.Test) {
 
 ///|
 test "string_README" (t : @test.Test) {
-  let full_path = "./markdown/string_README.md"
+  let full_path = "./resources/markdown/string_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/string_README.pdf"
@@ -444,7 +444,7 @@ test "string_README" (t : @test.Test) {
 
 ///|
 test "test_README" (t : @test.Test) {
-  let full_path = "./markdown/test_README.md"
+  let full_path = "./resources/markdown/test_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/test_README.pdf"
@@ -456,7 +456,7 @@ test "test_README" (t : @test.Test) {
 
 ///|
 test "tuple_README" (t : @test.Test) {
-  let full_path = "./markdown/tuple_README.md"
+  let full_path = "./resources/markdown/tuple_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/tuple_README.pdf"
@@ -468,7 +468,7 @@ test "tuple_README" (t : @test.Test) {
 
 ///|
 test "uint16_README" (t : @test.Test) {
-  let full_path = "./markdown/uint16_README.md"
+  let full_path = "./resources/markdown/uint16_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/uint16_README.pdf"
@@ -480,7 +480,7 @@ test "uint16_README" (t : @test.Test) {
 
 ///|
 test "uint64_README" (t : @test.Test) {
-  let full_path = "./markdown/uint64_README.md"
+  let full_path = "./resources/markdown/uint64_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/uint64_README.pdf"
@@ -492,7 +492,7 @@ test "uint64_README" (t : @test.Test) {
 
 ///|
 test "uint_README" (t : @test.Test) {
-  let full_path = "./markdown/uint_README.md"
+  let full_path = "./resources/markdown/uint_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/uint_README.pdf"
@@ -504,7 +504,7 @@ test "uint_README" (t : @test.Test) {
 
 ///|
 test "unit_README" (t : @test.Test) {
-  let full_path = "./markdown/unit_README.md"
+  let full_path = "./resources/markdown/unit_README.md"
   let content = @fs.read_file_to_string(full_path)
   let bytes = markdown_to_bytes(content)
   let path = "./output/unit_README.pdf"
