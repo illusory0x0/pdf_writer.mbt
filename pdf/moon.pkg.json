@@ -4,7 +4,7 @@
     "illusory0x0/pdf/lexer_bytes"
   ],
   "test-import": [
-    "moonbitlang/x/fs",
+    "moonbitlang/x/fs"
   ],
   "warn-list": "-2-6"
   // "pre-build": [
