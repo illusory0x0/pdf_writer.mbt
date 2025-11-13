@@ -13,7 +13,7 @@ pub(all) struct LexResult[T] {
 pub fn tokenize_header(
   input : BytesView,
   start_bytes_offset~ : Int,
-) -> LexResult[Header] raise LexError {
+) -> LexResult[LexHeader] raise LexError {
   lexmatch input with longest {
     (
       ("%PDF-" ("\d+" as major) "." ("\d+" as minor) "(\r\n)|\r|\n") as all,
@@ -22,7 +22,7 @@ pub fn tokenize_header(
       let (major, _) = try! @lexer_bytes.tokenize_int(major)
       let (minor, _) = try! @lexer_bytes.tokenize_int(minor)
       LexResult::{
-        value: Header::{ major, minor },
+        value: LexHeader::{ major, minor },
         start_bytes_offset,
         end_bytes_offset: start_bytes_offset + all.length(),
         rest,
@@ -47,7 +47,7 @@ fn skip_space(input : BytesView) -> Int {
 pub fn tokenize_body(
   input : BytesView,
   start_bytes_offset~ : Int,
-) -> LexResult[Body] {
+) -> LexResult[LexBody] {
   let mut offset = start_bytes_offset
   let mut rest = input
   let body_buffer = []
@@ -68,7 +68,7 @@ pub fn tokenize_body(
             let obj_bytes = rest_after_header[0:endobj_start_idx]
             let (object_num, _) = try! @lexer_bytes.tokenize_int(obj_num)
             let (generation_num, _) = try! @lexer_bytes.tokenize_int(gen_num)
-            let obj = Obj::{
+            let obj = LexObj::{
               start_bytes_offset: offset,
               object_num,
               generation_num,
@@ -88,7 +88,7 @@ pub fn tokenize_body(
     }
   }
   LexResult::{
-    value: Body::from(body_buffer),
+    value: LexBody::from(body_buffer),
     start_bytes_offset,
     end_bytes_offset: offset,
     rest,
@@ -104,7 +104,7 @@ pub fn tokenize_body(
 pub fn tokenize_xref_entry(
   input : BytesView,
   start_bytes_offset~ : Int,
-) -> LexResult[XRefEntry] raise LexError {
+) -> LexResult[LexXRefEntry] raise LexError {
   lexmatch input with longest {
     (
       (
@@ -120,9 +120,9 @@ pub fn tokenize_xref_entry(
     ) => {
       let (bytes_offset, _) = try! @lexer_bytes.tokenize_int(offset_str)
       let (generation_num, _) = try! @lexer_bytes.tokenize_int(gen_str)
-      let state = EntryState::InUse
+      let state = LexEntryState::InUse
       LexResult::{
-        value: XRefEntry::{ bytes_offset, generation_num, state },
+        value: LexXRefEntry::{ bytes_offset, generation_num, state },
         start_bytes_offset,
         end_bytes_offset: start_bytes_offset + all.length(),
         rest,
@@ -142,9 +142,9 @@ pub fn tokenize_xref_entry(
     ) => {
       let (bytes_offset, _) = try! @lexer_bytes.tokenize_int(offset_str)
       let (generation_num, _) = try! @lexer_bytes.tokenize_int(gen_str)
-      let state = EntryState::Free
+      let state = LexEntryState::Free
       LexResult::{
-        value: XRefEntry::{ bytes_offset, generation_num, state },
+        value: LexXRefEntry::{ bytes_offset, generation_num, state },
         start_bytes_offset,
         end_bytes_offset: start_bytes_offset + all.length(),
         rest,
@@ -161,7 +161,7 @@ pub fn tokenize_xref_entry(
 pub fn tokenize_xref_table(
   input : BytesView,
   start_bytes_offset : Int,
-) -> LexResult[XRefTable] raise LexError {
+) -> LexResult[LexXRefTable] raise LexError {
   lexmatch input with longest {
     (
       (
@@ -189,7 +189,7 @@ pub fn tokenize_xref_table(
         current_offset = entry_result.end_bytes_offset
       }
       LexResult::{
-        value: XRefTable::{ entries, start_num },
+        value: LexXRefTable::{ entries, start_num },
         start_bytes_offset,
         end_bytes_offset: current_offset,
         rest: current_rest,
@@ -333,7 +333,7 @@ pub fn skip_comment(input : BytesView) -> Int {
 }
 
 ///|
-pub fn tokenize_file(input : BytesView) -> LexResult[File] raise LexError {
+pub fn tokenize_file(input : BytesView) -> LexResult[LexFile] raise LexError {
   let header_result = tokenize_header(input, start_bytes_offset=0)
   let mut current_rest = header_result.rest
   let mut current_offset = header_result.end_bytes_offset
@@ -371,7 +371,7 @@ pub fn tokenize_file(input : BytesView) -> LexResult[File] raise LexError {
   }
   let startxref_result = tokenize_startxref(current_rest, current_offset)
   LexResult::{
-    value: File::{
+    value: LexFile::{
       header: header_result.value,
       body: body_result.value,
       xref_table: xref_result.value,

@@ -18,7 +18,7 @@ test "byte_offset" {
     b"trailer\n", b"<</Size 2 /Root 1 0 R>>\n", b"startxref\n", b"29\n", b"%%EOF\n",
   ]
   let file = bytes_concat([file_header, ..body, ..xref_table, ..trailer])
-  let result = @pdf_file_lexer.tokenize_file(file)
+  let result = tokenize_file(file)
   inspect(file_header.length(), content="9")
   inspect(result.value.body[0].start_bytes_offset, content="9")
   inspect(file.length() - result.rest.length(), content="126")
@@ -79,7 +79,7 @@ test "tokenize_file with comments between sections" {
     #|%%EOF
     #|
   let input = @encoding/utf8.encode(pdf_content)
-  let result = try? @pdf_file_lexer.tokenize_file(input)
+  let result = try? tokenize_file(input)
   @json.inspect(result is Ok(_), content=true)
   match result {
     Ok(file_result) => {
@@ -111,7 +111,7 @@ test "tokenize_file without comments" {
     #|%%EOF
     #|
   let input = @encoding/utf8.encode(pdf_content)
-  let result = try? @pdf_file_lexer.tokenize_file(input)
+  let result = try? tokenize_file(input)
   @json.inspect(result is Ok(_), content=true)
   match result {
     Ok(file_result) => {

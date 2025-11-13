@@ -2,7 +2,7 @@
 /// Main parser function that converts raw PDF bytes to a structured PDF file
 pub fn parse(input : BytesView) -> @pdf.File raise {
   // Step 1: Use pdf_file_lexer to tokenize the entire PDF file structure
-  let file_result = @pdf_file_lexer.tokenize_file(input) // Let LexError propagate
+  let file_result = @pdf.tokenize_file(input) // Let LexError propagate
   let pdf_file = file_result.value
 
   // Step 2: Parse each object in the body using pdf_object_parser

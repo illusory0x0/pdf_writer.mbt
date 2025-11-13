@@ -12,7 +12,7 @@ test "parse simple PDF" {
   })
 
   // test lexer
-  let file = @pdf_file_lexer.tokenize_file(input)
+  let file = @pdf.tokenize_file(input)
   @json.inspect(file, content={
     "value": {
       "header": { "major": 1, "minor": 4 },

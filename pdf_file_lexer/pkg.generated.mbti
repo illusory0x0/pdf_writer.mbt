@@ -4,60 +4,70 @@ package "illusory0x0/pdf/pdf_file_lexer"
 // Values
 fn skip_comment(BytesView) -> Int
 
-fn tokenize_body(BytesView, start_bytes_offset~ : Int) -> LexResult[Body]
+fn tokenize_body(BytesView, start_bytes_offset~ : Int) -> LexResult[LexBody]
 
-fn tokenize_file(BytesView) -> LexResult[File] raise LexError
+fn tokenize_file(BytesView) -> LexResult[LexFile] raise LexError
 
-fn tokenize_header(BytesView, start_bytes_offset~ : Int) -> LexResult[Header] raise LexError
+fn tokenize_header(BytesView, start_bytes_offset~ : Int) -> LexResult[LexHeader] raise LexError
 
 fn tokenize_startxref(BytesView, Int) -> LexResult[Int] raise LexError
 
 fn tokenize_trailer(BytesView, Int) -> LexResult[BytesView] raise LexError
 
-fn tokenize_xref_entry(BytesView, start_bytes_offset~ : Int) -> LexResult[XRefEntry] raise LexError
+fn tokenize_xref_entry(BytesView, start_bytes_offset~ : Int) -> LexResult[LexXRefEntry] raise LexError
 
-fn tokenize_xref_table(BytesView, Int) -> LexResult[XRefTable] raise LexError
+fn tokenize_xref_table(BytesView, Int) -> LexResult[LexXRefTable] raise LexError
 
 // Errors
 type LexError
 impl Show for LexError
 
 // Types and methods
-type Body
-fn Body::from(Array[Obj]) -> Self
-fn Body::iter(Self) -> Iter[Obj]
-fn Body::length(Self) -> Int
-fn Body::op_get(Self, Int) -> Obj
-impl Eq for Body
-impl Show for Body
-impl ToJson for Body
+type LexBody
+fn LexBody::from(Array[LexObj]) -> Self
+fn LexBody::iter(Self) -> Iter[LexObj]
+fn LexBody::length(Self) -> Int
+fn LexBody::op_get(Self, Int) -> LexObj
+impl Eq for LexBody
+impl Show for LexBody
+impl ToJson for LexBody
 
-pub(all) enum EntryState {
+pub(all) enum LexEntryState {
   InUse
   Free
 }
-impl Eq for EntryState
-impl Show for EntryState
-impl ToJson for EntryState
+impl Eq for LexEntryState
+impl Show for LexEntryState
+impl ToJson for LexEntryState
 
-pub(all) struct File {
-  header : Header
-  body : Body
-  xref_table : XRefTable
+pub(all) struct LexFile {
+  header : LexHeader
+  body : LexBody
+  xref_table : LexXRefTable
   trailer : BytesView
   start_xref_bytes_offset : Int
 }
-impl Eq for File
-impl Show for File
-impl ToJson for File
+impl Eq for LexFile
+impl Show for LexFile
+impl ToJson for LexFile
 
-pub(all) struct Header {
+pub(all) struct LexHeader {
   major : Int
   minor : Int
 }
-impl Eq for Header
-impl Show for Header
-impl ToJson for Header
+impl Eq for LexHeader
+impl Show for LexHeader
+impl ToJson for LexHeader
+
+pub(all) struct LexObj {
+  start_bytes_offset : Int
+  object_num : Int
+  generation_num : Int
+  obj_bytes : BytesView
+}
+impl Eq for LexObj
+impl Show for LexObj
+impl ToJson for LexObj
 
 pub(all) struct LexResult[T] {
   value : T
@@ -68,32 +78,22 @@ pub(all) struct LexResult[T] {
 impl[T : Show] Show for LexResult[T]
 impl[T : ToJson] ToJson for LexResult[T]
 
-pub(all) struct Obj {
-  start_bytes_offset : Int
-  object_num : Int
-  generation_num : Int
-  obj_bytes : BytesView
-}
-impl Eq for Obj
-impl Show for Obj
-impl ToJson for Obj
-
-pub(all) struct XRefEntry {
+pub(all) struct LexXRefEntry {
   bytes_offset : Int
   generation_num : Int
-  state : EntryState
+  state : LexEntryState
 }
-impl Eq for XRefEntry
-impl Show for XRefEntry
-impl ToJson for XRefEntry
+impl Eq for LexXRefEntry
+impl Show for LexXRefEntry
+impl ToJson for LexXRefEntry
 
-pub(all) struct XRefTable {
-  entries : Array[XRefEntry]
+pub(all) struct LexXRefTable {
+  entries : Array[LexXRefEntry]
   start_num : Int
 }
-impl Eq for XRefTable
-impl Show for XRefTable
-impl ToJson for XRefTable
+impl Eq for LexXRefTable
+impl Show for LexXRefTable
+impl ToJson for LexXRefTable
 
 // Type aliases
 

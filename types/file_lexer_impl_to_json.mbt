@@ -1,5 +1,5 @@
 ///|
-pub impl ToJson for File with to_json(self) {
+pub impl ToJson for LexFile with to_json(self) {
   {
     "header": self.header,
     "body": self.body,
@@ -10,12 +10,12 @@ pub impl ToJson for File with to_json(self) {
 }
 
 ///|
-pub impl ToJson for Header with to_json(self) {
+pub impl ToJson for LexHeader with to_json(self) {
   { "major": self.major, "minor": self.minor }
 }
 
 ///|
-pub impl ToJson for Obj with to_json(self) {
+pub impl ToJson for LexObj with to_json(self) {
   {
     "bytes_offset": self.start_bytes_offset,
     "object_num": self.object_num,
@@ -25,17 +25,17 @@ pub impl ToJson for Obj with to_json(self) {
 }
 
 ///|
-pub impl ToJson for Body with to_json(self) {
+pub impl ToJson for LexBody with to_json(self) {
   self.0.to_json()
 }
 
 ///|
-pub impl ToJson for XRefTable with to_json(self) {
+pub impl ToJson for LexXRefTable with to_json(self) {
   { "entries": self.entries, "start_num": self.start_num }
 }
 
 ///|
-pub impl ToJson for XRefEntry with to_json(self) {
+pub impl ToJson for LexXRefEntry with to_json(self) {
   {
     "bytes_offset": self.bytes_offset,
     "generation_num": self.generation_num,
@@ -44,7 +44,7 @@ pub impl ToJson for XRefEntry with to_json(self) {
 }
 
 ///|
-pub impl ToJson for EntryState with to_json(self) {
+pub impl ToJson for LexEntryState with to_json(self) {
   match self {
     InUse => "InUse"
     Free => "Free"
@@ -53,20 +53,24 @@ pub impl ToJson for EntryState with to_json(self) {
 
 ///|
 test "ToJson implementations" {
-  let in_use : EntryState = InUse
-  let free : EntryState = Free
+  let in_use : LexEntryState = InUse
+  let free : LexEntryState = Free
   @json.inspect(in_use, content="InUse")
   @json.inspect(free, content="Free")
-  let header : Header = { major: 1, minor: 7 }
+  let header : LexHeader = { major: 1, minor: 7 }
   @json.inspect(header, content={ "major": 1, "minor": 7 })
-  let entry : XRefEntry = { bytes_offset: 123, generation_num: 0, state: InUse }
+  let entry : LexXRefEntry = {
+    bytes_offset: 123,
+    generation_num: 0,
+    state: InUse,
+  }
   @json.inspect(entry, content={
     "bytes_offset": 123,
     "generation_num": 0,
     "state": "InUse",
   })
   let test_bytes = b"Hello PDF"
-  let obj : Obj = {
+  let obj : LexObj = {
     start_bytes_offset: 100,
     object_num: 1,
     generation_num: 0,

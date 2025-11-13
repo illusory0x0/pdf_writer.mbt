@@ -2,7 +2,7 @@
   "import": [
     "illusory0x0/pdf/fmt",
     "illusory0x0/pdf/mem_helper",
-    "illusory0x0/pdf/helper"
+    "illusory0x0/pdf/lexer_bytes", "illusory0x0/pdf/helper"
   ],
   "test-import": [
     "moonbitlang/x/fs",
