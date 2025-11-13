@@ -375,7 +375,7 @@ test "image" (t : @test.Test) {
     ("/Subtype", @pdf.Name(b"/Type1")),
     ("/BaseFont", @pdf.Name(b"/Times-Italic")),
   ])
-  let image_bytes = @fs.read_file_to_bytes("images/ocaml.jpg")
+  let image_bytes = @fs.read_file_to_bytes("resources/images/ocaml.jpg")
   // 5 0 obj 
   //2187x601
   let image = define_jpeg_image(
@@ -385,7 +385,7 @@ test "image" (t : @test.Test) {
     bpc=8,
     icc=6,
   )
-  let icc_bytes = @fs.read_file_to_bytes("./typst.icc")
+  let icc_bytes = @fs.read_file_to_bytes("resources/typst.icc")
   // 6 0 obj 
   let icc = define_icc(icc=icc_bytes)
   let font_f0 = define_font_item(name=b"/F0", font=times_italic_font)
